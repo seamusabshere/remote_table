@@ -5,12 +5,14 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "remote_table"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{Remotely open and parse XLS, ODS, CSV and fixed-width tables.}
+    gem.description = %Q{Remotely open and parse Excel XLS, ODS, CSV and fixed-width tables.}
     gem.email = "seamus@abshere.net"
     gem.homepage = "http://github.com/seamusabshere/remote_table"
-    gem.authors = ["Seamus Abshere"]
-    gem.rubyforge_project = "remote_table"
+    gem.authors = ["Seamus Abshere", "Andy Rossmeissl"]
+    %w{ activesupport roo fastercsv ryanwood-slither }.each { |name| gem.add_dependency name } # TODO: do I need to include activesupport, etc.?
+    gem.files.include %w(lib/remote_table/**/*)
+    # gem.rubyforge_project = "remotetable"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 
