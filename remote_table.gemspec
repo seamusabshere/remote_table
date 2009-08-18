@@ -25,20 +25,31 @@ Gem::Specification.new do |s|
      "VERSION",
      "lib/remote_table.rb",
      "lib/remote_table/file.rb",
+     "lib/remote_table/file.rb",
+     "lib/remote_table/file/csv.rb",
      "lib/remote_table/file/csv.rb",
      "lib/remote_table/file/fixed_width.rb",
+     "lib/remote_table/file/fixed_width.rb",
+     "lib/remote_table/file/ods.rb",
      "lib/remote_table/file/ods.rb",
      "lib/remote_table/file/roo_spreadsheet.rb",
+     "lib/remote_table/file/roo_spreadsheet.rb",
+     "lib/remote_table/file/xls.rb",
      "lib/remote_table/file/xls.rb",
      "lib/remote_table/package.rb",
+     "lib/remote_table/package.rb",
+     "lib/remote_table/request.rb",
      "lib/remote_table/request.rb",
      "lib/remote_table/transform.rb",
+     "lib/remote_table/transform.rb",
+     "remote_table.gemspec",
      "test/remote_table_test.rb",
      "test/test_helper.rb"
   ]
   s.homepage = %q{http://github.com/seamusabshere/remote_table}
-  s.rdoc_options = ["--charset=UTF-8"]
+  s.rdoc_options = ["--charset=UTF-8", "--line-numbers", "--inline-source"]
   s.require_paths = ["lib"]
+  s.requirements = ["curl"]
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{Remotely open and parse XLS, ODS, CSV and fixed-width tables.}
   s.test_files = [
