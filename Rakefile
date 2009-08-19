@@ -10,9 +10,9 @@ begin
     gem.email = "seamus@abshere.net"
     gem.homepage = "http://github.com/seamusabshere/remote_table"
     gem.authors = ["Seamus Abshere", "Andy Rossmeissl"]
-    %w{ activesupport roo fastercsv ryanwood-slither }.each { |name| gem.add_dependency name } # TODO: do I need to include activesupport, etc.?
+    %w{ activesupport roo fastercsv ryanwood-slither }.each { |name| gem.add_dependency name }
     gem.require_path = "lib"
-    gem.files.include %w(lib/remote_table/**/*) unless gem.files.empty? # seems to fail once it's in the wild
+    gem.files.include %w(lib/remote_table) unless gem.files.empty? # seems to fail once it's in the wild
     gem.rdoc_options << '--line-numbers' << '--inline-source'
     gem.requirements << 'curl'
     # gem.rubyforge_project = "remotetable"
