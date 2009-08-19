@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{remote_table}
-  s.version = "0.1.2"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Seamus Abshere", "Andy Rossmeissl"]
-  s.date = %q{2009-08-18}
+  s.date = %q{2009-08-19}
   s.description = %q{Remotely open and parse Excel XLS, ODS, CSV and fixed-width tables.}
   s.email = %q{seamus@abshere.net}
   s.extra_rdoc_files = [
