@@ -15,4 +15,4 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2009 Seamus Abshere. See LICENSE for details.
+Copyright (c) 2009 Brighter Planet. See LICENSE for details.
