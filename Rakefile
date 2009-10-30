@@ -10,7 +10,8 @@ begin
     gem.email = "seamus@abshere.net"
     gem.homepage = "http://github.com/seamusabshere/remote_table"
     gem.authors = ["Seamus Abshere", "Andy Rossmeissl"]
-    %w{ activesupport roo fastercsv ryanwood-slither }.each { |name| gem.add_dependency name }
+    %w{ activesupport fastercsv ryanwood-slither }.each { |name| gem.add_dependency name }
+    gem.add_dependency 'roo', '1.3.11'
     gem.require_path = "lib"
     gem.files.include %w(lib/remote_table) unless gem.files.empty? # seems to fail once it's in the wild
     gem.rdoc_options << '--line-numbers' << '--inline-source'
