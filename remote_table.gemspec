@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Seamus Abshere", "Andy Rossmeissl"]
-  s.date = %q{2009-10-30}
+  s.date = %q{2009-11-02}
   s.description = %q{Remotely open and parse Excel XLS, ODS, CSV and fixed-width tables.}
   s.email = %q{seamus@abshere.net}
   s.extra_rdoc_files = [
@@ -41,6 +41,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8", "--line-numbers", "--inline-source"]
   s.require_paths = ["lib"]
   s.requirements = ["curl"]
+  s.rubyforge_project = %q{remotetable}
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{Remotely open and parse XLS, ODS, CSV and fixed-width tables.}
   s.test_files = [
