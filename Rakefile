@@ -16,8 +16,7 @@ begin
     gem.files.include %w(lib/remote_table) unless gem.files.empty? # seems to fail once it's in the wild
     gem.rdoc_options << '--line-numbers' << '--inline-source'
     gem.requirements << 'curl'
-    # gem.rubyforge_project = "remotetable"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.rubyforge_project = "remotetable"
   end
   Jeweler::GemcutterTasks.new
   Jeweler::RubyforgeTasks.new do |rubyforge|
