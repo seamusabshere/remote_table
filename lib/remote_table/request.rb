@@ -17,11 +17,15 @@ class RemoteTable
     private
     
     def staging_dir_path
-      path = Tempfile.open(url.gsub(/[^a-z0-9]+/i, '_')).path
+      path = tempfile_path_from_url
       FileUtils.rm_f(path)
       FileUtils.mkdir(path)
       at_exit { FileUtils.rm_rf(path) }
       path
+    end
+    
+    def tempfile_path_from_url
+      Tempfile.open(url.gsub(/[^a-z0-9]+/i, '_')[0,100]).path
     end
     
     def url_with_google_docs_handling
