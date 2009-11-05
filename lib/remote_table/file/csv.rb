@@ -2,7 +2,7 @@ class RemoteTable
   module Csv
     def each_row(&block)
       skip_rows!
-      FasterCSV.parse(open(path), fastercsv_options) do |row|
+      FasterCSV.foreach(path, fastercsv_options) do |row|
         if row.respond_to?(:fields) # it's a traditional fastercsv row hash
           next if row.fields.compact.blank?
           hash = HashWithIndifferentAccess.new(row.to_hash)
@@ -20,7 +20,7 @@ class RemoteTable
     private
     
     def fastercsv_options
-      fastercsv_options = { :skip_blanks => true }              # ...and this will skip []
+      fastercsv_options = { :skip_blanks => true, :header_converters => lambda { |k| k.toutf8 } }
       if headers == false
         fastercsv_options.merge!(:headers => nil)
       else
