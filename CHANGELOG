@@ -1,0 +1,3 @@
+0.1.6
+* For CSVs, force convert headers using String#toutf8. :encoding => 'N'|'U' didn't work.
+* Fix handling of long urls when passing off to Tempfile.
