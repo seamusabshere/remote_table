@@ -5,7 +5,10 @@ class RemoteTable
       skip_rows!
       cut_columns!
       a = Slither.parse(path, schema_name)
-      a[:rows].each { |row| yield HashWithIndifferentAccess.new(row) }
+      a[:rows].each do |hash|
+        hash.reject! { |k, v| k.blank? }
+        yield hash if keep_blank_rows or hash.any? { |k, v| v.present? }
+      end
     ensure
       uncut_columns!
       unskip_rows!

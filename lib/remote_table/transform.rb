@@ -18,8 +18,16 @@ class RemoteTable
       self
     end
     
+    # - convert OrderedHash to a Hash (otherwise field ordering will be saved)
+    # - dump it
+    # - digest it
+    def self.row_hash(row)
+      Digest::MD5.hexdigest Marshal.dump(Hash.new.replace(row))
+    end
+    
     def each_row(&block)
       raw_table.each_row do |row|
+        row['row_hash'] = self.class.row_hash(row)
         virtual_rows = transform ? transform.apply(row) : row # allow transform.apply(row) to return multiple rows
         Array.wrap(virtual_rows).each do |virtual_row|
           next if select and !select.call(virtual_row)

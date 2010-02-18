@@ -55,7 +55,7 @@ class RemoteTable
     # in C but not in the others, we can default to the basename of the package
     # in order to do this we'll need to mv the uncompressed file on top of the original file
     def identify(path)
-      ::File.mv(path, file_path(path)) if !packing and [ nil, :bz2, :gz ].include?(compression)
+      FileUtils.mv(path, file_path(path)) if !packing and [ nil, :bz2, :gz ].include?(compression)
     end
     
     def file_path(path)

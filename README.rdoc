@@ -24,4 +24,4 @@ See the test file and also data_miner examples of custom parsers.
 
 == Copyright
 
-Copyright (c) 2009 Brighter Planet. See LICENSE for details.
+Copyright (c) 2010 Brighter Planet. See LICENSE for details.
