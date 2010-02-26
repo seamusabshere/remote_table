@@ -55,18 +55,18 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<roo>, ["~> 1.9.3"])
+      s.add_runtime_dependency(%q<roo>, ["~> 1.3.11"])
       s.add_runtime_dependency(%q<fastercsv>, ["~> 1.5.0"])
       s.add_runtime_dependency(%q<activesupport>, ["~> 2.3.4"])
       s.add_runtime_dependency(%q<ryanwood-slither>, ["~> 0.99.3"])
     else
-      s.add_dependency(%q<roo>, ["~> 1.9.3"])
+      s.add_dependency(%q<roo>, ["~> 1.3.11"])
       s.add_dependency(%q<fastercsv>, ["~> 1.5.0"])
       s.add_dependency(%q<activesupport>, ["~> 2.3.4"])
       s.add_dependency(%q<ryanwood-slither>, ["~> 0.99.3"])
     end
   else
-    s.add_dependency(%q<roo>, ["~> 1.9.3"])
+    s.add_dependency(%q<roo>, ["~> 1.3.11"])
     s.add_dependency(%q<fastercsv>, ["~> 1.5.0"])
     s.add_dependency(%q<activesupport>, ["~> 2.3.4"])
     s.add_dependency(%q<ryanwood-slither>, ["~> 0.99.3"])
