@@ -1,6 +1,8 @@
 class RemoteTable
   module Csv
     def each_row(&block)
+      backup_file!
+      convert_file_to_utf8!
       skip_rows!
       FasterCSV.foreach(path, fastercsv_options) do |row|
         ordered_hash = ActiveSupport::OrderedHash.new
@@ -27,13 +29,13 @@ class RemoteTable
         yield ordered_hash if keep_blank_rows or filled_values.nonzero?
       end
     ensure
-      restore_rows!
+      restore_file!
     end
     
     private
     
     def fastercsv_options
-      fastercsv_options = { :skip_blanks => !keep_blank_rows, :header_converters => lambda { |k| k.to_s.toutf8 } }
+      fastercsv_options = { :skip_blanks => !keep_blank_rows, :header_converters => lambda { |k| RemoteTable::File.convert_to_utf8 k.to_s, encoding } }
       if headers == false
         fastercsv_options.merge!(:headers => nil)
       else
@@ -41,18 +43,6 @@ class RemoteTable
       end
       fastercsv_options.merge!(:col_sep => delimiter) if delimiter
       fastercsv_options
-    end
-    
-    def skip_rows!
-      return unless skip
-      original = "#{path}.original"
-      FileUtils.cp(path, original)
-      `cat #{original} | tail -n +#{skip + 1} > #{path}`
-    end
-    
-    def restore_rows!
-      return unless skip
-      FileUtils.mv "#{path}.original", path
     end
   end
 end

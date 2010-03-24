@@ -1,6 +1,7 @@
 class RemoteTable
   class File
     attr_accessor :filename, :format, :delimiter, :skip, :cut, :crop, :sheet, :headers, :schema, :schema_name, :trap
+    attr_accessor :encoding
     attr_accessor :path
     attr_accessor :keep_blank_rows
     
@@ -17,7 +18,21 @@ class RemoteTable
       @schema = bus[:schema]
       @schema_name = bus[:schema_name]
       @trap = bus[:trap]
+      @encoding = bus[:encoding] || 'UTF-8'
       extend "RemoteTable::#{format.to_s.camelcase}".constantize
+    end
+    
+    class << self
+      # http://santanatechnotes.blogspot.com/2005/12/matching-iso-8859-1-strings-with-ruby.html
+      def convert_to_utf8(str, encoding)
+        if encoding == 'UTF-8'
+          str.toutf8 # just in case
+        else
+          @_iconv ||= Hash.new
+          @_iconv[encoding] ||= Iconv.new 'UTF-8', encoding
+          @_iconv[encoding].iconv(str).toutf8
+        end
+      end
     end
     
     def tabulate(path)
@@ -45,6 +60,38 @@ class RemoteTable
           end
         end
       end
+    end
+    
+    def backup_file!
+      FileUtils.cp path, "#{path}.backup"
+    end
+    
+    def skip_rows!
+      return unless skip
+      `cat #{path} | tail -n +#{skip + 1} > #{path}.tmp`
+      FileUtils.mv "#{path}.tmp", path
+    end
+    
+    def convert_file_to_utf8!
+      return if encoding == 'UTF8' or encoding == 'UTF-8'
+      `iconv -c -f #{encoding} -t UTF8 #{path} > #{path}.tmp`
+      FileUtils.mv "#{path}.tmp", path
+    end
+    
+    def restore_file!
+      FileUtils.mv "#{path}.backup", path if ::File.readable? "#{path}.backup"
+    end
+    
+    def cut_columns!
+      return unless cut
+      `cat #{path} | cut -c #{cut} > #{path}.tmp`
+      FileUtils.mv "#{path}.tmp", path
+    end
+    
+    def crop_rows!
+      return unless crop
+      `cat #{path} | tail -n +#{crop.first} | head -n #{crop.last - crop.first + 1} > #{path}.tmp`
+      FileUtils.mv "#{path}.tmp", path
     end
     
     def format_from_filename

@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'digest/md5'
+require 'iconv'
 require 'active_support'
 require 'tempfile'
 require 'fastercsv'
