@@ -25,7 +25,7 @@ class RemoteTable
     class << self
       # http://santanatechnotes.blogspot.com/2005/12/matching-iso-8859-1-strings-with-ruby.html
       def convert_to_utf8(str, encoding)
-        if encoding == 'UTF-8'
+        if encoding == 'UTF-8' or encoding == 'UTF8'
           str.toutf8 # just in case
         else
           @_iconv ||= Hash.new
@@ -73,8 +73,8 @@ class RemoteTable
     end
     
     def convert_file_to_utf8!
-      return if encoding == 'UTF8' or encoding == 'UTF-8'
-      `iconv -c -f #{encoding} -t UTF8 #{path} > #{path}.tmp`
+      return if encoding == 'UTF-8' or encoding == 'UTF8'
+      `iconv -c -f #{encoding} -t UTF-8 #{path} > #{path}.tmp`
       FileUtils.mv "#{path}.tmp", path
     end
     
