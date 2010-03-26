@@ -1,16 +1,27 @@
 class RemoteTable
   class Request
     attr_accessor :url, :post_data, :username, :password
+    attr_accessor :form_data
     
     # TODO: support post_data
     # TODO: support HTTP basic auth
     def initialize(bus)
       @url = bus[:url] or raise "need url"
+      @form_data = bus[:form_data]
     end
     
     def download
       path = ::File.join(staging_dir_path, 'REMOTE_TABLE_PACKAGE')
-      `curl --silent \"#{url_with_google_docs_handling}\" > #{path}`
+      cmd = %{
+        curl \
+        --silent \
+        --header "Expect: " \
+        --location \
+        #{"--data \"#{form_data}\"" if form_data.present?} \
+        "#{url_with_google_docs_handling}" \
+        --output "#{path}"
+      }
+      `#{cmd}`
       path
     end
     

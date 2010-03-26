@@ -1,12 +1,13 @@
 class RemoteTable
   class Package
-    attr_accessor :url, :compression, :packing, :filename
+    attr_accessor :url, :compression, :packing, :filename, :glob
     
     def initialize(bus)
       @url = bus[:url] or raise "need url"
       @compression = bus[:compression] || compression_from_basename
       @packing = bus[:packing] || packing_from_basename_and_compression
       @filename = bus[:filename] || filename_from_basename_and_compression_and_packing
+      @glob = bus[:glob]
       add_hints!(bus)
     end
     
@@ -51,11 +52,13 @@ class RemoteTable
 
     # ex. A: 2007-01.csv.gz  (compression not capable of storing multiple files)
     # ex. B: 2007-01.tar.gz  (packing)
-    # ex. C: 2007-01.zip     (compression capable of storing multiple files)    
-    # in C but not in the others, we can default to the basename of the package
-    # in order to do this we'll need to mv the uncompressed file on top of the original file
+    # ex. C: 2007-01.zip     (compression capable of storing multiple files)
     def identify(path)
-      FileUtils.mv(path, file_path(path)) if !packing and [ nil, :bz2, :gz ].include?(compression)
+      if glob.present?
+        FileUtils.mv Dir[::File.dirname(path) + glob].first, file_path(path)
+      elsif !packing and [ nil, :bz2, :gz ].include?(compression)
+        FileUtils.mv path, file_path(path)
+      end
     end
     
     def file_path(path)
