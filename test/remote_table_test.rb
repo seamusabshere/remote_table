@@ -14,7 +14,7 @@ class FuelOilParser
     row.keys.grep(/(.+) Residual Fuel Oil/) do |location_column_name|
       first_part = $1
       next if (cost = row[location_column_name]).blank? or (date = row['Date']).blank?
-      if first_part.starts_with?('U.S.')
+      if first_part.start_with?('U.S.')
         locatable = "united_states (Country)"
       elsif first_part.include?('PADD')
         /\(PADD (.*)\)/.match(first_part)
