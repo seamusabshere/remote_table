@@ -1,6 +1,11 @@
 require 'digest/md5'
 require 'iconv'
 require 'active_support'
+begin; require 'active_support/core_ext/object/blank'; rescue MissingSourceFile; end
+begin; require 'active_support/core_ext/string/inflections'; rescue MissingSourceFile; end
+begin; require 'active_support/core_ext/array/wrap'; rescue MissingSourceFile; end
+begin; require 'active_support/core_ext/hash/except'; rescue MissingSourceFile; end
+begin; require 'active_support/core_ext/string/starts_ends_with'; rescue MissingSourceFile; end
 require 'tempfile'
 require 'fastercsv'
 require 'slither'

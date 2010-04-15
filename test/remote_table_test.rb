@@ -11,16 +11,18 @@ class FuelOilParser
   end
   def apply(row)
     virtual_rows = []
-    row.keys.grep(/(.*) Residual Fuel Oil/) do |location_column_name|
+    row.keys.grep(/(.+) Residual Fuel Oil/) do |location_column_name|
+      first_part = $1
       next if (cost = row[location_column_name]).blank? or (date = row['Date']).blank?
-      if $1.starts_with?('U.S.')
+      if first_part.starts_with?('U.S.')
         locatable = "united_states (Country)"
-      elsif $1.include?('PADD')
-        /\(PADD (.*)\)/.match($1)
-        next if $1 == '1' # skip PADD 1 because we always prefer subdistricts
-        locatable = "#{$1} (PetroleumAdministrationForDefenseDistrict)"
+      elsif first_part.include?('PADD')
+        /\(PADD (.*)\)/.match(first_part)
+        padd_part = $1
+        next if padd_part == '1' # skip PADD 1 because we always prefer subdistricts
+        locatable = "#{padd_part} (PetroleumAdministrationForDefenseDistrict)"
       else
-        locatable = "#{$1} (State)"
+        locatable = "#{first_part} (State)"
       end
       date = Time.parse(date)
       virtual_rows << {
@@ -160,7 +162,7 @@ class RemoteTableTest < Test::Unit::TestCase
       assert_equal row.except('row_hash'), @test2_rows[index]
     end
   end
-
+  
   should "read fixed width correctly, keeping blank rows" do
     t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.fixed_width.txt',
                         :format => :fixed_width,
@@ -257,6 +259,7 @@ class RemoteTableTest < Test::Unit::TestCase
   
     t = RemoteTable.new(:url => 'http://tonto.eia.doe.gov/dnav/pet/xls/PET_PRI_RESID_A_EPPR_PTA_CPGAL_M.xls',
                         :transform => { :class => FuelOilParser })
+  
     assert t.rows.include?(ma_1990_01)
     assert t.rows.include?(ga_1990_01)
   end
