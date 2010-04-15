@@ -1,5 +1,6 @@
 require 'digest/md5'
 require 'iconv'
+require 'uri'
 require 'active_support'
 begin; require 'active_support/core_ext/object/blank'; rescue MissingSourceFile; end
 begin; require 'active_support/core_ext/string/inflections'; rescue MissingSourceFile; end
