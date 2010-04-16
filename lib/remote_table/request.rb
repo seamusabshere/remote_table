@@ -36,8 +36,7 @@ class RemoteTable
     
     def staging_dir_path    
       return @_staging_dir_path if @_staging_dir_path
-      @_staging_dir_path = Tempfile.open(parsed_url.to_s.gsub(/[^a-z0-9]+/i, '_')[0,100]).path
-      FileUtils.rm_f @_staging_dir_path
+      @_staging_dir_path = ::File.join Dir.tmpdir, rand.to_s
       FileUtils.mkdir @_staging_dir_path
       at_exit { FileUtils.rm_rf @_staging_dir_path }
       @_staging_dir_path
