@@ -3,10 +3,10 @@ class RemoteTable
     attr_accessor :parsed_url, :post_data, :username, :password
     attr_accessor :form_data
     
-    # TODO: support post_data
     # TODO: support HTTP basic auth
     def initialize(bus)
-      @parsed_url = URI.parse(bus[:url]) or raise "need url"
+      raise(ArgumentError, "RemoteTable needs :url option") unless bus[:url].present?
+      @parsed_url = URI.parse bus[:url]
       if @parsed_url.host == 'spreadsheets.google.com' and (bus[:format].blank? or bus[:format].to_s == 'csv')
         @parsed_url.query = 'output=csv&' + @parsed_url.query.sub(/\&*output=.*(\&|\z)/, '')
       end
