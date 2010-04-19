@@ -3,10 +3,15 @@ require 'iconv'
 require 'uri'
 require 'tmpdir'
 require 'active_support'
-begin; require 'active_support/core_ext/object/blank'; rescue MissingSourceFile; end
-begin; require 'active_support/core_ext/string/inflections'; rescue MissingSourceFile; end
-begin; require 'active_support/core_ext/array/wrap'; rescue MissingSourceFile; end
-begin; require 'active_support/core_ext/hash/except'; rescue MissingSourceFile; end
+require 'active_support/version'
+%w{
+  active_support/core_ext/object/blank
+  active_support/core_ext/string/inflections
+  active_support/core_ext/array/wrap
+  active_support/core_ext/hash/except
+}.each do |active_support_3_requirement|
+  require active_support_3_requirement
+end if ActiveSupport::VERSION::MAJOR == 3
 require 'fastercsv'
 require 'slither'
 require 'roo'
