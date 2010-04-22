@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{remote_table}
-  s.version = "0.2.11"
+  s.version = "0.2.12"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Seamus Abshere", "Andy Rossmeissl"]
-  s.date = %q{2010-04-19}
+  s.date = %q{2010-04-22}
   s.description = %q{Remotely open and parse Excel XLS, ODS, CSV and fixed-width tables.}
   s.email = %q{seamus@abshere.net}
   s.extra_rdoc_files = [
@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
      "lib/remote_table/file.rb",
      "lib/remote_table/file/csv.rb",
      "lib/remote_table/file/fixed_width.rb",
+     "lib/remote_table/file/html.rb",
      "lib/remote_table/file/ods.rb",
      "lib/remote_table/file/roo_spreadsheet.rb",
      "lib/remote_table/file/xls.rb",
@@ -59,17 +60,20 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<fastercsv>, [">= 1.5.0"])
       s.add_runtime_dependency(%q<activesupport>, [">= 2.3.4"])
       s.add_runtime_dependency(%q<slither>, [">= 0.99.3"])
+      s.add_runtime_dependency(%q<nokogiri>, [">= 1.4.1"])
     else
       s.add_dependency(%q<roo>, ["= 1.3.11"])
       s.add_dependency(%q<fastercsv>, [">= 1.5.0"])
       s.add_dependency(%q<activesupport>, [">= 2.3.4"])
       s.add_dependency(%q<slither>, [">= 0.99.3"])
+      s.add_dependency(%q<nokogiri>, [">= 1.4.1"])
     end
   else
     s.add_dependency(%q<roo>, ["= 1.3.11"])
     s.add_dependency(%q<fastercsv>, [">= 1.5.0"])
     s.add_dependency(%q<activesupport>, [">= 2.3.4"])
     s.add_dependency(%q<slither>, [">= 0.99.3"])
+    s.add_dependency(%q<nokogiri>, [">= 1.4.1"])
   end
 end
 
