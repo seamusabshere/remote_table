@@ -51,6 +51,9 @@ class RemoteTableTest < Test::Unit::TestCase
   end
   
   if ENV['NEW'] == 'true'
+  end
+  
+  if ENV['OLD'] == 'true'
     should "read an HTML table made with frontpage" do
       t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-E.htm",
                           :encoding => 'US-ASCII',
@@ -61,9 +64,7 @@ class RemoteTableTest < Test::Unit::TestCase
       assert_equal 'EZKC', t.rows.last['Designator']
       assert_equal 'EZ King Cobra', t.rows.last['Model']
     end
-  end
-  
-  if ENV['OLD'] == 'true'
+    
     should "open an XLS inside a zip file" do
       t = RemoteTable.new(:url => 'http://www.fueleconomy.gov/FEG/epadata/02data.zip', :filename => 'guide_jan28.xls')
       assert_equal 'ACURA',      t.rows.first['Manufacturer']
