@@ -26,19 +26,6 @@ class RemoteTable
       extend "RemoteTable::#{format.to_s.camelcase}".constantize
     end
     
-    class << self
-      # http://santanatechnotes.blogspot.com/2005/12/matching-iso-8859-1-strings-with-ruby.html
-      def convert_to_utf8(str, encoding)
-        if encoding == 'UTF-8' or encoding == 'UTF8'
-          str.toutf8 # just in case
-        else
-          @_iconv ||= Hash.new
-          @_iconv[encoding] ||= Iconv.new 'UTF-8', encoding
-          @_iconv[encoding].iconv(str).toutf8
-        end
-      end
-    end
-    
     def tabulate(path)
       define_fixed_width_schema! if format == :fixed_width and schema.is_a?(Array) # TODO move to generic subclass callback
       self.path = path

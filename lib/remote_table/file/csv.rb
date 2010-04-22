@@ -35,7 +35,7 @@ class RemoteTable
     private
     
     def fastercsv_options
-      fastercsv_options = { :skip_blanks => !keep_blank_rows, :header_converters => lambda { |k| RemoteTable::File.convert_to_utf8 k.to_s, encoding } }
+      fastercsv_options = { :skip_blanks => !keep_blank_rows }
       if headers == false
         fastercsv_options.merge!(:headers => nil)
       else
