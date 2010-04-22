@@ -50,12 +50,17 @@ class RemoteTableTest < Test::Unit::TestCase
     ]
   end
   
-  should "open an XLS inside a zip file" do
-    t = RemoteTable.new(:url => 'http://www.fueleconomy.gov/FEG/epadata/02data.zip', :filename => 'guide_jan28.xls')
-    assert_equal 'ACURA',      t.rows.first['Manufacturer']
-    assert_equal 'NSX',        t.rows.first['carline name']
-    assert_equal 'VOLVO',      t.rows.last['Manufacturer']
-    assert_equal 'V70 XC AWD', t.rows.last['carline name']
+  if ENV['NEW'] == 'true'
+    should "read an HTML table made with frontpage" do
+      t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-E.htm",
+                          :encoding => 'US-ASCII',
+                          :row_xpath => '//table/tr[2]/td/table/tr',
+                          :column_xpath => 'td'
+      assert_equal 'E110', t.rows.first['Designator']
+      assert_equal 'EMBRAER', t.rows.first['Manufacturer']
+      assert_equal 'EZKC', t.rows.last['Designator']
+      assert_equal 'EZ King Cobra', t.rows.last['Model']
+    end
   end
   
   should "not have indifferent string/symbol hash access" do

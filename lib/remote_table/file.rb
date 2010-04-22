@@ -4,6 +4,8 @@ class RemoteTable
     attr_accessor :encoding
     attr_accessor :path
     attr_accessor :keep_blank_rows
+    attr_accessor :row_xpath
+    attr_accessor :column_xpath
     
     def initialize(bus)
       @filename = bus[:filename]
@@ -19,6 +21,8 @@ class RemoteTable
       @schema_name = bus[:schema_name]
       @trap = bus[:trap]
       @encoding = bus[:encoding] || 'UTF-8'
+      @row_xpath = bus[:row_xpath]
+      @column_xpath = bus[:column_xpath]
       extend "RemoteTable::#{format.to_s.camelcase}".constantize
     end
     
@@ -98,6 +102,7 @@ class RemoteTable
       extname = ::File.extname(filename).gsub('.', '')
       return :csv if extname.blank?
       format = [ :xls, :ods ].detect { |i| i == extname.to_sym }
+      format = :html if extname =~ /\Ahtm/
       format = :csv if format.blank?
       format
     end

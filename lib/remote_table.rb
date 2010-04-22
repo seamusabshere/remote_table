@@ -15,6 +15,7 @@ end if ActiveSupport::VERSION::MAJOR == 3
 require 'fastercsv'
 require 'slither'
 require 'roo'
+require 'nokogiri'
 require 'remote_table/transform'
 require 'remote_table/request'
 require 'remote_table/package'
@@ -24,6 +25,7 @@ require 'remote_table/file/fixed_width'
 require 'remote_table/file/roo_spreadsheet'
 require 'remote_table/file/ods'
 require 'remote_table/file/xls'
+require 'remote_table/file/html'
 
 class RemoteTable
   attr_accessor :request, :package, :file, :transform

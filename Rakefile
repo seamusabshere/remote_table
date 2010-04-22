@@ -14,6 +14,7 @@ begin
     gem.add_dependency 'fastercsv', '>=1.5.0'
     gem.add_dependency 'activesupport', '>=2.3.4'
     gem.add_dependency 'slither', '>=0.99.3'
+    gem.add_dependency 'nokogiri', '>=1.4.1'
     gem.require_path = "lib"
     gem.files.include %w(lib/remote_table) unless gem.files.empty? # seems to fail once it's in the wild
     gem.rdoc_options << '--line-numbers' << '--inline-source'
