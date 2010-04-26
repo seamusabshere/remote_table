@@ -39,15 +39,17 @@ class RemoteTable
     @file = File.new(bus)
   end
   
-  def each_row
+  def each
     finish_table! unless table
     table.each_row { |row| yield row }
   end
+  alias :each_row :each
   
-  def rows
+  def to_a
     cache_rows! if @_row_cache.nil?
     @_row_cache
   end
+  alias :rows :to_a
   
   private
   
