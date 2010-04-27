@@ -32,6 +32,8 @@ class RemoteTable
   attr_accessor :request, :package, :file, :transform
   attr_accessor :table
   
+  include Enumerable
+  
   def initialize(bus)
     @transform = Transform.new(bus)
     @package = Package.new(bus)
@@ -50,6 +52,10 @@ class RemoteTable
     @_row_cache
   end
   alias :rows :to_a
+  
+  def <=>(other)
+    raise "Not implemented"
+  end
   
   private
   
