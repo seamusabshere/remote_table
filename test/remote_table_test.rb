@@ -101,7 +101,7 @@ class RemoteTableTest < Test::Unit::TestCase
     end
     
     should "open a Google Docs url (as a CSV, with sheet options)" do
-      t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?single=false&key=t5HM1KbaRngmTUbntg8JwPA&gid=5', :sheet => 0)
+      t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA&single=true&gid=0')
       assert_equal 'Gulf Coast',     t.rows.first['PAD district name']
       assert_equal 'AL',             t.rows.first['State']
       assert_equal 'Rocky Mountain', t.rows.last['PAD district name']

@@ -11,9 +11,6 @@ class RemoteTable
         if bus[:format].blank? or bus[:format].to_s == 'csv'
           @parsed_url.query = 'output=csv&' + @parsed_url.query.sub(/\&?output=.*?(\&|\z)/, '\1')
         end
-        if bus[:sheet].present?
-          @parsed_url.query = "gid=#{bus[:sheet]}&single=true&" + @parsed_url.query.gsub(/\&?(?:gid|single)=.*?(\&|\z)/, '\1')
-        end
       end
       @form_data = bus[:form_data]
     end
