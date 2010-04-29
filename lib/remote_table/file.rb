@@ -59,13 +59,13 @@ class RemoteTable
     
     def skip_rows!
       return unless skip
-      `cat #{path} | tail -n +#{skip + 1} > #{path}.tmp`
+      RemoteTable.backtick_with_reporting "cat #{path} | tail -n +#{skip + 1} > #{path}.tmp"
       FileUtils.mv "#{path}.tmp", path
     end
     
     def convert_file_to_utf8!
       return if encoding == 'UTF-8' or encoding == 'UTF8'
-      `iconv -c -f #{encoding} -t UTF-8 #{path} > #{path}.tmp`
+      RemoteTable.backtick_with_reporting "iconv -c -f #{encoding} -t UTF-8 #{path} > #{path}.tmp"
       FileUtils.mv "#{path}.tmp", path
     end
     
@@ -75,13 +75,13 @@ class RemoteTable
     
     def cut_columns!
       return unless cut
-      `cat #{path} | cut -c #{cut} > #{path}.tmp`
+      RemoteTable.backtick_with_reporting "cat #{path} | cut -c #{cut} > #{path}.tmp"
       FileUtils.mv "#{path}.tmp", path
     end
     
     def crop_rows!
       return unless crop
-      `cat #{path} | tail -n +#{crop.first} | head -n #{crop.last - crop.first + 1} > #{path}.tmp`
+      RemoteTable.backtick_with_reporting "cat #{path} | tail -n +#{crop.first} | head -n #{crop.last - crop.first + 1} > #{path}.tmp"
       FileUtils.mv "#{path}.tmp", path
     end
     

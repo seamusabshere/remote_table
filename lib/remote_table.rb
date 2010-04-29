@@ -56,6 +56,26 @@ class RemoteTable
   def <=>(other)
     raise "Not implemented"
   end
+
+  protected
+  
+  # TODO this should probably live somewhere else
+  def self.backtick_with_reporting(cmd)
+    cmd = cmd.gsub /\s+/m, ' '
+    cmd = cmd + ' 2>&1' unless cmd.include? '2>'
+    output = `#{cmd}`
+    unless $?.success?
+      raise %{
+From the remote_table gem...
+
+Command failed:
+#{cmd}
+
+Output:
+#{output}
+}
+    end
+  end
   
   private
   

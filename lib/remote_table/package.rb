@@ -47,7 +47,8 @@ class RemoteTable
     end
     
     def move_and_process(path, extname, cmd, args)
-      `mv #{path} #{path}.#{extname} && #{cmd} #{path}.#{extname} #{args}`
+      FileUtils.mv path, "#{path}.#{extname}"
+      RemoteTable.backtick_with_reporting "#{cmd} #{path}.#{extname} #{args}"
     end
 
     # ex. A: 2007-01.csv.gz  (compression not capable of storing multiple files)

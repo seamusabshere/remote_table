@@ -20,16 +20,14 @@ class RemoteTable
       if parsed_url.scheme == 'file'
         parsed_url.path
       else
-        cmd = %{
-          curl \
-          --silent \
-          --header "Expect: " \
-          --location \
-          #{"--data \"#{form_data}\"" if form_data.present?} \
-          "#{parsed_url}" \
+        RemoteTable.backtick_with_reporting %{
+          curl
+          --header "Expect: "
+          --location
+          #{"--data \"#{form_data}\"" if form_data.present?}
+          "#{parsed_url}"
           --output "#{path}"
         }
-        `#{cmd}`
         path
       end
     end
