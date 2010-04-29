@@ -65,7 +65,7 @@ class RemoteTable
     
     def convert_file_to_utf8!
       return if encoding == 'UTF-8' or encoding == 'UTF8'
-      RemoteTable.backtick_with_reporting "iconv -c -f #{encoding} -t UTF-8 #{path} > #{path}.tmp"
+      RemoteTable.backtick_with_reporting "iconv -c -f #{encoding} -t UTF-8 #{path} > #{path}.tmp", false
       FileUtils.mv "#{path}.tmp", path
     end
     

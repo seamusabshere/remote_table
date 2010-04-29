@@ -60,10 +60,10 @@ class RemoteTable
   protected
   
   # TODO this should probably live somewhere else
-  def self.backtick_with_reporting(cmd)
+  def self.backtick_with_reporting(cmd, raise_on_error = true)
     cmd = cmd.gsub /\s+/m, ' '
     output = `#{cmd}`
-    unless $?.success?
+    if raise_on_error and not $?.success?
       raise %{
 From the remote_table gem...
 
