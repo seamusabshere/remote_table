@@ -27,6 +27,7 @@ class RemoteTable
           #{"--data \"#{form_data}\"" if form_data.present?}
           "#{parsed_url}"
           --output "#{path}"
+          2>&1
         }
         path
       end
