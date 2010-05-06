@@ -36,6 +36,36 @@ class FuelOilParser
   end
 end
 
+class AircraftGuru
+  def is_not_attributed_to_aerospatiale?(row)
+    not row['Manufacturer'] =~ /AEROSPATIALE/i
+  end
+  
+  def is_not_attributed_to_cessna?(row)
+    not row['Manufacturer'] =~ /CESSNA/i
+  end
+  
+  def is_not_attributed_to_learjet?(row)
+    not row['Manufacturer'] =~ /LEAR/i
+  end
+  
+  def is_not_attributed_to_dehavilland?(row)
+    not row['Manufacturer'] =~ /DE ?HAVILLAND/i
+  end
+  
+  def is_not_attributed_to_mcdonnell_douglas?(row)
+    not row['Manufacturer'] =~ /MCDONNELL DOUGLAS/i
+  end
+  
+  def is_not_a_dc_plane?(row)
+    not row['Model'] =~ /DC/i
+  end
+  
+  def is_a_crj_900?(row)
+    row['Designator'].downcase == 'crj9'
+  end
+end
+
 class RemoteTableTest < Test::Unit::TestCase
   def setup
     @test2_rows_with_blanks = [
@@ -97,7 +127,24 @@ class RemoteTableTest < Test::Unit::TestCase
     end
   end
   
+  if ENV['ALL'] == 'true' or ENV['NEW'] == 'true'
+  end
+  
   if ENV['ALL'] == 'true' or ENV['FAST'] == 'true'
+    should "be able to apply errata files" do
+      t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-G.htm",
+                          :encoding => 'US-ASCII',
+                          :row_xpath => '//table/tr[2]/td/table/tr',
+                          :column_xpath => 'td',
+                          :errata => Errata.new(:table => RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'),
+                                                :responder => AircraftGuru.new)
+      g1 = t.rows.detect { |row| row['Model'] =~ /Gulfstream I/ }
+      assert g1
+      assert_equal 'GRUMMAN', g1['Manufacturer']
+      assert_equal 'G159 Gulfstream I (TC4 Academe, VC4)', g1['Model']
+    end
+    
+    # this will die with an error about libcurl if your curl doesn't support ssl
     should "connect using HTTPS if available" do
       t = RemoteTable.new(:url => 'https://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA')
       assert_equal 'Gulf Coast',     t.rows.first['PAD district name']

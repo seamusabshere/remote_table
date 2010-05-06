@@ -1,6 +1,7 @@
 class RemoteTable
   class Transform
     attr_accessor :select, :reject, :transform_class, :transform_options, :transform, :raw_table
+    attr_accessor :errata
     
     def initialize(bus)
       if transform_params = bus.delete(:transform)
@@ -11,8 +12,10 @@ class RemoteTable
       end
       @select = bus[:select]
       @reject = bus[:reject]
+      @errata = bus[:errata]
     end
     
+    # the null transformation
     def apply(raw_table)
       self.raw_table = raw_table
       self
@@ -30,6 +33,10 @@ class RemoteTable
         row['row_hash'] = self.class.row_hash(row)
         virtual_rows = transform ? transform.apply(row) : row # allow transform.apply(row) to return multiple rows
         Array.wrap(virtual_rows).each do |virtual_row|
+          if errata
+            next if errata.rejects? virtual_row
+            errata.correct! virtual_row
+          end
           next if select and !select.call(virtual_row)
           next if reject and reject.call(virtual_row)
           yield virtual_row
