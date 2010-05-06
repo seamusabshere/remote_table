@@ -128,12 +128,9 @@ class RemoteTableTest < Test::Unit::TestCase
   end
   
   if ENV['ALL'] == 'true' or ENV['NEW'] == 'true'
-  end
-  
-  if ENV['ALL'] == 'true' or ENV['FAST'] == 'true'
     should "be able to apply errata files" do
       t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-G.htm",
-                          :encoding => 'US-ASCII',
+                          :encoding => 'windows-1252',
                           :row_xpath => '//table/tr[2]/td/table/tr',
                           :column_xpath => 'td',
                           :errata => Errata.new(:table => RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'),
@@ -143,7 +140,9 @@ class RemoteTableTest < Test::Unit::TestCase
       assert_equal 'GRUMMAN', g1['Manufacturer']
       assert_equal 'G159 Gulfstream I (TC4 Academe, VC4)', g1['Model']
     end
-    
+  end
+  
+  if ENV['ALL'] == 'true' or ENV['FAST'] == 'true'
     # this will die with an error about libcurl if your curl doesn't support ssl
     should "connect using HTTPS if available" do
       t = RemoteTable.new(:url => 'https://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA')
