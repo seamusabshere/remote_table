@@ -1,5 +1,4 @@
 require 'digest/md5'
-require 'iconv'
 require 'uri'
 require 'tmpdir'
 require 'active_support'
