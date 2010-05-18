@@ -29,7 +29,7 @@ class RemoteTable
     # should we be doing this in ruby?
     def unescaped_html_without_soft_hyphens
       str = CGI.unescapeHTML IO.read(path)
-      str.gsub! /&shy;/, ''
+      str.gsub! /&shy;|\302\255/, ''
       str
     end
   end
