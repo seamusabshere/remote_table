@@ -3,6 +3,7 @@ class RemoteTable
     def each_row(&block)
       backup_file!
       convert_file_to_utf8!
+      remove_useless_characters!
       html_headers = (headers.is_a?(Array)) ? headers : nil
       Nokogiri::HTML(unescaped_html_without_soft_hyphens, nil, 'UTF-8').xpath(row_xpath).each do |row|
         values = row.xpath(column_xpath).map { |td| td.content.gsub(/\s+/, ' ').strip }
@@ -29,7 +30,7 @@ class RemoteTable
     # should we be doing this in ruby?
     def unescaped_html_without_soft_hyphens
       str = CGI.unescapeHTML IO.read(path)
-      str.gsub! /&shy;|\302\255/, ''
+      str.gsub! /&shy;/, ''
       str
     end
   end

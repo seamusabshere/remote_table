@@ -3,6 +3,7 @@ class RemoteTable
     def each_row(&block)
       backup_file!
       convert_file_to_utf8!
+      remove_useless_characters!
       crop_rows!
       skip_rows!
       cut_columns!

@@ -63,8 +63,16 @@ class RemoteTable
       FileUtils.mv "#{path}.tmp", path
     end
     
+    USELESS_CHARACTERS = [
+      '\xef\xbb\xbf',   # UTF-8 byte order mark
+      '\xc2\xad'        # soft hyphen, often inserted by MS Office (html: &shy;)
+    ]
+    def remove_useless_characters!
+      RemoteTable.backtick_with_reporting "perl -pe 's/#{USELESS_CHARACTERS.join '//g; s/'}//g' #{path} > #{path}.tmp"
+      FileUtils.mv "#{path}.tmp", path
+    end
+    
     def convert_file_to_utf8!
-      return if encoding == 'UTF-8' or encoding == 'UTF8'
       RemoteTable.backtick_with_reporting "iconv -c -f #{encoding} -t UTF-8 #{path} > #{path}.tmp"
       FileUtils.mv "#{path}.tmp", path
     end
