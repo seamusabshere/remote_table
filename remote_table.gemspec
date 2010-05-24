@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{remote_table}
-  s.version = "0.2.23"
+  s.version = "0.2.24"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Seamus Abshere", "Andy Rossmeissl"]
-  s.date = %q{2010-05-21}
+  s.date = %q{2010-05-24}
   s.description = %q{Remotely open and parse Excel XLS, ODS, CSV and fixed-width tables.}
   s.email = %q{seamus@abshere.net}
   s.extra_rdoc_files = [
@@ -61,6 +61,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<activesupport>, [">= 2.3.4"])
       s.add_runtime_dependency(%q<slither>, [">= 0.99.3"])
       s.add_runtime_dependency(%q<nokogiri>, [">= 1.4.1"])
+      s.add_runtime_dependency(%q<escape>, [">= 0.0.4"])
       s.add_development_dependency(%q<errata>, [">= 0.2.0"])
     else
       s.add_dependency(%q<roo>, ["= 1.3.11"])
@@ -68,6 +69,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<activesupport>, [">= 2.3.4"])
       s.add_dependency(%q<slither>, [">= 0.99.3"])
       s.add_dependency(%q<nokogiri>, [">= 1.4.1"])
+      s.add_dependency(%q<escape>, [">= 0.0.4"])
       s.add_dependency(%q<errata>, [">= 0.2.0"])
     end
   else
@@ -76,6 +78,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<activesupport>, [">= 2.3.4"])
     s.add_dependency(%q<slither>, [">= 0.99.3"])
     s.add_dependency(%q<nokogiri>, [">= 1.4.1"])
+    s.add_dependency(%q<escape>, [">= 0.0.4"])
     s.add_dependency(%q<errata>, [">= 0.2.0"])
   end
 end
