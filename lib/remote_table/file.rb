@@ -80,12 +80,12 @@ class RemoteTable
     
     def cut_columns!
       return unless cut
-      RemoteTable.bang path, "cut -c #{Escape.shell_single_word cut}"
+      RemoteTable.bang path, "cut -c #{Escape.shell_single_word cut.to_s}"
     end
     
     def crop_rows!
       return unless crop
-      RemoteTable.bang path "tail -n +#{Escape.shell_single_word crop.first} | head -n #{crop.last - crop.first + 1}"
+      RemoteTable.bang path "tail -n +#{Escape.shell_single_word crop.first.to_s} | head -n #{crop.last - crop.first + 1}"
     end
     
     def format_from_filename
