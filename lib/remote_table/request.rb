@@ -16,17 +16,17 @@ class RemoteTable
     end
     
     def download
-      path = ::File.join staging_dir_path, 'REMOTE_TABLE_PACKAGE'
       if parsed_url.scheme == 'file'
         parsed_url.path
       else
+        path = ::File.join staging_dir_path, 'REMOTE_TABLE_PACKAGE'
         RemoteTable.backtick_with_reporting %{
           curl
           --header "Expect: "
           --location
-          #{"--data \"#{form_data}\"" if form_data.present?}
-          "#{parsed_url}"
-          --output "#{path}"
+          #{"--data #{Escape.shell_single_word form_data}" if form_data.present?}
+          #{Escape.shell_single_word parsed_url.to_s}
+          --output #{Escape.shell_single_word path}
           2>&1
         }
         path

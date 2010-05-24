@@ -28,7 +28,7 @@ class RemoteTable
       return unless compression
       cmd, args = case compression
       when :zip, :exe
-        ["unzip", "-d #{::File.dirname(path)}"]
+        ["unzip", "-d #{Escape.shell_single_word ::File.dirname(path)}"]
       when :bz2
         'bunzip2'
       when :gz
@@ -47,8 +47,9 @@ class RemoteTable
     end
     
     def move_and_process(path, extname, cmd, args)
-      FileUtils.mv path, "#{path}.#{extname}"
-      RemoteTable.backtick_with_reporting "#{cmd} #{path}.#{extname} #{args}"
+      new_path = "#{path}.#{extname}"
+      FileUtils.mv path, new_path
+      RemoteTable.backtick_with_reporting "#{cmd} #{Escape.shell_single_word new_path} #{args}"
     end
 
     # ex. A: 2007-01.csv.gz  (compression not capable of storing multiple files)

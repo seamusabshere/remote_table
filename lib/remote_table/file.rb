@@ -59,8 +59,7 @@ class RemoteTable
     
     def skip_rows!
       return unless skip
-      RemoteTable.backtick_with_reporting "cat #{path} | tail -n +#{skip + 1} > #{path}.tmp"
-      FileUtils.mv "#{path}.tmp", path
+      RemoteTable.bang path, "tail -n +#{skip + 1}"
     end
     
     USELESS_CHARACTERS = [
@@ -68,13 +67,11 @@ class RemoteTable
       '\xc2\xad'        # soft hyphen, often inserted by MS Office (html: &shy;)
     ]
     def remove_useless_characters!
-      RemoteTable.backtick_with_reporting "perl -pe 's/#{USELESS_CHARACTERS.join '//g; s/'}//g' #{path} > #{path}.tmp"
-      FileUtils.mv "#{path}.tmp", path
+      RemoteTable.bang path, "perl -pe 's/#{USELESS_CHARACTERS.join '//g; s/'}//g'"
     end
     
     def convert_file_to_utf8!
-      RemoteTable.backtick_with_reporting "iconv -c -f #{encoding} -t UTF-8 #{path} > #{path}.tmp"
-      FileUtils.mv "#{path}.tmp", path
+      RemoteTable.bang path, "iconv -c -f #{Escape.shell_single_word encoding} -t UTF-8"
     end
     
     def restore_file!
@@ -83,14 +80,12 @@ class RemoteTable
     
     def cut_columns!
       return unless cut
-      RemoteTable.backtick_with_reporting "cat #{path} | cut -c #{cut} > #{path}.tmp"
-      FileUtils.mv "#{path}.tmp", path
+      RemoteTable.bang path, "cut -c #{Escape.shell_single_word cut}"
     end
     
     def crop_rows!
       return unless crop
-      RemoteTable.backtick_with_reporting "cat #{path} | tail -n +#{crop.first} | head -n #{crop.last - crop.first + 1} > #{path}.tmp"
-      FileUtils.mv "#{path}.tmp", path
+      RemoteTable.bang path "tail -n +#{Escape.shell_single_word crop.first} | head -n #{crop.last - crop.first + 1}"
     end
     
     def format_from_filename

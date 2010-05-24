@@ -15,6 +15,7 @@ begin
     gem.add_dependency 'activesupport', '>=2.3.4'
     gem.add_dependency 'slither', '>=0.99.3'
     gem.add_dependency 'nokogiri', '>=1.4.1'
+    gem.add_dependency 'escape', '>=0.0.4'
     gem.add_development_dependency 'errata', '>=0.2.0'
     gem.require_path = "lib"
     gem.rdoc_options << '--line-numbers' << '--inline-source'

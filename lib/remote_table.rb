@@ -12,6 +12,7 @@ require 'active_support/version'
   require active_support_3_requirement
 end if ActiveSupport::VERSION::MAJOR == 3
 require 'fastercsv'
+require 'escape'
 require 'slither'
 require 'roo'
 I_KNOW_I_AM_USING_AN_OLD_AND_BUGGY_VERSION_OF_LIBXML2 = true
@@ -58,11 +59,17 @@ class RemoteTable
 
   protected
   
+  def self.bang(path, cmd)
+    tmp_path = "#{path}.tmp"
+    RemoteTable.backtick_with_reporting "cat #{Escape.shell_single_word path} | #{cmd} > #{Escape.shell_single_word tmp_path}"
+    FileUtils.mv tmp_path, path
+  end
+  
   # TODO this should probably live somewhere else
-  def self.backtick_with_reporting(cmd, raise_on_error = true)
-    cmd = cmd.gsub /\s+/m, ' '
+  def self.backtick_with_reporting(cmd)
+    cmd = cmd.gsub /[ ]*\n[ ]*/m, ' '
     output = `#{cmd}`
-    if raise_on_error and not $?.success?
+    if not $?.success?
       raise %{
 From the remote_table gem...
 

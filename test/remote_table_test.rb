@@ -131,6 +131,16 @@ class RemoteTableTest < Test::Unit::TestCase
   end
   
   if ENV['ALL'] == 'true' or ENV['FAST'] == 'true'
+    should "work on filenames with spaces, using globbing" do
+      t = RemoteTable.new :url => 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', :glob => '/*.csv'
+      assert_equal 'ASTON MARTIN', t.rows.first['MFR']
+    end
+    
+    should "work on filenames with spaces" do
+      t = RemoteTable.new :url => 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', :filename => '2008_FE_guide_ALL_rel_dates_-no sales-for DOE-5-1-08.csv'
+      assert_equal 'ASTON MARTIN', t.rows.first['MFR']
+    end
+    
     should "ignore UTF-8 byte order marks" do
       t = RemoteTable.new :url => 'http://www.freebase.com/type/exporttypeinstances/base/horses/horse_breed?page=0&filter_mode=type&filter_view=table&show%01p%3D%2Ftype%2Fobject%2Fname%01index=0&show%01p%3D%2Fcommon%2Ftopic%2Fimage%01index=1&show%01p%3D%2Fcommon%2Ftopic%2Farticle%01index=2&sort%01p%3D%2Ftype%2Fobject%2Ftype%01p%3Dlink%01p%3D%2Ftype%2Flink%2Ftimestamp%01index=false&=&exporttype=csv-8'
       assert_equal 'Tawleed', t.rows.first['name']
