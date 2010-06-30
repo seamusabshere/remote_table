@@ -37,32 +37,31 @@ class FuelOilParser
 end
 
 class AircraftGuru
-  def is_not_attributed_to_aerospatiale?(row)
-    not row['Manufacturer'] =~ /AEROSPATIALE/i
+  def is_a_dc_plane?(row)
+    row['Designator'] =~ /^DC\d/i
   end
   
-  def is_not_attributed_to_cessna?(row)
-    not row['Manufacturer'] =~ /CESSNA/i
+  # def is_a_crj_900?(row)
+  #   row['Designator'].downcase == 'crj9'
+  # end
+  
+  def is_a_g159?(row)
+    row['Designator'] =~ /^G159$/
+  end
+
+  def is_a_galx?(row)
+    row['Designator'] =~ /^GALX$/
   end
   
-  def is_not_attributed_to_learjet?(row)
-    not row['Manufacturer'] =~ /LEAR/i
-  end
-  
-  def is_not_attributed_to_dehavilland?(row)
-    not row['Manufacturer'] =~ /DE ?HAVILLAND/i
-  end
-  
-  def is_not_attributed_to_mcdonnell_douglas?(row)
-    not row['Manufacturer'] =~ /MCDONNELL DOUGLAS/i
-  end
-  
-  def is_not_a_dc_plane?(row)
-    not row['Model'] =~ /DC/i
-  end
-  
-  def is_a_crj_900?(row)
-    row['Designator'].downcase == 'crj9'
+  def method_missing(method_id, *args, &block)
+    if method_id.to_s =~ /\Ais_n?o?t?_?attributed_to_([^\?]+)/
+      manufacturer_name = $1
+      manufacturer_regexp = Regexp.new(manufacturer_name.gsub('_', ' ?'), Regexp::IGNORECASE)
+      matches = manufacturer_regexp.match(args.first['Manufacturer']) # row['Manufacturer'] =~ /mcdonnell douglas/i
+      method_id.to_s.include?('not_attributed') ? matches.nil? : !matches.nil?
+    else
+      super
+    end
   end
 end
 
@@ -155,8 +154,8 @@ class RemoteTableTest < Test::Unit::TestCase
                                                 :responder => AircraftGuru.new)
       g1 = t.rows.detect { |row| row['Model'] =~ /Gulfstream I/ }
       assert g1
-      assert_equal 'GRUMMAN', g1['Manufacturer']
-      assert_equal 'G159 Gulfstream I (TC4 Academe, VC4)', g1['Model']
+      assert_equal 'GULFSTREAM AEROSPACE', g1['Manufacturer']
+      assert_equal 'Gulfstream I', g1['Model']
     end
 
     # this will die with an error about libcurl if your curl doesn't support ssl
