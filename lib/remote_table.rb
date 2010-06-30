@@ -4,6 +4,7 @@ require 'tmpdir'
 require 'active_support'
 require 'active_support/version'
 %w{
+  active_support/core_ext/string/conversions
   active_support/core_ext/object/blank
   active_support/core_ext/string/inflections
   active_support/core_ext/array/wrap
