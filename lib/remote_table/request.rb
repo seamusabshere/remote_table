@@ -33,13 +33,11 @@ class RemoteTable
       end
     end
     
-    private
-    
     def staging_dir_path    
       return @_staging_dir_path if @_staging_dir_path
-      @_staging_dir_path = ::File.join Dir.tmpdir, rand.to_s
-      FileUtils.mkdir @_staging_dir_path
-      at_exit { FileUtils.rm_rf @_staging_dir_path }
+      @_staging_dir_path = ::File.join Dir.tmpdir, 'remote_table_gem', rand.to_s
+      FileUtils.mkdir_p @_staging_dir_path
+      RemoteTable.remove_at_exit @_staging_dir_path
       @_staging_dir_path
     end
   end

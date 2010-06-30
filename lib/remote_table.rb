@@ -9,6 +9,7 @@ require 'active_support/version'
   active_support/core_ext/string/inflections
   active_support/core_ext/array/wrap
   active_support/core_ext/hash/except
+  active_support/core_ext/class/attribute_accessors
 }.each do |active_support_3_requirement|
   require active_support_3_requirement
 end if ActiveSupport::VERSION::MAJOR == 3
@@ -30,6 +31,21 @@ require 'remote_table/file/xls'
 require 'remote_table/file/html'
 
 class RemoteTable
+  cattr_accessor :paths_for_removal
+  class << self
+    def cleanup
+      paths_for_removal.each do |path|
+        FileUtils.rm_rf path
+        paths_for_removal.delete path
+      end if paths_for_removal.is_a?(Array)
+    end
+    
+    def remove_at_exit(path)
+      self.paths_for_removal ||= Array.new
+      paths_for_removal.push path
+    end
+  end
+
   attr_accessor :request, :package, :file, :transform
   attr_accessor :table
   
@@ -40,6 +56,7 @@ class RemoteTable
     @package = Package.new(bus)
     @request = Request.new(bus)
     @file = File.new(bus)
+    at_exit { RemoteTable.cleanup }
   end
   
   def each
