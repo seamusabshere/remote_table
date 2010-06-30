@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{remote_table}
-  s.version = "0.2.26"
+  s.version = "0.2.27"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Seamus Abshere", "Andy Rossmeissl"]
-  s.date = %q{2010-05-24}
+  s.date = %q{2010-06-30}
   s.description = %q{Remotely open and parse Excel XLS, ODS, CSV and fixed-width tables.}
   s.email = %q{seamus@abshere.net}
   s.extra_rdoc_files = [
@@ -44,7 +44,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.requirements = ["curl"]
   s.rubyforge_project = %q{remotetable}
-  s.rubygems_version = %q{1.3.6}
+  s.rubygems_version = %q{1.3.7}
   s.summary = %q{Remotely open and parse XLS, ODS, CSV and fixed-width tables.}
   s.test_files = [
     "test/remote_table_test.rb",
@@ -55,7 +55,7 @@ Gem::Specification.new do |s|
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<roo>, ["= 1.3.11"])
       s.add_runtime_dependency(%q<fastercsv>, [">= 1.5.0"])
       s.add_runtime_dependency(%q<activesupport>, [">= 2.3.4"])
