@@ -28,6 +28,7 @@ require 'remote_table/file/fixed_width'
 require 'remote_table/file/roo_spreadsheet'
 require 'remote_table/file/ods'
 require 'remote_table/file/xls'
+require 'remote_table/file/xlsx'
 require 'remote_table/file/html'
 
 class RemoteTable

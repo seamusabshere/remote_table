@@ -130,6 +130,11 @@ class RemoteTableTest < Test::Unit::TestCase
   end
   
   if ENV['ALL'] == 'true' or ENV['FAST'] == 'true'
+    should "open an XLSX" do
+      t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx')
+      assert_equal "Secure encryption of all data", t.rows[5]["Requirements"]
+    end
+    
     should "work on filenames with spaces, using globbing" do
       t = RemoteTable.new :url => 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', :glob => '/*.csv'
       assert_equal 'ASTON MARTIN', t.rows.first['MFR']

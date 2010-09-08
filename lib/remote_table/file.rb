@@ -91,7 +91,7 @@ class RemoteTable
     def format_from_filename
       extname = ::File.extname(filename).gsub('.', '')
       return :csv if extname.blank?
-      format = [ :xls, :ods ].detect { |i| i == extname.to_sym }
+      format = [ :xls, :ods, :xlsx ].detect { |i| i == extname.to_sym }
       format = :html if extname =~ /\Ahtm/
       format = :csv if format.blank?
       format
