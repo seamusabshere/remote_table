@@ -130,6 +130,16 @@ class RemoteTableTest < Test::Unit::TestCase
   end
   
   if ENV['ALL'] == 'true' or ENV['FAST'] == 'true'
+    should "open an XLSX like an array (numbered columns)" do
+      t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :headers => false)
+      assert_equal "Secure encryption of all data", t.rows[5][0]
+    end
+
+    should "open an XLSX with custom headers" do
+      t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :headers => %w{foo bar baz})
+      assert_equal "Secure encryption of all data", t.rows[5]['foo']
+    end
+
     should "open an XLSX" do
       t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx')
       assert_equal "Secure encryption of all data", t.rows[5]["Requirements"]
