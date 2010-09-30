@@ -21,11 +21,22 @@ class RemoteTable
       self
     end
     
-    # - convert OrderedHash to a Hash (otherwise field ordering will be saved)
+    # - convert it to a plain hash for whatever ruby version you're on
     # - dump it
     # - digest it
     def self.row_hash(row)
-      Digest::MD5.hexdigest Marshal.dump(Hash.new.replace(row))
+      plain_hsh = if RUBY_VERSION >= '1.9'
+        row.keys.sort.inject(::Hash.new) do |memo, key|
+          value = row[key]
+          key = key.to_s.toutf8
+          value = value.to_s.toutf8 if value.respond_to? :to_s
+          memo[key] = value
+          memo
+        end
+      else
+        ::Hash.new.replace(row)
+      end
+      ::Digest::MD5.hexdigest ::Marshal.dump(plain_hsh)
     end
     
     def each_row(&block)

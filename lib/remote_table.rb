@@ -1,6 +1,7 @@
 require 'digest/md5'
 require 'uri'
 require 'tmpdir'
+require 'kconv'
 require 'active_support'
 require 'active_support/version'
 %w{
@@ -13,9 +14,30 @@ require 'active_support/version'
 }.each do |active_support_3_requirement|
   require active_support_3_requirement
 end if ActiveSupport::VERSION::MAJOR == 3
-require 'fastercsv'
+
+if RUBY_VERSION >= '1.9'
+  require 'csv'
+  FasterCSV = CSV
+else
+  begin
+    require 'fastercsv'
+  rescue LoadError
+    $stderr.puts "[remote_table gem] You probably need to manually install the fastercsv gem."
+    raise $!
+  end
+end
+
+begin
+  if RUBY_VERSION >= '1.9'
+    gem "slither-ruby19"
+  end
+  require 'slither'
+rescue LoadError
+  $stderr.puts "[remote_table gem] You probably need to manually install the #{RUBY_VERSION >= '1.9' ? 'slither-ruby19' : 'slither'} gem."
+  raise $!
+end
+
 require 'escape'
-require 'slither'
 require 'roo'
 I_KNOW_I_AM_USING_AN_OLD_AND_BUGGY_VERSION_OF_LIBXML2 = true
 require 'nokogiri'

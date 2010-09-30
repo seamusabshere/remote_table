@@ -10,10 +10,13 @@ begin
     gem.email = "seamus@abshere.net"
     gem.homepage = "http://github.com/seamusabshere/remote_table"
     gem.authors = ["Seamus Abshere", "Andy Rossmeissl"]
-    gem.add_dependency 'roo', '1.3.11' # 1.9.3 breaks
-    gem.add_dependency 'fastercsv', '>=1.5.0'
+    # sabshere [unknown date] roo 1.9.3 doesn't work, so use old 1.3 version
+    gem.add_dependency 'roo', '1.3.11'
+    # sabshere 9/30/10 depending on fastercsv when using ruby 1.9.2 results in exiting with error
+    # gem.add_dependency 'fastercsv', '>=1.5.0'
     gem.add_dependency 'activesupport', '>=2.3.4'
-    gem.add_dependency 'slither', '>=0.99.3'
+    # sabshere 9/30/10 official slither gem doesn't yet support ruby 1.9.2
+    # gem.add_dependency 'slither', '>=0.99.3'
     gem.add_dependency 'nokogiri', '>=1.4.1'
     gem.add_dependency 'escape', '>=0.0.4'
     gem.add_development_dependency 'errata', '>=0.2.0'
