@@ -202,8 +202,8 @@ class RemoteTableTest < Test::Unit::TestCase
       y[:b] = 2
       y[:a] = 1
     
-      assert Marshal.dump(x) != Marshal.dump(y)
-      assert RemoteTable::Transform.row_hash(x) == RemoteTable::Transform.row_hash(y)
+      assert_not_equal Marshal.dump(x), Marshal.dump(y)
+      assert_equal RemoteTable::Transform.row_hash(x), RemoteTable::Transform.row_hash(y)
     end
   
     should "open a Google Docs url (as a CSV)" do
