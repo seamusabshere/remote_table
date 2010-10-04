@@ -27,16 +27,7 @@ else
   end
 end
 
-begin
-  if RUBY_VERSION >= '1.9'
-    gem "slither-ruby19"
-  end
-  require 'slither'
-rescue LoadError
-  $stderr.puts "[remote_table gem] You probably need to manually install the #{RUBY_VERSION >= '1.9' ? 'slither-ruby19' : 'slither'} gem."
-  raise $!
-end
-
+require 'slither'
 require 'escape'
 require 'roo'
 I_KNOW_I_AM_USING_AN_OLD_AND_BUGGY_VERSION_OF_LIBXML2 = true
