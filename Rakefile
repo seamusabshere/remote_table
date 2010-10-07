@@ -15,8 +15,7 @@ begin
     # sabshere 9/30/10 depending on fastercsv when using ruby 1.9.2 results in exiting with error
     # gem.add_dependency 'fastercsv', '>=1.5.0'
     gem.add_dependency 'activesupport', '>=2.3.4'
-    # sabshere 9/30/10 official slither gem doesn't yet support ruby 1.9.2
-    gem.add_dependency 'slither-ruby19', '>=0.99.3'
+    gem.add_dependency 'slither', '>=0.99.4'
     gem.add_dependency 'nokogiri', '>=1.4.1'
     gem.add_dependency 'escape', '>=0.0.4'
     gem.add_development_dependency 'errata', '>=0.2.0'
