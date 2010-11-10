@@ -30,7 +30,6 @@ end
 require 'slither'
 require 'escape'
 require 'roo'
-I_KNOW_I_AM_USING_AN_OLD_AND_BUGGY_VERSION_OF_LIBXML2 = true
 require 'nokogiri'
 require 'remote_table/transform'
 require 'remote_table/request'

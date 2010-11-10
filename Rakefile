@@ -10,8 +10,7 @@ begin
     gem.email = "seamus@abshere.net"
     gem.homepage = "http://github.com/seamusabshere/remote_table"
     gem.authors = ["Seamus Abshere", "Andy Rossmeissl"]
-    # sabshere [unknown date] roo 1.9.3 doesn't work, so use old 1.3 version
-    gem.add_dependency 'roo', '1.3.11'
+    gem.add_dependency 'roo', '~>1.9'
     # sabshere 9/30/10 depending on fastercsv when using ruby 1.9.2 results in exiting with error
     # gem.add_dependency 'fastercsv', '>=1.5.0'
     gem.add_dependency 'activesupport', '>=2.3.4'
