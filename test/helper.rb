@@ -7,6 +7,7 @@ end
 Bundler.setup
 require 'test/unit'
 require 'shoulda'
+require 'ruby-debug'
 # require 'ruby-debug'
 # require 'errata'
 # require 'active_support/all'

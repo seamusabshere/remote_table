@@ -10,6 +10,7 @@ class RemoteTable
     autoload :HTML, 'remote_table/format/html'
     
     autoload :Textual, 'remote_table/format/mixins/textual'
+    autoload :Rooable, 'remote_table/format/mixins/rooable'
     
     attr_reader :t
 

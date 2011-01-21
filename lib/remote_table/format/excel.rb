@@ -1,8 +1,9 @@
 class RemoteTable
   class Format
     class Excel < Format
-      def all
-        
+      include Rooable
+      def roo_class
+        ::Excel
       end
     end
   end

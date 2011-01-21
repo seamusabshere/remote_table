@@ -68,6 +68,44 @@ class RemoteTable
       t.options['column_xpath']
     end
     
+    def compression
+      clue = if t.options['compression']
+        t.options['compression'].to_s
+      else
+        ::File.extname uri.path
+      end
+      case clue.downcase
+      when /gz/, /gunzip/
+        'gz'
+      when /zip/
+        'zip'
+      when /bz2/, /bunzip2/
+        'bz2'
+      when /exe/
+        'exe'
+      end
+    end
+    
+    def packing
+      clue = if t.options['packing']
+        t.options['packing'].to_s
+      else
+        ::File.extname(uri.path.sub(/\.#{compression}\z/, ''))
+      end
+      case clue.downcase
+      when /tar/
+        'tar'
+      end
+    end
+    
+    def glob
+      t.options['glob']
+    end
+    
+    def filename
+      t.options['filename']
+    end
+    
     # Get the format in the form of RemoteTable::Format::Excel, etc.
     #
     # Note: treats all spreadsheets.google.com URLs as Format::Delimited (i.e., CSV)
@@ -78,8 +116,9 @@ class RemoteTable
       clue = if t.options['format']
         t.options['format'].to_s
       else
-        ::File.extname(uri.path)
+        ::File.extname t.local_file.path
       end
+      return Format::Delimited if clue.blank?
       case clue.downcase
       when /xlsx/, /excelx/
         Format::Excelx
@@ -94,7 +133,7 @@ class RemoteTable
       when /htm/
         Format::HTML
       else
-        raise Format::Unknown
+        raise Format::Unknown, clue
       end
     end
   end

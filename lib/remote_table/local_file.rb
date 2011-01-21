@@ -11,15 +11,23 @@ class RemoteTable
     end
     
     def path
-      download
+      save_locally
       @path
     end
     
     private
     
-    def download
+    def save_locally
       return if @path.is_a?(::String)
-      @path = ::File.join staging_dir_path, 'REMOTE_TABLE_PACKAGE'
+      @path = ::File.join(staging_dir_path, ::File.basename(t.properties.uri.path))
+      download
+      decompress
+      unpack
+      pick
+      @path
+    end
+    
+    def download
       if t.properties.uri.scheme == 'file'
         ::FileUtils.cp t.properties.uri.path, @path
       else
@@ -29,12 +37,48 @@ class RemoteTable
           --header "Expect: "
           --location
           #{"--data #{::Escape.shell_single_word t.properties.form_data}" if t.properties.form_data.present?}
-          #{::Escape.shell_single_word t.properties.uri.to_s}
           --output #{::Escape.shell_single_word @path}
+          #{::Escape.shell_single_word t.properties.uri.to_s}
           2>&1
         }
       end
-      @path
+    end
+    
+    def decompress
+      return unless t.properties.compression
+      new_path = @path.chomp ".#{t.properties.compression}"
+      cmd = case t.properties.compression
+      when 'zip', 'exe'
+        "unzip #{::Escape.shell_single_word @path} -d #{::File.dirname(@path)}"
+        # can't set path yet because there may be multiple files
+      when 'bz2'
+        "bunzip2 --stdout #{::Escape.shell_single_word @path} > #{::Escape.shell_single_word new_path}"
+        @path = new_path
+      when 'gz'
+        "gunzip --stdout #{::Escape.shell_single_word @path} > #{::Escape.shell_single_word new_path}"
+        @path = new_path
+      end
+      ::RemoteTable.executor.backtick_with_reporting cmd
+    end
+    
+    def unpack
+      return unless t.properties.packing
+      cmd = case t.properties.packing
+      when 'tar'
+        "tar -xf #{::Escape.shell_single_word @path} -C #{::File.dirname(@path)}"
+      end
+      ::RemoteTable.executor.backtick_with_reporting cmd
+    end
+    
+    # ex. A: 2007-01.csv.gz  (compression not capable of storing multiple files)
+    # ex. B: 2007-01.tar.gz  (packing)
+    # ex. C: 2007-01.zip     (compression capable of storing multiple files)
+    def pick
+      if t.properties.filename.present?
+        @path = ::File.join ::File.dirname(@path), t.properties.filename
+      elsif t.properties.glob.present?
+        @path = ::Dir[::File.dirname(@path)+t.properties.glob].first
+      end
     end
     
     def staging_dir_path    

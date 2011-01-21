@@ -29,21 +29,21 @@ class TestGeneral < Test::Unit::TestCase
     assert_equal "Secure encryption of all data", t.rows[5]["Requirements"]
   end
   
-  # should "work on filenames with spaces, using globbing" do
-  #   t = RemoteTable.new :url => 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', :glob => '/*.csv'
-  #   assert_equal 'ASTON MARTIN', t.rows.first['MFR']
-  # end
-  # 
-  # should "work on filenames with spaces" do
-  #   t = RemoteTable.new :url => 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', :filename => '2008_FE_guide_ALL_rel_dates_-no sales-for DOE-5-1-08.csv'
-  #   assert_equal 'ASTON MARTIN', t.rows.first['MFR']
-  # end
-  # 
-  # should "ignore UTF-8 byte order marks" do
-  #   t = RemoteTable.new :url => 'http://www.freebase.com/type/exporttypeinstances/base/horses/horse_breed?page=0&filter_mode=type&filter_view=table&show%01p%3D%2Ftype%2Fobject%2Fname%01index=0&show%01p%3D%2Fcommon%2Ftopic%2Fimage%01index=1&show%01p%3D%2Fcommon%2Ftopic%2Farticle%01index=2&sort%01p%3D%2Ftype%2Fobject%2Ftype%01p%3Dlink%01p%3D%2Ftype%2Flink%2Ftimestamp%01index=false&=&exporttype=csv-8'
-  #   assert_equal 'Tawleed', t.rows.first['name']
-  # end
-  # 
+  should "work on filenames with spaces, using globbing" do
+    t = RemoteTable.new :url => 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', :glob => '/*.csv'
+    assert_equal 'ASTON MARTIN', t.rows.first['MFR']
+  end
+  
+  should "work on filenames with spaces" do
+    t = RemoteTable.new :url => 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', :filename => '2008_FE_guide_ALL_rel_dates_-no sales-for DOE-5-1-08.csv'
+    assert_equal 'ASTON MARTIN', t.rows.first['MFR']
+  end
+  
+  should "ignore UTF-8 byte order marks" do
+    t = RemoteTable.new :url => 'http://www.freebase.com/type/exporttypeinstances/base/horses/horse_breed?page=0&filter_mode=type&filter_view=table&show%01p%3D%2Ftype%2Fobject%2Fname%01index=0&show%01p%3D%2Fcommon%2Ftopic%2Fimage%01index=1&show%01p%3D%2Fcommon%2Ftopic%2Farticle%01index=2&sort%01p%3D%2Ftype%2Fobject%2Ftype%01p%3Dlink%01p%3D%2Ftype%2Flink%2Ftimestamp%01index=false&=&exporttype=csv-8'
+    assert_equal 'Tawleed', t.rows.first['name']
+  end
+  
   # this will die with an error about libcurl if your curl doesn't support ssl
   should "connect using HTTPS if available" do
     t = RemoteTable.new(:url => 'https://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA')
@@ -77,74 +77,74 @@ class TestGeneral < Test::Unit::TestCase
   #   assert_equal RemoteTable::Transform.row_hash(x), RemoteTable::Transform.row_hash(y)
   # end
   # 
-  # should "open a Google Docs url (as a CSV)" do
-  #   t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA')
-  #   assert_equal 'Gulf Coast',     t.rows.first['PAD district name']
-  #   assert_equal 'AL',             t.rows.first['State']
-  #   assert_equal 'Rocky Mountain', t.rows.last['PAD district name']
-  #   assert_equal 'WY',             t.rows.last['State']
-  # end
-  # 
-  # should "open a Google Docs url (as a CSV, with sheet options)" do
-  #   t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA&single=true&gid=0')
-  #   assert_equal 'Gulf Coast',     t.rows.first['PAD district name']
-  #   assert_equal 'AL',             t.rows.first['State']
-  #   assert_equal 'Rocky Mountain', t.rows.last['PAD district name']
-  #   assert_equal 'WY',             t.rows.last['State']
-  # end
-  # 
-  # should "open a Google Docs url as a CSV without headers" do
-  #   t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA', :skip => 1, :headers => false)
-  #   assert_equal 'AL',             t.rows.first[0]
-  #   assert_equal 'Gulf Coast',     t.rows.first[4]
-  #   assert_equal 'WY',             t.rows.last[0]
-  #   assert_equal 'Rocky Mountain', t.rows.last[4]
-  # end
+  should "open a Google Docs url (as a CSV)" do
+    t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA')
+    assert_equal 'Gulf Coast',     t.rows.first['PAD district name']
+    assert_equal 'AL',             t.rows.first['State']
+    assert_equal 'Rocky Mountain', t.rows.last['PAD district name']
+    assert_equal 'WY',             t.rows.last['State']
+  end
+  
+  should "open a Google Docs url (as a CSV, with sheet options)" do
+    t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA&single=true&gid=0')
+    assert_equal 'Gulf Coast',     t.rows.first['PAD district name']
+    assert_equal 'AL',             t.rows.first['State']
+    assert_equal 'Rocky Mountain', t.rows.last['PAD district name']
+    assert_equal 'WY',             t.rows.last['State']
+  end
+  
+  should "open a Google Docs url as a CSV without headers" do
+    t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA', :skip => 1, :headers => false)
+    assert_equal 'AL',             t.rows.first[0]
+    assert_equal 'Gulf Coast',     t.rows.first[4]
+    assert_equal 'WY',             t.rows.last[0]
+    assert_equal 'Rocky Mountain', t.rows.last[4]
+  end
   # 
   # should "take the last of values if the header is duplicated" do
   #   t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=tujrgUOwDSLWb-P4KCt1qBg')
   #   assert_equal '2', t.rows.first['dup_header']
   # end
   # 
-  # should "respect field order in CSVs without headers" do
-  #   t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA', :skip => 1, :headers => false)
-  #   last_k = -1
-  #   saw_string = false
-  #   t.rows.each do |row|
-  #     row.each do |k, v|
-  #       if k.is_a?(Fixnum) and last_k.is_a?(Fixnum)
-  #         assert !saw_string
-  #         assert k > last_k
-  #       end
-  #       last_k = k
-  #       saw_string = k.is_a?(String)
-  #     end
-  #   end
-  # end
-  # 
-  # %w{ csv ods xls }.each do |format|
-  #   eval %{
-  #     should "read #{format}" do
-  #       t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.#{format}')
-  #       # no blank headers
-  #       assert t.rows.all? { |row| row.keys.all?(&:present?) }
-  #       # correct values
-  #       t.rows.each_with_index do |row, index|
-  #         assert_equal row.except('row_hash'), $test2_rows[index]
-  #       end
-  #     end
-  #   
-  #     should "read #{format}, keeping blank rows" do
-  #       t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.#{format}', :keep_blank_rows => true)
-  #       # no blank headers
-  #       assert t.rows.all? { |row| row.keys.all?(&:present?) }
-  #       # correct values
-  #       t.rows.each_with_index do |row, index|
-  #         assert_equal row.except('row_hash'), $test2_rows_with_blanks[index]
-  #       end
-  #     end
-  #   }
-  # end
+  should "respect field order in CSVs without headers" do
+    t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA', :skip => 1, :headers => false)
+    last_k = -1
+    saw_string = false
+    t.rows.each do |row|
+      row.each do |k, v|
+        if k.is_a?(Fixnum) and last_k.is_a?(Fixnum)
+          assert !saw_string
+          assert k > last_k
+        end
+        last_k = k
+        saw_string = k.is_a?(String)
+      end
+    end
+  end
+  
+  %w{ csv ods xls }.each do |format|
+    eval %{
+      should "read #{format}" do
+        t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.#{format}')
+        # no blank headers
+        assert t.rows.all? { |row| row.keys.all?(&:present?) }
+        # correct values
+        t.rows.each_with_index do |row, index|
+          assert_equal row.except('row_hash'), $test2_rows[index]
+        end
+      end
+    
+      should "read #{format}, keeping blank rows" do
+        t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.#{format}', :keep_blank_rows => true)
+        # no blank headers
+        assert t.rows.all? { |row| row.keys.all?(&:present?) }
+        # correct values
+        t.rows.each_with_index do |row, index|
+          assert_equal row.except('row_hash'), $test2_rows_with_blanks[index]
+        end
+      end
+    }
+  end
   # 
   # should "read fixed width correctly" do
   #   t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.fixed_width.txt',
