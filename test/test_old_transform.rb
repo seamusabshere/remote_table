@@ -36,14 +36,13 @@ class FuelOilParser
   end
 end
 
-class TestParser < Test::Unit::TestCase
+class TestOldTransform < Test::Unit::TestCase
   should "open an XLS with a parser" do
     ma_1990_01 = {"month"=>1, "cost"=>"54.0", "locatable"=>"Massachusetts (State)", "year"=>1990}
     ga_1990_01 = {"month"=>1, "cost"=>"50.7", "locatable"=>"Georgia (State)", "year"=>1990}
 
     t = RemoteTable.new(:url => 'http://tonto.eia.doe.gov/dnav/pet/xls/PET_PRI_RESID_A_EPPR_PTA_CPGAL_M.xls',
                         :transform => { :class => FuelOilParser })
-
     assert t.rows.include?(ma_1990_01)
     assert t.rows.include?(ga_1990_01)
   end

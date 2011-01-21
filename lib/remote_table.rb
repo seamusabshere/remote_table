@@ -12,6 +12,9 @@ class RemoteTable
   autoload :Format, 'remote_table/format'
   autoload :Properties, 'remote_table/properties'
   autoload :LocalFile, 'remote_table/local_file'
+  autoload :Transformer, 'remote_table/transformer'
+
+  # singletons
   autoload :Cleaner, 'remote_table/cleaner'
   autoload :Executor, 'remote_table/executor'
   autoload :Hasher, 'remote_table/hasher'
@@ -50,12 +53,17 @@ class RemoteTable
     else
       @options = args[0].dup
     end
-    @options.stringify_keys!
     if args.length == 2
       @url = args[0].dup
     else
-      @url = @options['url']
+      @url = @options['url'] || @options[:url]
     end
+    # deprecated
+    if options[:transform]
+      transformer.legacy_transformer = options[:transform][:class].new options[:transform].except(:class)
+      transformer.legacy_transformer.add_hints! @options
+    end
+    @options.stringify_keys!
     @url.freeze
     @options.freeze
     at_exit { ::RemoteTable.cleaner.cleanup }
@@ -64,9 +72,12 @@ class RemoteTable
   def each(&blk)
     format.each do |row|
       row['row_hash'] = ::RemoteTable.hasher.hash row
-      next if properties.select and !properties.select.call(row)
-      next if properties.reject and properties.reject.call(row)
-      yield row
+      # allow the transformer to return multiple "virtual rows" for every real row
+      transformer.transform(row).each do |virtual_row|
+        next if properties.select and !properties.select.call(virtual_row)
+        next if properties.reject and properties.reject.call(virtual_row)
+        yield virtual_row
+      end
     end
   end
   
@@ -97,8 +108,12 @@ class RemoteTable
     @properties ||= Properties.new self
   end
   
-  # Access to the format that reads the format
+  # Access to the driver that reads the format
   def format
     @format ||= properties.format.new self
+  end
+  
+  def transformer
+    @transformer ||= Transformer.new self
   end
 end
