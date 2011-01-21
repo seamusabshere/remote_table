@@ -74,6 +74,10 @@ class RemoteTable
       row['row_hash'] = ::RemoteTable.hasher.hash row
       # allow the transformer to return multiple "virtual rows" for every real row
       transformer.transform(row).each do |virtual_row|
+        if properties.errata
+          next if properties.errata.rejects? virtual_row
+          properties.errata.correct! virtual_row
+        end
         next if properties.select and !properties.select.call(virtual_row)
         next if properties.reject and properties.reject.call(virtual_row)
         yield virtual_row

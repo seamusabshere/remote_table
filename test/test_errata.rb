@@ -1,4 +1,5 @@
 require 'helper'
+require 'errata'
 
 class AircraftGuru
   def is_a_dc_plane?(row)

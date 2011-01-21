@@ -142,6 +142,10 @@ class RemoteTable
       t.options['reject']
     end
     
+    def errata
+      t.options['errata']
+    end
+    
     # Get the format in the form of RemoteTable::Format::Excel, etc.
     #
     # Note: treats all spreadsheets.google.com URLs as Format::Delimited (i.e., CSV)
