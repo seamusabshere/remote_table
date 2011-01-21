@@ -13,7 +13,7 @@ $test2_rows = [
 $test2_rows_with_blanks.freeze
 $test2_rows.freeze
 
-class TestGeneral < Test::Unit::TestCase
+class TestOldSyntax < Test::Unit::TestCase
   should "open an XLSX like an array (numbered columns)" do
     t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :headers => false)
     assert_equal "Secure encryption of all data", t.rows[5][0]
@@ -111,6 +111,7 @@ class TestGeneral < Test::Unit::TestCase
     t.rows.each do |row|
       last_column_number = -1
       row.each do |column_number, v|
+        next if column_number == 'row_hash'
         assert column_number.is_a?(Numeric)
         assert(column_number > last_column_number)
         last_column_number = column_number

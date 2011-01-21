@@ -63,6 +63,7 @@ class RemoteTable
   
   def each(&blk)
     format.each do |row|
+      row['row_hash'] = ::RemoteTable.hasher.hash row
       next if properties.select and !properties.select.call(row)
       next if properties.reject and properties.reject.call(row)
       yield row
