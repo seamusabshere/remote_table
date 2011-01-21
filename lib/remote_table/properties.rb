@@ -134,6 +134,14 @@ class RemoteTable
       t.options['schema_name']
     end
     
+    def select
+      t.options['select']
+    end
+    
+    def reject
+      t.options['reject']
+    end
+    
     # Get the format in the form of RemoteTable::Format::Excel, etc.
     #
     # Note: treats all spreadsheets.google.com URLs as Format::Delimited (i.e., CSV)

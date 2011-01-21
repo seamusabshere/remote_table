@@ -62,7 +62,11 @@ class RemoteTable
   end
   
   def each(&blk)
-    format.each(&blk)
+    format.each do |row|
+      next if properties.select and !properties.select.call(row)
+      next if properties.reject and properties.reject.call(row)
+      yield row
+    end
   end
   
   # def to_a_with_caching
