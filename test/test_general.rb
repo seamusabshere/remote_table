@@ -64,19 +64,19 @@ class TestGeneral < Test::Unit::TestCase
     assert_equal 'EZ King Cobra', t.rows.last['Model']
   end
   
-  # should "hash rows without paying attention to order" do
-  #   x = ActiveSupport::OrderedHash.new
-  #   x[:a] = 1
-  #   x[:b] = 2
-  # 
-  #   y = ActiveSupport::OrderedHash.new
-  #   y[:b] = 2
-  #   y[:a] = 1
-  # 
-  #   assert_not_equal Marshal.dump(x), Marshal.dump(y)
-  #   assert_equal RemoteTable::Transform.row_hash(x), RemoteTable::Transform.row_hash(y)
-  # end
-  # 
+  should "hash rows without paying attention to order" do
+    x = ActiveSupport::OrderedHash.new
+    x[:a] = 1
+    x[:b] = 2
+  
+    y = ActiveSupport::OrderedHash.new
+    y[:b] = 2
+    y[:a] = 1
+  
+    assert_not_equal Marshal.dump(x), Marshal.dump(y)
+    assert_equal RemoteTable::Transform.row_hash(x), RemoteTable::Transform.row_hash(y)
+  end
+  
   should "open a Google Docs url (as a CSV)" do
     t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA')
     assert_equal 'Gulf Coast',     t.rows.first['PAD district name']
@@ -100,24 +100,20 @@ class TestGeneral < Test::Unit::TestCase
     assert_equal 'WY',             t.rows.last[0]
     assert_equal 'Rocky Mountain', t.rows.last[4]
   end
-  # 
-  # should "take the last of values if the header is duplicated" do
-  #   t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=tujrgUOwDSLWb-P4KCt1qBg')
-  #   assert_equal '2', t.rows.first['dup_header']
-  # end
-  # 
+  
+  should "take the last of values if the header is duplicated" do
+    t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=tujrgUOwDSLWb-P4KCt1qBg')
+    assert_equal '2', t.rows.first['dup_header']
+  end
+  
   should "respect field order in CSVs without headers" do
     t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA', :skip => 1, :headers => false)
-    last_k = -1
-    saw_string = false
     t.rows.each do |row|
-      row.each do |k, v|
-        if k.is_a?(Fixnum) and last_k.is_a?(Fixnum)
-          assert !saw_string
-          assert k > last_k
-        end
-        last_k = k
-        saw_string = k.is_a?(String)
+      last_column_number = -1
+      row.each do |column_number, v|
+        assert column_number.is_a?(Numeric)
+        assert(column_number > last_column_number)
+        last_column_number = column_number
       end
     end
   end
@@ -145,88 +141,88 @@ class TestGeneral < Test::Unit::TestCase
       end
     }
   end
-  # 
-  # should "read fixed width correctly" do
-  #   t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.fixed_width.txt',
-  #                       :format => :fixed_width,
-  #                       :skip => 1,
-  #                       :schema => [[ 'header4', 10, { :type => :string }  ],
-  #                                   [ 'spacer',  1 ],
-  #                                   [ 'header5', 10, { :type => :string } ],
-  #                                   [ 'spacer',  12 ],
-  #                                   [ 'header6', 10, { :type => :string } ]])
-  # 
-  #   # no blank headers
-  #   assert t.rows.all? { |row| row.keys.all?(&:present?) }
-  #   # correct values
-  #   t.rows.each_with_index do |row, index|
-  #     assert_equal row.except('row_hash'), $test2_rows[index]
-  #   end
-  # end
-  # 
-  # should "read fixed width correctly, keeping blank rows" do
-  #   t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.fixed_width.txt',
-  #                       :format => :fixed_width,
-  #                       :keep_blank_rows => true,
-  #                       :skip => 1,
-  #                       :schema => [[ 'header4', 10, { :type => :string }  ],
-  #                                   [ 'spacer',  1 ],
-  #                                   [ 'header5', 10, { :type => :string } ],
-  #                                   [ 'spacer',  12 ],
-  #                                   [ 'header6', 10, { :type => :string } ]])
-  # 
-  #   # no blank headers
-  #   assert t.rows.all? { |row| row.keys.all?(&:present?) }
-  #   # correct values
-  #   t.rows.each_with_index do |row, index|
-  #     assert_equal row.except('row_hash'), $test2_rows_with_blanks[index]
-  #   end
-  # end
-  # 
-  # should "have the same row hash across formats" do
-  #   csv = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.csv')
-  #   ods = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.ods')
-  #   xls = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.xls')
-  #   fixed_width = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.fixed_width.txt',
-  #                                 :format => :fixed_width,
-  #                                 :skip => 1,
-  #                                 :schema => [[ 'header1', 10, { :type => :string }  ],
-  #                                             [ 'spacer',  1 ],
-  #                                             [ 'header2', 10, { :type => :string } ],
-  #                                             [ 'spacer',  12 ],
-  #                                             [ 'header3', 10, { :type => :string } ]])
-  # 
-  #   csv2 = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.alternate_order.csv')
-  #   ods2 = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.alternate_order.ods')
-  #   xls2 = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.alternate_order.xls')
-  #   fixed_width2 = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.alternate_order.fixed_width.txt',
-  #                                  :format => :fixed_width,
-  #                                  :skip => 1,
-  #                                  :schema => [[ 'spacer',  11 ],
-  #                                              [ 'header2', 10, { :type => :string }  ],
-  #                                              [ 'spacer',  1 ],
-  #                                              [ 'header3', 10, { :type => :string } ],
-  #                                              [ 'spacer',  1 ],
-  #                                              [ 'header1', 10, { :type => :string } ]])
-  # 
-  # 
-  #   reference = csv.rows[0]['row_hash']
-  # 
-  #   # same row hashes
-  #   assert_equal reference, ods.rows[0]['row_hash']
-  #   assert_equal reference, xls.rows[0]['row_hash']
-  #   assert_equal reference, fixed_width.rows[0]['row_hash']
-  #   # same row hashes with different order
-  #   assert_equal reference, csv2.rows[0]['row_hash']
-  #   assert_equal reference, ods2.rows[0]['row_hash']
-  #   assert_equal reference, xls2.rows[0]['row_hash']
-  #   assert_equal reference, fixed_width2.rows[0]['row_hash']
-  # end
-  # 
-  # should "open an ODS" do
-  #   t = RemoteTable.new(:url => 'http://www.worldmapper.org/data/opendoc/2_worldmapper_data.ods', :sheet => 'Data', :keep_blank_rows => true)
-  # 
-  #   assert_equal 'Central Africa', t.rows[5]['name']
-  #   assert_equal 99,               t.rows[5]['MAP DATA population (millions) 2002'].to_i
-  # end
+  
+  should "read fixed width correctly" do
+    t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.fixed_width.txt',
+                        :format => :fixed_width,
+                        :skip => 1,
+                        :schema => [[ 'header4', 10, { :type => :string }  ],
+                                    [ 'spacer',  1 ],
+                                    [ 'header5', 10, { :type => :string } ],
+                                    [ 'spacer',  12 ],
+                                    [ 'header6', 10, { :type => :string } ]])
+  
+    # no blank headers
+    assert t.rows.all? { |row| row.keys.all?(&:present?) }
+    # correct values
+    t.rows.each_with_index do |row, index|
+      assert_equal row.except('row_hash'), $test2_rows[index]
+    end
+  end
+  
+  should "read fixed width correctly, keeping blank rows" do
+    t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.fixed_width.txt',
+                        :format => :fixed_width,
+                        :keep_blank_rows => true,
+                        :skip => 1,
+                        :schema => [[ 'header4', 10, { :type => :string }  ],
+                                    [ 'spacer',  1 ],
+                                    [ 'header5', 10, { :type => :string } ],
+                                    [ 'spacer',  12 ],
+                                    [ 'header6', 10, { :type => :string } ]])
+  
+    # no blank headers
+    assert t.rows.all? { |row| row.keys.all?(&:present?) }
+    # correct values
+    t.rows.each_with_index do |row, index|
+      assert_equal row.except('row_hash'), $test2_rows_with_blanks[index]
+    end
+  end
+  
+  should "have the same row hash across formats" do
+    csv = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.csv')
+    ods = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.ods')
+    xls = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.xls')
+    fixed_width = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.fixed_width.txt',
+                                  :format => :fixed_width,
+                                  :skip => 1,
+                                  :schema => [[ 'header1', 10, { :type => :string }  ],
+                                              [ 'spacer',  1 ],
+                                              [ 'header2', 10, { :type => :string } ],
+                                              [ 'spacer',  12 ],
+                                              [ 'header3', 10, { :type => :string } ]])
+  
+    csv2 = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.alternate_order.csv')
+    ods2 = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.alternate_order.ods')
+    xls2 = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.alternate_order.xls')
+    fixed_width2 = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/remote_table_row_hash_test.alternate_order.fixed_width.txt',
+                                   :format => :fixed_width,
+                                   :skip => 1,
+                                   :schema => [[ 'spacer',  11 ],
+                                               [ 'header2', 10, { :type => :string }  ],
+                                               [ 'spacer',  1 ],
+                                               [ 'header3', 10, { :type => :string } ],
+                                               [ 'spacer',  1 ],
+                                               [ 'header1', 10, { :type => :string } ]])
+  
+  
+    reference = csv.rows[0]['row_hash']
+  
+    # same row hashes
+    assert_equal reference, ods.rows[0]['row_hash']
+    assert_equal reference, xls.rows[0]['row_hash']
+    assert_equal reference, fixed_width.rows[0]['row_hash']
+    # same row hashes with different order
+    assert_equal reference, csv2.rows[0]['row_hash']
+    assert_equal reference, ods2.rows[0]['row_hash']
+    assert_equal reference, xls2.rows[0]['row_hash']
+    assert_equal reference, fixed_width2.rows[0]['row_hash']
+  end
+  
+  should "open an ODS" do
+    t = RemoteTable.new(:url => 'http://www.worldmapper.org/data/opendoc/2_worldmapper_data.ods', :sheet => 'Data', :keep_blank_rows => true)
+  
+    assert_equal 'Central Africa', t.rows[5]['name']
+    assert_equal 99,               t.rows[5]['MAP DATA population (millions) 2002'].to_i
+  end
 end

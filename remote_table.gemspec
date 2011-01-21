@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'roo', '~>1.9'
   # sabshere 9/30/10 depending on fastercsv when using ruby 1.9.2 results in exiting with error
   # s.add_dependency 'fastercsv', '>=1.5.0'
-  # s.add_dependency 'slither', '>=0.99.4'
+  s.add_dependency 'slither', '>=0.99.4'
   s.add_dependency 'activesupport', '>=2.3.4'
   s.add_dependency 'i18n' # activesupport?
   s.add_dependency 'builder' # roo?

@@ -9,6 +9,7 @@ PATH
       i18n
       nokogiri (>= 1.4.1)
       roo (~> 1.9)
+      slither (>= 0.99.4)
       spreadsheet
       zip
 
@@ -37,6 +38,7 @@ GEM
       linecache (>= 0.3)
     ruby-ole (1.2.10.1)
     shoulda (2.10.3)
+    slither (0.99.4)
     spreadsheet (0.6.4.1)
       ruby-ole
     test-unit (2.1.2)
@@ -57,6 +59,7 @@ DEPENDENCIES
   roo (~> 1.9)
   ruby-debug
   shoulda
+  slither (>= 0.99.4)
   spreadsheet
   test-unit
   zip

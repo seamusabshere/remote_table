@@ -14,6 +14,7 @@ class RemoteTable
   autoload :LocalFile, 'remote_table/local_file'
   autoload :Cleaner, 'remote_table/cleaner'
   autoload :Executor, 'remote_table/executor'
+  autoload :Hasher, 'remote_table/hasher'
   
   def self.cleaner
     Cleaner.instance
@@ -21,6 +22,17 @@ class RemoteTable
   
   def self.executor
     Executor.instance
+  end
+  
+  def self.hasher
+    Hasher.instance
+  end
+  
+  # Legacy
+  class Transform
+    def self.row_hash(row)
+      ::RemoteTable.hasher.hash row
+    end
   end
 
   include ::Enumerable

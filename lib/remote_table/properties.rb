@@ -106,6 +106,34 @@ class RemoteTable
       t.options['filename']
     end
     
+    # Cut columns up to this character
+    def cut
+      t.options['cut']
+    end
+    
+    # Crop rows after this line
+    def crop
+      t.options['crop']
+    end
+    
+    # The fixed-width schema, given as an array
+    #     t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.fixed_width.txt',
+    #                         :format => :fixed_width,
+    #                         :skip => 1,
+    #                         :schema => [[ 'header4', 10, { :type => :string }  ],
+    #                                     [ 'spacer',  1 ],
+    #                                     [ 'header5', 10, { :type => :string } ],
+    #                                     [ 'spacer',  12 ],
+    #                                     [ 'header6', 10, { :type => :string } ]])
+    def schema
+      t.options['schema']
+    end
+    
+    # The name of the fixed-width schema according to Slither
+    def schema_name
+      t.options['schema_name']
+    end
+    
     # Get the format in the form of RemoteTable::Format::Excel, etc.
     #
     # Note: treats all spreadsheets.google.com URLs as Format::Delimited (i.e., CSV)
