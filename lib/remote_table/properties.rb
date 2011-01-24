@@ -1,11 +1,13 @@
 require 'uri'
 class RemoteTable
+  # Represents the properties of a RemoteTable, whether they are explicitly set by the user or inferred automatically.
   class Properties
     attr_reader :t
     def initialize(t)
       @t = t
     end
     
+    # The parsed URI of the file to get.
     def uri
       return @uri if @uri.is_a?(::URI)
       @uri = ::URI.parse t.url
@@ -40,6 +42,8 @@ class RemoteTable
     end
     
     # How many rows to skip
+    #
+    # Default: 0
     def skip
       t.options['skip'].to_i
     end
@@ -68,6 +72,11 @@ class RemoteTable
       t.options['column_xpath']
     end
     
+    # The compression type.
+    #
+    # Default: guessed from URI.
+    #
+    # Can be specified as: "gz", "zip", "bz2", "exe" (treated as "zip")
     def compression
       clue = if t.options['compression']
         t.options['compression'].to_s
@@ -86,6 +95,11 @@ class RemoteTable
       end
     end
     
+    # The packing type.
+    #
+    # Default: guessed from URI.
+    #
+    # Can be specified as: "tar"
     def packing
       clue = if t.options['packing']
         t.options['packing'].to_s
@@ -98,10 +112,18 @@ class RemoteTable
       end
     end
     
+    # The glob used to pick a file out of an archive.
+    #
+    # Example:
+    #     RemoteTable.new 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', 'glob' => '/*.csv'
     def glob
       t.options['glob']
     end
     
+    # The filename, which can be used to pick a file out of an archive.
+    #
+    # Example:
+    #     RemoteTable.new 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', 'filename' => '2008_FE_guide_ALL_rel_dates_-no sales-for DOE-5-1-08.csv'
     def filename
       t.options['filename']
     end
@@ -117,14 +139,16 @@ class RemoteTable
     end
     
     # The fixed-width schema, given as an array
-    #     t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.fixed_width.txt',
-    #                         :format => :fixed_width,
-    #                         :skip => 1,
-    #                         :schema => [[ 'header4', 10, { :type => :string }  ],
-    #                                     [ 'spacer',  1 ],
-    #                                     [ 'header5', 10, { :type => :string } ],
-    #                                     [ 'spacer',  12 ],
-    #                                     [ 'header6', 10, { :type => :string } ]])
+    #
+    # Example:
+    #     RemoteTable.new('http://cloud.github.com/downloads/seamusabshere/remote_table/test2.fixed_width.txt',
+    #                      'format' => 'fixed_width',
+    #                      'skip' => 1,
+    #                      'schema' => [[ 'header4', 10, { :type => :string }  ],
+    #                                  [  'spacer',  1 ],
+    #                                  [  'header5', 10, { :type => :string } ],
+    #                                  [  'spacer',  12 ],
+    #                                  [  'header6', 10, { :type => :string } ]])
     def schema
       t.options['schema']
     end
@@ -134,14 +158,17 @@ class RemoteTable
       t.options['schema_name']
     end
     
+    # A proc to call to decide whether to return a row.
     def select
       t.options['select']
     end
     
+    # A proc to call to decide whether to return a row.
     def reject
       t.options['reject']
     end
     
+    # An Errata object (see the Errata gem at http://github.com/seamusabshere/errata) to be used on every row.
     def errata
       t.options['errata']
     end
@@ -150,7 +177,9 @@ class RemoteTable
     #
     # Note: treats all spreadsheets.google.com URLs as Format::Delimited (i.e., CSV)
     #
-    # Default: tries to guess from file extension
+    # Default: guessed from file extension (which is usually the same as the URI, but sometimes not if you pick out a specific file from an archive)
+    #
+    # Can be specified as: "xlsx", "xls", "csv", "ods", "fixed_width", "html"
     def format
       return Format::Delimited if uri.host == 'spreadsheets.google.com'
       clue = if t.options['format']

@@ -19,18 +19,6 @@ class RemoteTable
   autoload :Executor, 'remote_table/executor'
   autoload :Hasher, 'remote_table/hasher'
   
-  def self.cleaner
-    Cleaner.instance
-  end
-  
-  def self.executor
-    Executor.instance
-  end
-  
-  def self.hasher
-    Hasher.instance
-  end
-  
   # Legacy
   class Transform
     def self.row_hash(row)
@@ -43,18 +31,20 @@ class RemoteTable
   attr_reader :url
   attr_reader :options
   
+  # Create a new RemoteTable.
+  #
+  #     RemoteTable.new(url, options = {})
+  #
   # New syntax:
-  #     t = RemoteTable.new('www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :foo => :bar)
+  #     RemoteTable.new('www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', 'foo' => 'bar')
   # Old syntax:
-  #     t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :foo => :bar)
+  #     RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :foo => 'bar')
+  #
+  # See the <tt>Properties</tt> object for the sorts of options you can pass.
   def initialize(*args)
-    if args.length == 2
-      @options = args[1].dup
-    else
-      @options = args[0].dup
-    end
-    if args.length == 2
-      @url = args[0].dup
+    @options = args.last.is_a?(::Hash) ? args.last.dup : {}
+    if args.first.is_a? ::String
+      @url = args.first.dup
     else
       @url = @options['url'] || @options[:url]
     end
@@ -85,13 +75,6 @@ class RemoteTable
     end
   end
   
-  # def to_a_with_caching
-  #   @to_a ||= to_a_without_caching
-  # end
-  # alias_method_chain :to_a, :caching
-  # alias_method :to_a_without_caching, :to_a
-  # alias_method :to_a, :to_a_with_caching
-  
   # Get a row by row number
   def [](row_number)
     to_a[row_number]
@@ -101,22 +84,38 @@ class RemoteTable
   def rows
     to_a
   end
-      
-  # Access to a downloaded copy of the file
+  
+  # Used internally as a sort of garbage collector.
+  def self.cleaner
+    Cleaner.instance
+  end
+  
+  # Used internally to execute stuff in shells.
+  def self.executor
+    Executor.instance
+  end
+  
+  # Used internally to create unique hashes of rows.
+  def self.hasher
+    Hasher.instance
+  end
+  
+  # Used internally to access to a downloaded copy of the file
   def local_file
     @local_file ||= LocalFile.new self
   end
   
-  # Access to the properties of the table, either set by the user or implied
+  # Used internally to access to the properties of the table, either set by the user or implied
   def properties
     @properties ||= Properties.new self
   end
   
-  # Access to the driver that reads the format
+  # Used internally to access to the driver that reads the format
   def format
     @format ||= properties.format.new self
   end
   
+  # Used internally to acess the transformer (aka parser).
   def transformer
     @transformer ||= Transformer.new self
   end

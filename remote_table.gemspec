@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Seamus Abshere", "Andy Rossmeissl"]
   s.email       = ["seamus@abshere.net"]
   s.homepage    = "https://github.com/seamusabshere/remote_table"
-  s.summary     = %Q{Open XLS, ODS, CSV and fixed-width files as Ruby hashes.}
-  s.description = %q{Lets you open local and remote tables using a common interface.}
+  s.summary     = "Open local or remote XLSX, XLS, ODS, CSV and fixed-width files."
+  s.description = %q{Gives you a standard way to parse various formats and treat them as an array of hashes.}
 
   s.rubyforge_project = "remotetable"
 
@@ -19,11 +19,11 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
   
-  s.add_dependency 'roo', '~>1.9'
+  s.add_dependency 'activesupport', '>=2.3.4'
   # sabshere 9/30/10 depending on fastercsv when using ruby 1.9.2 results in exiting with error
   # s.add_dependency 'fastercsv', '>=1.5.0'
+  s.add_dependency 'roo', '~>1.9'
   s.add_dependency 'slither', '>=0.99.4'
-  s.add_dependency 'activesupport', '>=2.3.4'
   s.add_dependency 'i18n' # activesupport?
   s.add_dependency 'builder' # roo?
   s.add_dependency 'zip' # roo

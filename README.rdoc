@@ -1,6 +1,6 @@
 =remote_table
 
-Remotely open and parse Excel XLS, ODS, CSV and fixed-width tables.
+Open local or remote XLSX, XLS, ODS, CSV and fixed-width files.
 
 ==Real-life usage
 
@@ -8,14 +8,28 @@ Used by data_miner (http://github.com/seamusabshere/data_miner)
 
 ==Example
 
-Taken from <tt>#{GEMDIR}/test/remote_table_test.rb</tt>:
+Taken from <tt>#{GEMDIR}/test/test_remote_table.rb</tt>:
 
-  >> t = RemoteTable.new(:url => 'http://www.fueleconomy.gov/FEG/epadata/98guide6.zip', :filename => '98guide6.csv')
-  => #<RemoteTable:0x359da50 @transform=#<RemoteTable::Transform:0x359d154 @select=nil, @reject=nil>, @file=#<RemoteTable::File:0x35970c4 @delimiter=nil, @headers=nil, @cut=nil, @filename="98guide6.csv", @skip=nil, @schema_name=nil, @crop=nil, @format=:csv, @trap=nil, @sheet=0, @schema=nil>, @package=#<RemoteTable::Package:0x359c538 @url="http://www.fueleconomy.gov/FEG/epadata/98guide6.zip", @filename="98guide6.csv", @compression=:zip, @packing=nil>, @request=#<RemoteTable::Request:0x3596bec @url="http://www.fueleconomy.gov/FEG/epadata/98guide6.zip">>
-  >> t.rows.first
-  => {"cyl"=>"6", "eng dscr"=>"DOHC VTEC", "trans dscr"=>"2MODE CLKUP", "trans"=>"Auto(L4)", "cmb"=>"20", "2pv"=>nil, "carline name"=>"NSX", "displ"=>"3.0", "ucmb"=>"23.5311", "hpv"=>nil, "4pv"=>nil, "Class"=>"TWO SEATERS", "Manufacturer"=>"ACURA", "fl"=>"P", "2lv"=>nil, "G"=>nil, "hlv"=>nil, "drv"=>"R", "cty"=>"18", "ucty"=>"19.8733", "S"=>nil, "4lv"=>nil, "fcost"=>"1050", "T"=>nil, "hwy"=>"24", "uhwy"=>"30.3612"}
+    should "open an XLSX" do
+      t = RemoteTable.new 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx'
+      assert_equal "Secure encryption of all data", t[5]["Requirements"]
+    end
+
+or on the console
+
+    ?> t = RemoteTable.new 'http://www.fueleconomy.gov/FEG/epadata/98guide6.zip', 'filename' => '98guide6.csv'
+    => #<RemoteTable:0x359da50 [...]>
+    ?> t[0]
+    => {"cyl"=>"6", "eng dscr"=>"DOHC VTEC", "trans dscr"=>"2MODE CLKUP", "trans"=>"Auto(L4)", "cmb"=>"20", "2pv"=>nil, "carline name"=>"NSX", "displ"=>"3.0", "ucmb"=>"23.5311", "hpv"=>nil, "4pv"=>nil, "Class"=>"TWO SEATERS", "Manufacturer"=>"ACURA", "fl"=>"P", "2lv"=>nil, "G"=>nil, "hlv"=>nil, "drv"=>"R", "cty"=>"18", "ucty"=>"19.8733", "S"=>nil, "4lv"=>nil, "fcost"=>"1050", "T"=>nil, "hwy"=>"24", "uhwy"=>"30.3612"}
 
 See the test file and also data_miner examples of custom parsers.
+
+==Wishlist
+
+* The new parser syntax (aka transformer) hasn't been defined yet... only the old-style syntax is available
+* We currently call curl (and a lot of other utilities) using a shell. Is there a safer way to do this?
+* Row hashes may come out differently for Ruby 1.8 and Ruby 1.9, which ruins the whole purpose.
+* Since <tt>Enumerable</tt> provides <tt>#to_a</tt>, I'm not sure if it's caching the row loading.
 
 ==Authors
 
@@ -24,4 +38,4 @@ See the test file and also data_miner examples of custom parsers.
 
 == Copyright
 
-Copyright (c) 2010 Brighter Planet. See LICENSE for details.
+Copyright (c) 2011 Brighter Planet. See LICENSE for details.
