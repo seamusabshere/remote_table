@@ -77,6 +77,7 @@ class RemoteTable
       end
     end
   end
+  alias :each_row :each
   
   # Get a row by row number
   def [](row_number)
