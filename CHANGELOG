@@ -1,4 +1,8 @@
+1.1.0
+* Fixed difference in row hashes between Ruby 1.8 and 1.9
+* Properly required fastercsv depending on Ruby version
 1.0.0
+* Using bundler and gemspec instead of jeweler
 * Refactored to follow more Ruby conventions
 * Suggesting new syntax that looks more like an Enumerable... t[5] instead of t.rows[5]
 * Switching to string option keys (but old syntax is supported)

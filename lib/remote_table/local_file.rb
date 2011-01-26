@@ -34,8 +34,9 @@ class RemoteTable
         # sabshere 1/20/11 FIXME: ::RemoteTable.config.curl_bin_path or smth
         ::RemoteTable.executor.backtick_with_reporting %{
           curl
-          --header "Expect: "
+          --silent
           --location
+          --header "Expect: "
           #{"--data #{::Escape.shell_single_word t.properties.form_data}" if t.properties.form_data.present?}
           --output #{::Escape.shell_single_word @path}
           #{::Escape.shell_single_word t.properties.uri.to_s}

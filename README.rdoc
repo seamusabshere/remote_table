@@ -28,8 +28,6 @@ See the test file and also data_miner examples of custom parsers.
 
 * The new parser syntax (aka transformer) hasn't been defined yet... only the old-style syntax is available
 * We currently call curl (and a lot of other utilities) using a shell. Is there a safer way to do this?
-* Row hashes may come out differently for Ruby 1.8 and Ruby 1.9, which ruins the whole purpose.
-* Since <tt>Enumerable</tt> provides <tt>#to_a</tt>, I'm not sure if it's caching the row loading.
 
 ==Authors
 

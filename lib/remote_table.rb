@@ -9,9 +9,6 @@ require 'active_support/version'
   require active_support_3_requirement
 end if ::ActiveSupport::VERSION::MAJOR == 3
 
-# sabshere 1/25/11 sometimes people call Slither from add_hints! (deprecated)
-autoload :Slither, ::Gem.required_location('slither', 'slither.rb')
-
 class RemoteTable
   autoload :Format, 'remote_table/format'
   autoload :Properties, 'remote_table/properties'

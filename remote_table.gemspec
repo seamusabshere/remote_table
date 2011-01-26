@@ -20,8 +20,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_dependency 'activesupport', '>=2.3.4'
-  # sabshere 9/30/10 depending on fastercsv when using ruby 1.9.2 results in exiting with error
-  # s.add_dependency 'fastercsv', '>=1.5.0'
   s.add_dependency 'roo', '~>1.9'
   s.add_dependency 'slither', '>=0.99.4'
   s.add_dependency 'i18n' # activesupport?
@@ -31,8 +29,16 @@ Gem::Specification.new do |s|
   s.add_dependency 'spreadsheet' #roo
   s.add_dependency 'google-spreadsheet-ruby' #roo
   s.add_dependency 'escape', '>=0.0.4'
+  unless RUBY_VERSION >= '1.9'
+    s.add_dependency 'fastercsv', '>=1.5.0'
+  end
+
   s.add_development_dependency 'errata', '>=0.2.0'
   s.add_development_dependency 'test-unit'
   s.add_development_dependency 'shoulda'
-  s.add_development_dependency 'ruby-debug'
+  if RUBY_VERSION >= '1.9'
+    s.add_development_dependency 'ruby-debug19'
+  else
+    s.add_development_dependency 'ruby-debug'
+  end
 end

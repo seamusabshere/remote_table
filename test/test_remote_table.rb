@@ -8,7 +8,7 @@ class TestRemoteTable < Test::Unit::TestCase
   
   should "add a row hash to every row" do
     t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx')
-    assert_equal "59d68cfc1cd6b32f5b333d6f0e4bea6d", t[5]['row_hash']
+    assert_equal "06d8a738551c17735e2731e25c8d0461", t[5]['row_hash']
   end
   
   should "open a google doc" do
@@ -18,10 +18,6 @@ class TestRemoteTable < Test::Unit::TestCase
   
   should "return an ordered hash" do
     t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'
-    if RUBY_VERSION >= '1.9'
-      assert_equal ::Hash, t[0].class
-    else
-      assert_equal ::ActiveSupport::OrderedHash, t[0].class
-    end
+    assert_equal ::ActiveSupport::OrderedHash, t[0].class
   end
 end
