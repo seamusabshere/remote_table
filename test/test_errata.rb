@@ -31,13 +31,26 @@ class AircraftGuru
 end
 
 class TestErrata < Test::Unit::TestCase
-  should "be able to apply errata files" do
+  should "be able to apply Errata instances directly" do
     t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-G.htm",
                         :encoding => 'windows-1252',
                         :row_xpath => '//table/tr[2]/td/table/tr',
                         :column_xpath => 'td',
-                        :errata => Errata.new(:table => RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'),
+                        :errata => Errata.new(:url => 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw',
                                               :responder => AircraftGuru.new)
+    g1 = t.rows.detect { |row| row['Model'] =~ /Gulfstream I/ }
+    assert g1
+    assert_equal 'GULFSTREAM AEROSPACE', g1['Manufacturer']
+    assert_equal 'Gulfstream I', g1['Model']
+  end
+  
+  should "be able to apply erratas given a hash of options" do
+    t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-G.htm",
+                        :encoding => 'windows-1252',
+                        :row_xpath => '//table/tr[2]/td/table/tr',
+                        :column_xpath => 'td',
+                        :errata => { :url => 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw',
+                                     :responder => AircraftGuru.new }
     g1 = t.rows.detect { |row| row['Model'] =~ /Gulfstream I/ }
     assert g1
     assert_equal 'GULFSTREAM AEROSPACE', g1['Manufacturer']

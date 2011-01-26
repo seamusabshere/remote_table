@@ -168,9 +168,14 @@ class RemoteTable
       t.options['reject']
     end
     
-    # An Errata object (see the Errata gem at http://github.com/seamusabshere/errata) to be used on every row.
+    # A hash of options to create a new Errata instance (see the Errata gem at http://github.com/seamusabshere/errata) to be used on every row.
     def errata
-      t.options['errata']
+      return unless t.options.has_key? 'errata'
+      @errata ||= if t.options['errata'].is_a? ::Hash
+        ::Errata.new t.options['errata']
+      else
+        t.options['errata']
+      end
     end
     
     # Get the format in the form of RemoteTable::Format::Excel, etc.
@@ -201,6 +206,9 @@ class RemoteTable
         Format::FixedWidth
       when /htm/
         Format::HTML
+      when /txt/, /dat/
+        # legacy
+        Format::Delimited
       else
         raise Format::Unknown, clue
       end
