@@ -85,9 +85,13 @@ class RemoteTable
   end
   
   # Get the whole row array back
-  def rows
-    to_a
+  def to_a
+    return @to_a if @to_a.is_a? ::Array
+    @to_a = []
+    each { |row| @to_a.push row }
+    @to_a.freeze
   end
+  alias :rows :to_a
   
   # Used internally as a sort of garbage collector.
   def self.cleaner
