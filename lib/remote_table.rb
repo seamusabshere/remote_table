@@ -4,6 +4,7 @@ require 'active_support/version'
   active_support/core_ext/hash
   active_support/core_ext/string
   active_support/core_ext/module
+  active_support/core_ext/array/wrap
 }.each do |active_support_3_requirement|
   require active_support_3_requirement
 end if ::ActiveSupport::VERSION::MAJOR == 3
@@ -46,17 +47,12 @@ class RemoteTable
   # See the <tt>Properties</tt> object for the sorts of options you can pass.
   def initialize(*args)
     @options = args.last.is_a?(::Hash) ? args.last.dup : {}
-    if args.first.is_a? ::String
-      @url = args.first.dup
-    else
-      @url = @options['url'] || @options[:url]
-    end
-    # deprecated
-    if options[:transform]
-      transformer.legacy_transformer = options[:transform][:class].new options[:transform].except(:class)
-      transformer.legacy_transformer.add_hints! @options
-    end
     @options.stringify_keys!
+    @url = if args.first.is_a? ::String
+      args.first.dup
+    else
+      @options['url'].dup
+    end
     @url.freeze
     @options.freeze
     at_exit { ::RemoteTable.cleaner.cleanup }
@@ -66,7 +62,7 @@ class RemoteTable
     format.each do |row|
       row['row_hash'] = ::RemoteTable.hasher.hash row
       # allow the transformer to return multiple "virtual rows" for every real row
-      transformer.transform(row).each do |virtual_row|
+      ::Array.wrap(transformer.transform(row)).each do |virtual_row|
         if properties.errata
           next if properties.errata.rejects? virtual_row
           properties.errata.correct! virtual_row

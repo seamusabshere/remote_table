@@ -1,7 +1,6 @@
 class RemoteTable
   class Transformer
     attr_reader :t
-    attr_accessor :legacy_transformer
     def initialize(t)
       @t = t
     end
@@ -10,8 +9,15 @@ class RemoteTable
       if legacy_transformer
         legacy_transformer.apply row
       else
-        [ row ]
+        row
       end
+    end
+    def legacy_transformer
+      return @legacy_transformer if @legacy_transformer
+      return unless t.options['transform']
+      transform_options = t.options['transform'].dup
+      transform.stringify_keys!
+      @legacy_transformer = transform_options['class'].new transform_options.except('class')
     end
   end
 end
