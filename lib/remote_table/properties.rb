@@ -192,7 +192,6 @@ class RemoteTable
       else
         ::File.extname t.local_file.path
       end
-      return Format::Delimited if clue.blank?
       case clue.downcase
       when /xlsx/, /excelx/
         Format::Excelx
@@ -206,11 +205,8 @@ class RemoteTable
         Format::FixedWidth
       when /htm/
         Format::HTML
-      when /txt/, /dat/
-        # legacy
-        Format::Delimited
       else
-        raise Format::Unknown, clue
+        Format::Delimited
       end
     end
   end

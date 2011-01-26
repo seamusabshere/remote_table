@@ -1,7 +1,5 @@
 class RemoteTable  
   class Format
-    class Unknown < StandardError; end
-    
     autoload :Excel, 'remote_table/format/excel'
     autoload :Excelx, 'remote_table/format/excelx'
     autoload :Delimited, 'remote_table/format/delimited'
