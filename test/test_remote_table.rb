@@ -16,6 +16,12 @@ class TestRemoteTable < Test::Unit::TestCase
     assert_equal 'Seamus Abshere', t[0]['name']
   end
   
+  should "open a csv with custom headers" do
+    t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw', :headers => %w{ col1 col2 col3 }
+    assert_equal 'name', t[0]['col2']
+    assert_equal 'Seamus Abshere', t[1]['col2']
+  end
+  
   should "return an ordered hash" do
     t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'
     assert_equal ::ActiveSupport::OrderedHash, t[0].class

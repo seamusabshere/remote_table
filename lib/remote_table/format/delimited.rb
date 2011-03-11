@@ -51,6 +51,8 @@ class RemoteTable
         fastercsv_options = { :skip_blanks => !t.properties.keep_blank_rows }
         if t.properties.headers == false
           fastercsv_options.merge!(:headers => nil)
+        elsif t.properties.headers.is_a?(::Array)
+          fastercsv_options.merge!(:headers => t.properties.headers)
         else
           fastercsv_options.merge!(:headers => :first_row)
         end
