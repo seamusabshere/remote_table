@@ -47,17 +47,25 @@ class RemoteTable
 
       private
 
+      FASTERCSV_OPTIONS = %w{
+        unconverted_fields
+        col_sep
+        headers
+        row_sep
+        return_headers
+        header_converters
+        quote_char
+        skip_blanks
+        converters
+        force_quotes
+      }
+
       def fastercsv_options
-        fastercsv_options = { :skip_blanks => !t.properties.keep_blank_rows }
-        if t.properties.headers == false
-          fastercsv_options.merge!(:headers => nil)
-        elsif t.properties.headers.is_a?(::Array)
-          fastercsv_options.merge!(:headers => t.properties.headers)
-        else
-          fastercsv_options.merge!(:headers => :first_row)
-        end
-        fastercsv_options.merge!(:col_sep => t.properties.delimiter) if t.properties.delimiter
-        fastercsv_options
+        hsh = t.options.slice *FASTERCSV_OPTIONS
+        hsh.merge! 'skip_blanks' => !t.properties.keep_blank_rows
+        hsh.reverse_merge! 'headers' => :first_row
+        hsh.reverse_merge! 'col_sep' => t.properties.delimiter
+        hsh.symbolize_keys
       end
     end
   end

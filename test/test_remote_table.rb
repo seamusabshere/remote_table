@@ -26,4 +26,13 @@ class TestRemoteTable < Test::Unit::TestCase
     t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'
     assert_equal ::ActiveSupport::OrderedHash, t[0].class
   end
+  
+  should "pass through fastercsv options" do
+    f = Tempfile.new 'pass-through-fastercsv-options'
+    f.write %{3,Title example,Body example with a <a href="">link</a>,test category}
+    f.flush
+    t = RemoteTable.new "file://#{f.path}", :quote_char => %{'}, :headers => nil
+    assert_equal %{Body example with a <a href="">link</a>}, t[0][2]
+    f.close
+  end
 end
