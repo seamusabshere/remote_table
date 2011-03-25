@@ -8,6 +8,7 @@ class RemoteTable
     
     def initialize(t)
       @t = t
+      @staging_dir_path = nil # memory leak?
     end
     
     def path
