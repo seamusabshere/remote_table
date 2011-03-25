@@ -35,4 +35,12 @@ class TestRemoteTable < Test::Unit::TestCase
     assert_equal %{Body example with a <a href="">link</a>}, t[0][2]
     f.close
   end
+  
+  should "open a csv inside a zip file" do
+    t = RemoteTable.new  'http://www.epa.gov/climatechange/emissions/downloads10/2010-Inventory-Annex-Tables.zip',
+                         :filename => 'Annex Tables/Annex 3/Table A-93.csv',
+                         :skip => 1,
+                         :select => lambda { |row| row['Vehicle Age'].to_i.to_s == row['Vehicle Age'] }
+    assert_equal '9.09%', t[0]['LDGV']
+  end
 end

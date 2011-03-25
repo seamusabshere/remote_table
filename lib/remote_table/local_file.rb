@@ -51,7 +51,7 @@ class RemoteTable
       new_path = @path.chomp ".#{t.properties.compression}"
       cmd = case t.properties.compression
       when 'zip', 'exe'
-        "unzip #{::Escape.shell_single_word @path} -d #{::File.dirname(@path)}"
+        "unzip -n #{::Escape.shell_single_word @path} -d #{::File.dirname(@path)}"
         # can't set path yet because there may be multiple files
       when 'bz2'
         "bunzip2 --stdout #{::Escape.shell_single_word @path} > #{::Escape.shell_single_word new_path}"
