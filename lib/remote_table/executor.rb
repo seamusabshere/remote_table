@@ -7,6 +7,7 @@ class RemoteTable
   class Executor
     include ::Singleton
     def bang(path, cmd)
+      srand # in case this was forked by resque
       tmp_path = "#{path}.bang.#{rand}"
       backtick_with_reporting "cat #{::Escape.shell_single_word path} | #{cmd} > #{::Escape.shell_single_word tmp_path}"
       ::FileUtils.mv tmp_path, path

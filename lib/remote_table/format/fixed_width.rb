@@ -25,6 +25,7 @@ class RemoteTable
           ::Slither.send :definition, t.properties.schema_name
         elsif t.properties.schema.is_a?(::Array)
           everything = lambda { |_| true }
+          srand # in case this was forked by resque
           ::Slither.define(rand.to_s) do |d|
             d.rows do |row|
               row.trap(&everything)
