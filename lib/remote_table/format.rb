@@ -20,14 +20,9 @@ class RemoteTable
     def each
       raise "must be defined by format"
     end
-    
-    def backup_file!
-      ::FileUtils.cp t.local_file.path, "#{t.local_file.path}.backup"
-    end
-    
-    def restore_file!
-      return unless ::File.readable? "#{t.local_file.path}.backup"
-      ::FileUtils.mv "#{t.local_file.path}.backup", t.local_file.path
+        
+    def delete_file!
+      ::FileUtils.rm_rf t.properties.staging_dir_path
     end
   end
 end

@@ -8,7 +8,6 @@ class RemoteTable
     
     def initialize(t)
       @t = t
-      @staging_dir_path = nil # memory leak?
     end
     
     def path
@@ -20,7 +19,7 @@ class RemoteTable
     
     def save_locally
       return if @path.is_a?(::String)
-      @path = ::File.join(staging_dir_path, ::File.basename(t.properties.uri.path))
+      @path = ::File.join(t.properties.staging_dir_path, ::File.basename(t.properties.uri.path))
       download
       decompress
       unpack
@@ -36,6 +35,7 @@ class RemoteTable
         ::RemoteTable.executor.backtick_with_reporting %{
           curl
           --silent
+          --show-error
           --location
           --header "Expect: "
           #{"--data #{::Escape.shell_single_word t.properties.form_data}" if t.properties.form_data.present?}
@@ -49,18 +49,20 @@ class RemoteTable
     def decompress
       return unless t.properties.compression
       new_path = @path.chomp ".#{t.properties.compression}"
+      raise_on_error = true
       cmd = case t.properties.compression
       when 'zip', 'exe'
-        "unzip -n #{::Escape.shell_single_word @path} -d #{::File.dirname(@path)}"
         # can't set path yet because there may be multiple files
+        raise_on_error = false
+        "unzip -qq -n #{::Escape.shell_single_word @path} -d #{::File.dirname(@path)}"
       when 'bz2'
+        @path = new_path
         "bunzip2 --stdout #{::Escape.shell_single_word @path} > #{::Escape.shell_single_word new_path}"
-        @path = new_path
       when 'gz'
-        "gunzip --stdout #{::Escape.shell_single_word @path} > #{::Escape.shell_single_word new_path}"
         @path = new_path
+        "gunzip --stdout #{::Escape.shell_single_word @path} > #{::Escape.shell_single_word new_path}"
       end
-      ::RemoteTable.executor.backtick_with_reporting cmd
+      ::RemoteTable.executor.backtick_with_reporting cmd, raise_on_error
     end
     
     def unpack
@@ -81,14 +83,6 @@ class RemoteTable
       elsif t.properties.glob.present?
         @path = ::Dir[::File.dirname(@path)+t.properties.glob].first
       end
-    end
-    
-    def staging_dir_path    
-      return @staging_dir_path if @staging_dir_path.is_a?(::String)
-      @staging_dir_path = ::File.join ::Dir.tmpdir, 'remote_table_gem', rand.to_s
-      ::FileUtils.mkdir_p @staging_dir_path
-      ::RemoteTable.cleaner.remove_at_exit @staging_dir_path
-      @staging_dir_path
     end
   end
 end

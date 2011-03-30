@@ -5,7 +5,6 @@ class RemoteTable
     class HTML < Format
       include Textual
       def each(&blk)
-        backup_file!
         convert_file_to_utf8!
         remove_useless_characters!
         html_headers = (t.properties.headers.is_a?(::Array)) ? t.properties.headers : nil
@@ -19,7 +18,7 @@ class RemoteTable
           yield hash if t.properties.keep_blank_rows or hash.any? { |k, v| v.present? }
         end
       ensure
-        restore_file!
+        delete_file!
       end
 
       private

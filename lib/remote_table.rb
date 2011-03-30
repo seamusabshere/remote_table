@@ -16,7 +16,6 @@ class RemoteTable
   autoload :Transformer, 'remote_table/transformer'
 
   # singletons
-  autoload :Cleaner, 'remote_table/cleaner'
   autoload :Executor, 'remote_table/executor'
   autoload :Hasher, 'remote_table/hasher'
   
@@ -52,7 +51,6 @@ class RemoteTable
     end
     @url.freeze
     @options.freeze
-    at_exit { ::RemoteTable.cleaner.cleanup }
   end
   
   def each(&blk)
@@ -85,12 +83,7 @@ class RemoteTable
     @to_a.freeze
   end
   alias :rows :to_a
-  
-  # Used internally as a sort of garbage collector.
-  def self.cleaner
-    Cleaner.instance
-  end
-  
+    
   # Used internally to execute stuff in shells.
   def self.executor
     Executor.instance

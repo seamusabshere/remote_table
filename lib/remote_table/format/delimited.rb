@@ -15,7 +15,6 @@ class RemoteTable
     class Delimited < Format
       include Textual
       def each(&blk)
-        backup_file!
         convert_file_to_utf8!
         remove_useless_characters!
         skip_rows!
@@ -42,7 +41,7 @@ class RemoteTable
           yield ordered_hash if t.properties.keep_blank_rows or filled_values > 0
         end
       ensure
-        restore_file!
+        delete_file!
       end
 
       private
