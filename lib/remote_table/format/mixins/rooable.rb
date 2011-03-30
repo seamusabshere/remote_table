@@ -31,6 +31,8 @@ class RemoteTable
           end
           yield ordered_hash if t.properties.keep_blank_rows or ordered_hash.any? { |k, v| v.present? }
         end
+      ensure
+        t.local_file.delete
       end
 
       private

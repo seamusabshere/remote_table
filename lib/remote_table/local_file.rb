@@ -2,7 +2,7 @@ require 'fileutils'
 require 'escape'
 require 'tmpdir'
 class RemoteTable
-  class LocalFile
+  class LocalFile #:nodoc:all
     
     attr_reader :t
     
@@ -15,11 +15,25 @@ class RemoteTable
       @path
     end
     
+    def delete
+      ::FileUtils.rm_rf staging_dir_path
+      @path = nil
+      @staging_dir_path = nil
+    end
+    
     private
+    
+    def staging_dir_path #:nodoc:
+      return @staging_dir_path if @staging_dir_path.is_a?(::String)
+      srand # in case this was forked by resque
+      @staging_dir_path = ::File.join ::Dir.tmpdir, 'remote_table_gem', rand.to_s
+      ::FileUtils.mkdir_p @staging_dir_path
+      @staging_dir_path
+    end
     
     def save_locally
       return if @path.is_a?(::String)
-      @path = ::File.join(t.properties.staging_dir_path, ::File.basename(t.properties.uri.path))
+      @path = ::File.join(staging_dir_path, ::File.basename(t.properties.uri.path))
       download
       decompress
       unpack

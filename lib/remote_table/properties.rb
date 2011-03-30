@@ -209,13 +209,5 @@ class RemoteTable
         Format::Delimited
       end
     end
-    
-    def staging_dir_path #:nodoc:
-      return @staging_dir_path if @staging_dir_path.is_a?(::String)
-      srand # in case this was forked by resque
-      @staging_dir_path = ::File.join ::Dir.tmpdir, 'remote_table_gem', rand.to_s
-      ::FileUtils.mkdir_p @staging_dir_path
-      @staging_dir_path
-    end
   end
 end

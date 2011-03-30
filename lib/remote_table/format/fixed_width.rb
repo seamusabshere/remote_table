@@ -14,7 +14,7 @@ class RemoteTable
           yield hash if t.properties.keep_blank_rows or hash.any? { |k, v| v.present? }
         end
       ensure
-        delete_file!
+        t.local_file.delete
       end
       private
       def parser

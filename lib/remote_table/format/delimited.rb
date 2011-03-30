@@ -41,7 +41,7 @@ class RemoteTable
           yield ordered_hash if t.properties.keep_blank_rows or filled_values > 0
         end
       ensure
-        delete_file!
+        t.local_file.delete
       end
 
       private

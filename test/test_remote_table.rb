@@ -43,4 +43,12 @@ class TestRemoteTable < Test::Unit::TestCase
                          :select => lambda { |row| row['Vehicle Age'].to_i.to_s == row['Vehicle Age'] }
     assert_equal '9.09%', t[0]['LDGV']
   end
+  
+  should 'not blow up if each is called twice' do
+    t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'
+    assert_nothing_raised do
+      t.each { |row| }
+      t.each { |row| }
+    end
+  end
 end

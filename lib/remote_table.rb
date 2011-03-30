@@ -54,6 +54,13 @@ class RemoteTable
   end
   
   def each(&blk)
+    to_a.each { |row| yield row }
+  end
+  alias :each_row :each
+  
+  def to_a
+    return @to_a if @to_a.is_a? ::Array
+    @to_a = []
     format.each do |row|
       row['row_hash'] = ::RemoteTable.hasher.hash row
       # allow the transformer to return multiple "virtual rows" for every real row
@@ -64,25 +71,18 @@ class RemoteTable
         end
         next if properties.select and !properties.select.call(virtual_row)
         next if properties.reject and properties.reject.call(virtual_row)
-        yield virtual_row
+        @to_a.push virtual_row
       end
     end
+    @to_a.freeze
+    @to_a
   end
-  alias :each_row :each
+  alias :rows :to_a
   
   # Get a row by row number
   def [](row_number)
     to_a[row_number]
   end
-  
-  # Get the whole row array back
-  def to_a
-    return @to_a if @to_a.is_a? ::Array
-    @to_a = []
-    each { |row| @to_a.push row }
-    @to_a.freeze
-  end
-  alias :rows :to_a
     
   # Used internally to execute stuff in shells.
   def self.executor

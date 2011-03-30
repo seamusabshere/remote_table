@@ -20,9 +20,5 @@ class RemoteTable
     def each
       raise "must be defined by format"
     end
-        
-    def delete_file!
-      ::FileUtils.rm_rf t.properties.staging_dir_path
-    end
   end
 end
