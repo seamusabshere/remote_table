@@ -51,4 +51,12 @@ class TestRemoteTable < Test::Unit::TestCase
       t.each { |row| }
     end
   end
+  
+  should 'allow itself to be cleared for save memory' do
+    t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'
+    t.to_a
+    assert_equal Array, t.instance_variable_get(:@to_a).class
+    t.free
+    assert_equal NilClass, t.instance_variable_get(:@to_a).class
+  end
 end

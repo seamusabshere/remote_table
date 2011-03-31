@@ -74,7 +74,6 @@ class RemoteTable
         @to_a.push virtual_row
       end
     end
-    @to_a.freeze
     @to_a
   end
   alias :rows :to_a
@@ -83,7 +82,15 @@ class RemoteTable
   def [](row_number)
     to_a[row_number]
   end
-    
+  
+  # clear the row cache to save memory
+  def free
+    @to_a.clear if @to_a.is_a?(::Array)
+    @to_a = nil
+    ::GC.start
+    nil
+  end
+  
   # Used internally to execute stuff in shells.
   def self.executor
     Executor.instance
