@@ -21,3 +21,5 @@ begin
 rescue LoadError
    puts "Rdoc is not available"
 end
+
+task :default => :test
