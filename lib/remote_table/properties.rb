@@ -48,11 +48,11 @@ class RemoteTable
       t.options['skip'].to_i
     end
     
-    # The encoding
+    # Likely external encoding
     #
     # Default: "UTF-8"
     def encoding
-      t.options['encoding'] || 'UTF-8'
+      @encoding ||= ::Array.wrap(t.options['encoding'] || [ 'UTF-8', 'US-ASCII', 'ASCII-8BIT' ])
     end
     
     # The delimiter

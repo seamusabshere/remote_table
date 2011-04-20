@@ -2,11 +2,7 @@ require 'fileutils'
 require 'escape'
 class RemoteTable
   class Format
-    module Textual
-      def convert_file_to_utf8!
-        ::RemoteTable.executor.bang t.local_file.path, "iconv -c -f #{::Escape.shell_single_word t.properties.encoding} -t UTF-8"
-      end
-      
+    module Textual      
       USELESS_CHARACTERS = [
         '\xef\xbb\xbf',   # UTF-8 byte order mark
         '\xc2\xad'        # soft hyphen, often inserted by MS Office (html: &shy;)

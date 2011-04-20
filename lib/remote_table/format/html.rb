@@ -5,11 +5,10 @@ class RemoteTable
     class HTML < Format
       include Textual
       def each(&blk)
-        convert_file_to_utf8!
         remove_useless_characters!
         html_headers = (t.properties.headers.is_a?(::Array)) ? t.properties.headers : nil
         ::Nokogiri::HTML(unescaped_html_without_soft_hyphens, nil, 'UTF-8').xpath(t.properties.row_xpath).each do |row|
-          values = row.xpath(t.properties.column_xpath).map { |td| td.content.gsub(/\s+/, ' ').strip }
+          values = row.xpath(t.properties.column_xpath).map { |td| utf8 td.content.gsub(/\s+/, ' ').strip }
           if html_headers.nil?
             html_headers = values
             next

@@ -1,3 +1,7 @@
+if ::RUBY_VERSION >= '1.9'
+  require 'ensure/encoding'
+end
+
 class RemoteTable  
   class Format
     autoload :Excel, 'remote_table/format/excel'
@@ -14,6 +18,14 @@ class RemoteTable
 
     def initialize(t)
       @t = t
+    end
+    
+    def utf8(str)
+      if ::RUBY_VERSION >= '1.9'
+        str.ensure_encoding 'UTF-8', :external_encoding => t.properties.encoding, :invalid_characters => :transcode
+      else
+        str
+      end
     end
     
     include ::Enumerable

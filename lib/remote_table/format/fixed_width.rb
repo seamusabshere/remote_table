@@ -4,13 +4,15 @@ class RemoteTable
     class FixedWidth < Format
       include Textual
       def each(&blk)
-        convert_file_to_utf8!
         remove_useless_characters!
         crop_rows!
         skip_rows!
         cut_columns!
         parser.parse[:rows].each do |hash|
           hash.reject! { |k, v| k.blank? }
+          hash.each do |k, v|
+            hash[k] = utf8 v
+          end
           yield hash if t.properties.keep_blank_rows or hash.any? { |k, v| v.present? }
         end
       ensure

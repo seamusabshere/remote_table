@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'google-spreadsheet-ruby' #roo
   s.add_dependency 'escape', '>=0.0.4'
   s.add_dependency 'posix-spawn'
+  s.add_dependency 'ensure-encoding'
   unless RUBY_VERSION >= '1.9'
     s.add_dependency 'fastercsv', '>=1.5.0'
   end
