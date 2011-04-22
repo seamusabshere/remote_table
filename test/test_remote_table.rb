@@ -59,4 +59,10 @@ class TestRemoteTable < Test::Unit::TestCase
     t.free
     assert_equal NilClass, t.instance_variable_get(:@to_a).class
   end
+  
+  # fixes ArgumentError: invalid byte sequence in UTF-8
+  should %{safely read non-utf8 html} do
+    t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-B.htm", :encoding => 'windows-1252', :row_xpath => '//table/tr[2]/td/table/tr', :column_xpath => 'td'
+    assert_equal 'AGUSTA', t.rows[0]['Manufacturer']
+  end
 end

@@ -8,7 +8,7 @@ class RemoteTable
         remove_useless_characters!
         html_headers = (t.properties.headers.is_a?(::Array)) ? t.properties.headers : nil
         ::Nokogiri::HTML(unescaped_html_without_soft_hyphens, nil, 'UTF-8').xpath(t.properties.row_xpath).each do |row|
-          values = row.xpath(t.properties.column_xpath).map { |td| utf8 td.content.gsub(/\s+/, ' ').strip }
+          values = row.xpath(t.properties.column_xpath).map { |td| td.content.gsub(/\s+/, ' ').strip }
           if html_headers.nil?
             html_headers = values
             next
@@ -31,7 +31,7 @@ class RemoteTable
 
       # should we be doing this in ruby?
       def unescaped_html_without_soft_hyphens
-        str = ::CGI.unescapeHTML ::IO.read(t.local_file.path)
+        str = ::CGI.unescapeHTML utf8(::IO.read(t.local_file.path))
         # get rid of MS Office baddies
         str.gsub! /&shy;/, ''
         str
