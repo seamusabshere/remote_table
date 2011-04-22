@@ -61,8 +61,8 @@ class TestRemoteTable < Test::Unit::TestCase
   end
   
   # fixes ArgumentError: invalid byte sequence in UTF-8
-  should %{safely read non-utf8 html} do
-    t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-B.htm", :encoding => 'windows-1252', :row_xpath => '//table/tr[2]/td/table/tr', :column_xpath => 'td'
-    assert_equal 'AGUSTA', t.rows[0]['Manufacturer']
+  should %{safely strip soft hyphens and read non-utf8 html} do
+    t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-A.htm", :encoding => 'windows-1252', :row_xpath => '//table/tr[2]/td/table/tr', :column_xpath => 'td'
+    assert t.rows.detect { |row| row['Model'] == 'A300B4600' }
   end
 end

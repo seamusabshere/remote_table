@@ -6,6 +6,7 @@ require 'posix/spawn'
 class RemoteTable
   class Executor
     include ::Singleton
+    # we should really be piping things i think
     def bang(path, cmd)
       srand # in case this was forked by resque
       tmp_path = "#{path}.bang.#{rand}"

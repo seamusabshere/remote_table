@@ -5,7 +5,9 @@ class RemoteTable
     module Textual      
       USELESS_CHARACTERS = [
         '\xef\xbb\xbf',   # UTF-8 byte order mark
-        '\xc2\xad'        # soft hyphen, often inserted by MS Office (html: &shy;)
+        '\xc2\xad',       # soft hyphen, often inserted by MS Office (html: &shy;)
+        '\xad',
+        # '\xa0'
       ]
       def remove_useless_characters!
         ::RemoteTable.executor.bang t.local_file.path, "perl -pe 's/#{USELESS_CHARACTERS.join '//g; s/'}//g'"

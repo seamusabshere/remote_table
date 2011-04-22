@@ -33,7 +33,7 @@ class RemoteTable
       def unescaped_html_without_soft_hyphens
         str = ::CGI.unescapeHTML utf8(::IO.read(t.local_file.path))
         # get rid of MS Office baddies
-        str.gsub! /&shy;/, ''
+        str.gsub! '&shy;', ''
         str
       end
     end
