@@ -1,5 +1,7 @@
 if ::RUBY_VERSION >= '1.9'
   require 'ensure/encoding'
+else
+  require 'iconv'
 end
 
 class RemoteTable  
@@ -24,7 +26,7 @@ class RemoteTable
       if ::RUBY_VERSION >= '1.9'
         str.ensure_encoding 'UTF-8', :external_encoding => t.properties.encoding, :invalid_characters => :transcode
       else
-        str
+        ::Iconv.conv('UTF-8//TRANSLIT', t.properties.encoding[0], str + ' ')[0..-2]
       end
     end
     

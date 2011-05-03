@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'helper'
 
 class TestRemoteTable < Test::Unit::TestCase
@@ -64,5 +65,10 @@ class TestRemoteTable < Test::Unit::TestCase
   should %{safely strip soft hyphens and read non-utf8 html} do
     t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-A.htm", :encoding => 'windows-1252', :row_xpath => '//table/tr[2]/td/table/tr', :column_xpath => 'td'
     assert t.rows.detect { |row| row['Model'] == 'A300B4600' }
+  end
+  
+  should %{transliterate characters into UTF-8 as long as the user provides the right encoding} do
+    t = RemoteTable.new :url => 'http://static.brighterplanet.com/science/data/consumables/pets/breed_genders.csv', :encoding => 'ISO-8859-1'
+    assert t.rows.detect { |row| row['name'] == 'Briquet Griffon Vendéen' }
   end
 end
