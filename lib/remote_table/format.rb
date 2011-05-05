@@ -31,7 +31,7 @@ class RemoteTable
       else
         return str if t.properties.encoding[0] =~ /utf.?8/i
         begin
-          ::Iconv.conv('UTF-8//TRANSLIT', t.properties.encoding[0], str + ' ')[0..-2]
+          ::Iconv.conv('UTF-8//TRANSLIT', t.properties.encoding[0], str.to_s + ' ')[0..-2]
         rescue ::Iconv::IllegalSequence
           $stderr.puts "[remote_table] Unable to transliterate #{str} into UTF-8 given #{t.properties.encoding[0]}"
           str
