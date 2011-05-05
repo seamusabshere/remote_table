@@ -7,7 +7,7 @@ class RemoteTable
     # eventually this will support a different way of specifying a transformer
     def transform(row)
       if legacy_transformer
-        legacy_transformer.apply row
+        ::Array.wrap legacy_transformer.apply(row)
       else
         [row]
       end

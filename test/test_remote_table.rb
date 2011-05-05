@@ -87,9 +87,14 @@ class TestRemoteTable < Test::Unit::TestCase
   end
   
   should %{not die when it reads Åland Islands} do
-    t = RemoteTable.new :url => 'http://www.iso.org/iso/list-en1-semic-3.txt', :skip => 2, :headers => false, :delimiter => ';'
+    t = RemoteTable.new 'http://www.iso.org/iso/list-en1-semic-3.txt', :skip => 2, :headers => false, :delimiter => ';'
     assert_nothing_raised do
       t[1][0]
     end
+  end
+  
+  should %{parse a big CSV that is not UTF-8} do
+    t = RemoteTable.new 'https://openflights.svn.sourceforge.net/svnroot/openflights/openflights/data/airports.dat', :headers => false
+    assert_equal 'Goroka', t[0][1]
   end
 end
