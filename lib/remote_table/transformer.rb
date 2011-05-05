@@ -9,7 +9,7 @@ class RemoteTable
       if legacy_transformer
         legacy_transformer.apply row
       else
-        row
+        [row]
       end
     end
     def legacy_transformer

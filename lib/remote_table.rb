@@ -4,10 +4,18 @@ require 'active_support/version'
   active_support/core_ext/hash
   active_support/core_ext/string
   active_support/core_ext/module
-  active_support/core_ext/array/wrap
+  active_support/core_ext/array
 }.each do |active_support_3_requirement|
   require active_support_3_requirement
 end if ::ActiveSupport::VERSION::MAJOR == 3
+
+class Hash
+  attr_accessor :row_hash
+end
+
+class Array
+  attr_accessor :row_hash
+end
 
 class RemoteTable
   autoload :Format, 'remote_table/format'
@@ -53,40 +61,52 @@ class RemoteTable
     @options.freeze
   end
   
+  # not thread safe
   def each(&blk)
-    to_a.each { |row| yield row }
+    if fully_cached?
+      cache.each(&blk)
+    else
+      mark_download!
+      retval = format.each do |row|
+        row.row_hash = ::RemoteTable.hasher.hash row
+        transformer.transform(row).each do |virtual_row|
+          if properties.errata
+            next if properties.errata.rejects? virtual_row
+            properties.errata.correct! virtual_row
+          end
+          next if properties.select and !properties.select.call(virtual_row)
+          next if properties.reject and properties.reject.call(virtual_row)
+          cache.push virtual_row unless properties.streaming
+          yield virtual_row
+        end
+      end
+      fully_cached! unless properties.streaming
+      retval
+    end
   end
   alias :each_row :each
   
   def to_a
-    return @to_a if @to_a.is_a? ::Array
-    @to_a = []
-    format.each do |row|
-      row['row_hash'] = ::RemoteTable.hasher.hash row
-      # allow the transformer to return multiple "virtual rows" for every real row
-      ::Array.wrap(transformer.transform(row)).each do |virtual_row|
-        if properties.errata
-          next if properties.errata.rejects? virtual_row
-          properties.errata.correct! virtual_row
-        end
-        next if properties.select and !properties.select.call(virtual_row)
-        next if properties.reject and properties.reject.call(virtual_row)
-        @to_a.push virtual_row
-      end
+    if fully_cached?
+      cache.dup
+    else
+      map { |row| row }
     end
-    @to_a
   end
   alias :rows :to_a
   
   # Get a row by row number
   def [](row_number)
-    to_a[row_number]
+    if fully_cached?
+      cache[row_number]
+    else
+      to_a[row_number]
+    end
   end
   
   # clear the row cache to save memory
   def free
-    @to_a.clear if @to_a.is_a?(::Array)
-    @to_a = nil
+    cache.clear
     ::GC.start
     nil
   end
@@ -119,5 +139,29 @@ class RemoteTable
   # Used internally to acess the transformer (aka parser).
   def transformer
     @transformer ||= Transformer.new self
+  end
+  
+  attr_reader :download_count
+  
+  private
+  
+  def mark_download!
+    @download_count ||= 0
+    @download_count += 1
+    if properties.warn_on_multiple_downloads and download_count > 1
+      $stderr.puts "[remote_table] Warning: #{url} has been downloaded #{download_count} times."
+    end
+  end 
+  
+  def fully_cached!
+    @fully_cached = true
+  end
+  
+  def fully_cached?
+    !!@fully_cached
+  end
+  
+  def cache
+    @cache ||= []
   end
 end

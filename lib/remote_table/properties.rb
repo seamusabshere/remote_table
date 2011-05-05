@@ -17,9 +17,32 @@ class RemoteTable
       @uri
     end
     
+    # Whether to stream the rows without caching them. Saves memory, but you have to re-download the file every time you...
+    # * call []
+    # * call each
+    # Defaults to false.
+    def streaming
+      t.options['streaming'] || false
+    end
+
+    # Defaults to true.
+    def warn_on_multiple_downloads
+      t.options['warn_on_multiple_downloads'] != false
+    end
+    
     # The headers specified by the user
+    #
+    # Default: :first_row
     def headers
-      t.options['headers']
+      t.options['headers'].nil? ? :first_row : t.options['headers']
+    end
+    
+    def use_first_row_as_header?
+      headers == :first_row
+    end
+    
+    def output_class
+      headers == false ? ::Array : ::ActiveSupport::OrderedHash
     end
     
     # The sheet specified by the user as a number or a string
@@ -52,7 +75,7 @@ class RemoteTable
     #
     # Default: "UTF-8"
     def encoding
-      @encoding ||= ::Array.wrap(t.options['encoding'] || [ 'ISO-8859-1', 'US-ASCII', 'ASCII-8BIT', 'windows-1252', 'UTF-8' ])
+      @encoding ||= ::Array.wrap(t.options['encoding'] || [ 'ISO-8859-1', 'US-ASCII', 'WINDOWS-1252', 'ASCII-8BIT', 'UTF-8' ])
     end
     
     # The delimiter
@@ -70,6 +93,16 @@ class RemoteTable
     # The XPath used to find columns
     def column_xpath
       t.options['column_xpath']
+    end
+
+    # The CSS selector used to find rows
+    def row_css
+      t.options['row_css']
+    end
+    
+    # The CSS selector used to find columns
+    def column_css
+      t.options['column_css']
     end
     
     # The compression type.
@@ -205,6 +238,8 @@ class RemoteTable
         Format::FixedWidth
       when /htm/
         Format::HTML
+      when /xml/
+        Format::XML
       else
         Format::Delimited
       end

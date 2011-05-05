@@ -12,10 +12,16 @@ class RemoteTable
   class Hasher
     include ::Singleton
     def hash(row)
-      row = row.dup
-      row.stringify_keys!
-      str = row.keys.sort.map do |k|
-        row[k].to_query k
+      str = if row.is_a?(::Array)
+        tmp_ary = []
+        row.each_with_index do |v, i|
+          tmp_ary.push v.to_query(i.to_s)
+        end
+        tmp_ary
+      else
+        row.stringify_keys.keys.sort.map do |k|
+          row[k].to_query k
+        end
       end.join('&')
       ::Digest::MD5.hexdigest str
     end

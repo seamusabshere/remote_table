@@ -1,7 +1,7 @@
 class RemoteTable
   class Format
     class OpenOffice < Format
-      include Rooable
+      include ProcessedByRoo
       def roo_class
         ::Openoffice
       end

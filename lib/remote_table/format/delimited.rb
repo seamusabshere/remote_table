@@ -6,7 +6,7 @@ else
     require 'fastercsv'
     ::RemoteTable::CSV = ::FasterCSV
   rescue ::LoadError
-    $stderr.puts "[remote_table gem] You probably need to manually install the fastercsv gem and/or require it in your Gemfile."
+    $stderr.puts "[remote_table] You probably need to manually install the fastercsv gem and/or require it in your Gemfile."
     raise $!
   end
 end
@@ -19,26 +19,18 @@ class RemoteTable
         remove_useless_characters!
         skip_rows!
         CSV.foreach(t.local_file.path, fastercsv_options) do |row|
-          ordered_hash = ::ActiveSupport::OrderedHash.new
-          filled_values = 0
-          case row
-          when CSV::Row
-            row.each do |header, value|
-              next if header.blank?
-              value = '' if value.nil?
-              ordered_hash[header] = utf8 value
-              filled_values += 1 if value.present?
+          if row.is_a?(CSV::Row)
+            output = row.inject(::ActiveSupport::OrderedHash.new) do |memo, (key, value)|
+              if key.present?
+                value = '' if value.nil?
+                memo[key] = utf8 value
+              end
+              memo
             end
-          when ::Array
-            index = 0
-            row.each do |value|
-              value = '' if value.nil?
-              ordered_hash[index] = utf8 value
-              filled_values += 1 if value.present?
-              index += 1
-            end
+            yield output if t.properties.keep_blank_rows or output.any? { |k, v| v.present? }
+          else
+            yield row if t.properties.keep_blank_rows or row.any? { |v| v.present? }
           end
-          yield ordered_hash if t.properties.keep_blank_rows or filled_values > 0
         end
       ensure
         t.local_file.delete
@@ -62,7 +54,7 @@ class RemoteTable
       def fastercsv_options
         hsh = t.options.slice *FASTERCSV_OPTIONS
         hsh.merge! 'skip_blanks' => !t.properties.keep_blank_rows
-        hsh.reverse_merge! 'headers' => :first_row
+        hsh.reverse_merge! 'headers' => t.properties.headers
         hsh.reverse_merge! 'col_sep' => t.properties.delimiter
         hsh.symbolize_keys
       end

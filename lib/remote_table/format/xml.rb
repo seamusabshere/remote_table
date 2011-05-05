@@ -2,12 +2,12 @@ require 'nokogiri'
 require 'cgi'
 class RemoteTable
   class Format
-    class HTML < Format
+    class XML < Format
       include Textual
       include ProcessedByNokogiri
       
       def nokogiri_class
-        ::Nokogiri::HTML::Document
+        ::Nokogiri::XML::Document
       end
     end
   end

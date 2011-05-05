@@ -9,7 +9,7 @@ class TestRemoteTable < Test::Unit::TestCase
   
   should "add a row hash to every row" do
     t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx')
-    assert_equal "06d8a738551c17735e2731e25c8d0461", t[5]['row_hash']
+    assert_equal "06d8a738551c17735e2731e25c8d0461", t[5].row_hash
   end
   
   should "open a google doc" do
@@ -56,11 +56,11 @@ class TestRemoteTable < Test::Unit::TestCase
   should 'allow itself to be cleared for save memory' do
     t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'
     t.to_a
-    assert_equal Array, t.instance_variable_get(:@to_a).class
+    assert t.send(:cache).length > 0
     t.free
-    assert_equal NilClass, t.instance_variable_get(:@to_a).class
+    assert t.send(:cache).length == 0
   end
-  
+    
   # fixes ArgumentError: invalid byte sequence in UTF-8
   should %{safely strip soft hyphens and read windows-1252 html} do
     t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-A.htm", :row_xpath => '//table/tr[2]/td/table/tr', :column_xpath => 'td'
@@ -70,5 +70,26 @@ class TestRemoteTable < Test::Unit::TestCase
   should %{transliterate characters from ISO-8859-1} do
     t = RemoteTable.new :url => 'http://static.brighterplanet.com/science/data/consumables/pets/breed_genders.csv'
     assert t.rows.detect { |row| row['name'] == 'Briquet Griffon Vendéen' }
+  end
+  
+  should %{read xml with css selectors} do
+    t = RemoteTable.new 'http://www.nanonull.com/TimeService/TimeService.asmx/getCityTime?city=Chicago', :format => :xml, :row_css => 'string', :headers => false
+    assert /(AM|PM)/.match(t[0][0])
+  end
+  
+  should %{optionally stream rows instead of caching them} do
+    t = RemoteTable.new 'http://www.earthtools.org/timezone/40.71417/-74.00639', :format => :xml, :row_xpath => '//timezone/isotime', :headers => false, :streaming => true
+    time1 = t[0][0]
+    assert /\d\d\d\d-\d\d-\d\d/.match(time1)
+    sleep 1
+    time2 = t[0][0]
+    assert(time1 != time2)
+  end
+  
+  should %{not die when it reads Åland Islands} do
+    t = RemoteTable.new :url => 'http://www.iso.org/iso/list-en1-semic-3.txt', :skip => 2, :headers => false, :delimiter => ';'
+    assert_nothing_raised do
+      t[1][0]
+    end
   end
 end

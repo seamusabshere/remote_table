@@ -8,20 +8,23 @@ class RemoteTable
         crop_rows!
         skip_rows!
         cut_columns!
-        parser.parse[:rows].each do |hash|
-          hash.reject! { |k, v| k.blank? }
-          hash.each do |k, v|
-            hash[k] = utf8 v
+        parser.parse[:rows].each do |row|
+          row.reject! { |k, v| k.blank? }
+          row.each do |k, v|
+            row[k] = utf8 v
           end
-          yield hash if t.properties.keep_blank_rows or hash.any? { |k, v| v.present? }
+          yield row if t.properties.keep_blank_rows or row.any? { |k, v| v.present? }
         end
       ensure
         t.local_file.delete
       end
+      
       private
+      
       def parser
         @parser ||= ::Slither::Parser.new definition, t.local_file.path
       end
+      
       def definition
         @definition ||= if t.properties.schema_name.is_a?(::String) or t.properties.schema_name.is_a?(::Symbol)
           ::Slither.send :definition, t.properties.schema_name

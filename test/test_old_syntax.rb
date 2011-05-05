@@ -106,16 +106,10 @@ class TestOldSyntax < Test::Unit::TestCase
     assert_equal '2', t.rows.first['dup_header']
   end
   
-  should "respect field order in CSVs without headers" do
+  should "return an Array when instructed not to use headers" do
     t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA', :skip => 1, :headers => false)
     t.rows.each do |row|
-      last_column_number = -1
-      row.each do |column_number, v|
-        next if column_number == 'row_hash'
-        assert column_number.is_a?(Numeric)
-        assert(column_number > last_column_number)
-        last_column_number = column_number
-      end
+      assert row.is_a?(::Array)
     end
   end
   
