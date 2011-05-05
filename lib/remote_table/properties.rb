@@ -52,7 +52,7 @@ class RemoteTable
     #
     # Default: "UTF-8"
     def encoding
-      @encoding ||= ::Array.wrap(t.options['encoding'] || [ 'UTF-8', 'US-ASCII', 'ASCII-8BIT' ])
+      @encoding ||= ::Array.wrap(t.options['encoding'] || [ 'ISO-8859-1', 'US-ASCII', 'ASCII-8BIT', 'windows-1252', 'UTF-8' ])
     end
     
     # The delimiter
