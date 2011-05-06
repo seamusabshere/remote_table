@@ -63,7 +63,7 @@ class TestRemoteTable < Test::Unit::TestCase
     
   # fixes ArgumentError: invalid byte sequence in UTF-8
   should %{safely strip soft hyphens and read windows-1252 html} do
-    t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-A.htm", :row_xpath => '//table/tr[2]/td/table/tr', :column_xpath => 'td'
+    t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-A.htm", :row_xpath => '//table/tr[2]/td/table/tr', :column_xpath => 'td', :encoding => 'windows-1252'
     assert t.rows.detect { |row| row['Model'] == 'A300B4600' }
   end
   
@@ -86,15 +86,36 @@ class TestRemoteTable < Test::Unit::TestCase
     assert(time1 != time2)
   end
   
-  should %{not die when it reads Åland Islands} do
-    t = RemoteTable.new 'http://www.iso.org/iso/list-en1-semic-3.txt', :skip => 2, :headers => false, :delimiter => ';'
-    assert_nothing_raised do
-      t[1][0]
+  {
+  # IMPOSSIBLE "../support/list-en1-semic-3.office-2011-for-mac-sp1-excel-95.binary.xls" => {:format=>"xls",         :encoding=>"binary"},
+  "../support/list-en1-semic-3.office-2011-for-mac-sp1.binary.xlsx"         => {:format=>"xlsx",        :encoding=>"binary"},
+  "../support/list-en1-semic-3.office-2011-for-mac-sp1.binary.xls"          => {:format=>"xls",         :encoding=>"binary"},
+  "../support/list-en1-semic-3.neooffice.binary.ods"                        => {:format=>"ods",         :encoding=>"binary"},
+  "../support/list-en1-semic-3.neooffice.iso-8859-1.fixed_width-64"         => {:format=>"fixed_width", :encoding=>"iso-8859-1", :schema => [['name', 63, { :type => :string }], ['iso_3166', 2, { :type => :string }]]},
+  "../support/list-en1-semic-3.neooffice.utf-8.fixed_width-62"              => {:format=>"fixed_width", :encoding=>"utf-8", :schema => [['name', 61, { :type => :string }], ['iso_3166', 2, { :type => :string }]]},
+  # TODO "../support/list-en1-semic-3.office-2011-for-mac-sp1.utf-8.html"          => {:format=>"html",        :encoding=>"utf-8"},
+  # TODO "../support/list-en1-semic-3.office-2011-for-mac-sp1.iso-8859-1.html"     => {:format=>"html",        :encoding=>"iso-8859-1"},
+  # TODO "../support/list-en1-semic-3.neooffice.utf-8.html"                        => {:format=>"html",        :encoding=>"utf-8"},
+  "../support/list-en1-semic-3.neooffice.utf-8.xml"                         => {:format=>"xml",         :encoding=>"utf-8", :row_css => 'Row', :column_css => 'Data', :select => lambda { |row| row[1].to_s =~ /[A-Z]{2}/ }},
+  "../support/list-en1-semic-3.neooffice.iso-8859-1.csv"                    => {:format=>"csv",         :encoding=>"iso-8859-1", :delimiter => ';'},
+  "../support/list-en1-semic-3.original.iso-8859-1.csv"                     => {:format=>"csv",         :encoding=>"iso-8859-1", :delimiter => ';'},
+  "../support/list-en1-semic-3.office-2011-for-mac-sp1.mac.csv-comma"       => {:format=>"csv",         :encoding=>"MACROMAN"}, # comma because no option in excel
+  "../support/list-en1-semic-3.neooffice.utf-8.csv"                         => {:format=>"csv",         :encoding=>"utf-8", :delimiter => ';'}
+  }.each do |k, v|
+    should %{open #{v[:format]} encoded #{v[:encoding]} created by #{File.basename(k).split('.')[1]}} do
+      options = v.merge(:headers => false, :skip => 2)
+      t = RemoteTable.new "file://#{File.expand_path(k, __FILE__)}", options
+      assert_equal %{ÅLAND ISLANDS}, (t[1].is_a?(::Array) ? t[1][0] : t[1]['name'])
     end
   end
   
+  should %{recode as UTF-8 even ISO-8859-1 (or any other encoding)} do
+    t = RemoteTable.new 'http://www.iso.org/iso/list-en1-semic-3.txt', :skip => 2, :headers => false, :delimiter => ';', :encoding => 'ISO-8859-1'
+    assert_equal %{ÅLAND ISLANDS}, t[1][0]
+  end
+  
   should %{parse a big CSV that is not UTF-8} do
-    t = RemoteTable.new 'https://openflights.svn.sourceforge.net/svnroot/openflights/openflights/data/airports.dat', :headers => false
+    t = RemoteTable.new 'https://openflights.svn.sourceforge.net/svnroot/openflights/openflights/data/airports.dat', :headers => false#, :encoding => 'UTF-8'
     assert_equal 'Goroka', t[0][1]
   end
 end

@@ -6,11 +6,17 @@ class RemoteTable
       USELESS_CHARACTERS = [
         '\xef\xbb\xbf',   # UTF-8 byte order mark
         '\xc2\xad',       # soft hyphen, often inserted by MS Office (html: &shy;)
-        '\xad',
-        # '\xa0'
       ]
       def remove_useless_characters!
         ::RemoteTable.executor.bang t.local_file.path, "perl -pe 's/#{USELESS_CHARACTERS.join '//g; s/'}//g'"
+        if t.properties.encoding[0] =~ /windows.?1252/i
+          # soft hyphen again, as I have seen it appear in windows 1252
+          ::RemoteTable.executor.bang t.local_file.path, %q{perl -pe 's/\xad//g'}
+        end
+      end
+      
+      def fix_newlines!
+        ::RemoteTable.executor.bang t.local_file.path, %q{perl -pe 's/\r\n|\n|\r/\n/g'}
       end
       
       def skip_rows!

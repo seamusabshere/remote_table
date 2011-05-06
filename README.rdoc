@@ -136,6 +136,11 @@ More examples:
                                 [ 'spacer',  1 ],
                                 [ 'header1', 10, { :type => :string } ]]
 
+==Helpful hints
+
+* ASCII-8BIT is the same as BINARY
+* ISO-8859-1 is the same as Latin1
+
 ==Custom parsers
 
 See the test file and also data_miner examples of custom parsers.

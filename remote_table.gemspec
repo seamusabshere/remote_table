@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   
   s.add_dependency 'activesupport', '>=2.3.4'
   s.add_dependency 'roo', '~>1.9'
-  s.add_dependency 'slither', '>=0.99.4'
+  s.add_dependency 'fixed_width'
   s.add_dependency 'i18n' # activesupport?
   s.add_dependency 'builder' # roo?
   s.add_dependency 'zip' # roo
@@ -31,9 +31,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'escape', '>=0.0.4'
   s.add_dependency 'posix-spawn'
   s.add_dependency 'ensure-encoding'
-  unless RUBY_VERSION >= '1.9'
-    s.add_dependency 'fastercsv', '>=1.5.0'
-  end
+  s.add_dependency 'fastercsv', '>=1.5.0'
 
   s.add_development_dependency 'errata', '>=0.2.0'
   s.add_development_dependency 'test-unit'

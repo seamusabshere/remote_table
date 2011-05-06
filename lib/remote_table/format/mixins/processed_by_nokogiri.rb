@@ -4,6 +4,7 @@ class RemoteTable
   class Format
     module ProcessedByNokogiri
       def each
+        raise "[remote_table] Need :row_css or :row_xpath in order to process XML or HTML" unless t.properties.row_css or t.properties.row_xpath
         remove_useless_characters!
         first_row = true
         keys = t.properties.headers if t.properties.headers.is_a?(::Array)
@@ -57,7 +58,7 @@ class RemoteTable
 
       # should we be doing this in ruby?
       def unescaped_xml_without_soft_hyphens
-        str = ::CGI.unescapeHTML utf8(::IO.read(t.local_file.path))
+        str = ::CGI.unescapeHTML recode_as_utf8(::IO.read(t.local_file.path))
         # get rid of MS Office baddies
         str.gsub! '&shy;', ''
         str

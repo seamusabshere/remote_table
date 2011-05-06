@@ -1,3 +1,8 @@
+if ::RUBY_VERSION < '1.9' and $KCODE != 'UTF8'
+  $stderr.puts "[remote_table] Ruby 1.8 detected, setting $KCODE to UTF8 so that ActiveSupport::Multibyte works properly."
+  $KCODE = 'UTF8'
+end
+
 require 'active_support'
 require 'active_support/version'
 %w{

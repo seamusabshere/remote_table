@@ -186,7 +186,7 @@ class RemoteTable
       t.options['schema']
     end
     
-    # The name of the fixed-width schema according to Slither
+    # The name of the fixed-width schema according to FixedWidth
     def schema_name
       t.options['schema_name']
     end
