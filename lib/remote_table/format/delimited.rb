@@ -21,16 +21,15 @@ class RemoteTable
         skip_rows!
         CSV.foreach(t.local_file.path, fastercsv_options) do |row|
           if row.is_a?(CSV::Row)
-            hash = row.inject(::ActiveSupport::OrderedHash.new) do |memo, (key, value)|
-              if key.present?
-                value = '' if value.nil?
-                memo[key] = recode_as_utf8 value
+            hash = row.inject(::ActiveSupport::OrderedHash.new) do |memo, (k, v)|
+              if k.present?
+                memo[k] = recode_as_utf8 v.to_s
               end
               memo
             end
             yield hash if t.properties.keep_blank_rows or hash.any? { |k, v| v.present? }
           elsif row.is_a?(::Array)
-            array = row.map { |v| recode_as_utf8 v }
+            array = row.map { |v| recode_as_utf8 v.to_s }
             yield array if t.properties.keep_blank_rows or array.any? { |v| v.present? }
           end
         end
