@@ -6,6 +6,7 @@ class RemoteTable
       def each
         raise "[remote_table] Need :row_css or :row_xpath in order to process XML or HTML" unless t.properties.row_css or t.properties.row_xpath
         remove_useless_characters!
+        transliterate_whole_file_to_utf8!
         first_row = true
         keys = t.properties.headers if t.properties.headers.is_a?(::Array)
         xml = nokogiri_class.parse(unescaped_xml_without_soft_hyphens, nil, 'UTF-8')
@@ -16,7 +17,7 @@ class RemoteTable
             row.xpath(t.properties.column_xpath)
           else
             [row]
-          end.map { |cell| cell.content.gsub(/\s+/, ' ').strip }
+          end.map { |cell| assume_utf8 cell.content.gsub(/\s+/, ' ').strip }
           if first_row and t.properties.use_first_row_as_header?
             keys = values
             first_row = false
@@ -58,7 +59,7 @@ class RemoteTable
 
       # should we be doing this in ruby?
       def unescaped_xml_without_soft_hyphens
-        str = ::CGI.unescapeHTML recode_as_utf8(::IO.read(t.local_file.path))
+        str = ::CGI.unescapeHTML t.local_file.encoded_io.read
         # get rid of MS Office baddies
         str.gsub! '&shy;', ''
         str

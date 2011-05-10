@@ -8,7 +8,7 @@ class RemoteTable
         if t.properties.output_class == ::Array
           (first_row..spreadsheet.last_row).each do |y|
             output = (1..spreadsheet.last_column).map do |x|
-              spreadsheet.cell(y, x).to_s.gsub(/<[^>]+>/, '').strip
+              assume_utf8 spreadsheet.cell(y, x).to_s.gsub(/<[^>]+>/, '').strip
             end
             yield output if t.properties.keep_blank_rows or output.any? { |v| v.present? }
           end
@@ -18,16 +18,17 @@ class RemoteTable
             (1..spreadsheet.last_column).each do |x|
               keys[x] = spreadsheet.cell(first_row, x)
               keys[x] = spreadsheet.cell(first_row - 1, x) if keys[x].blank? # look up
+              keys[x] = assume_utf8 keys[x]
             end
           else
             (1..spreadsheet.last_column).each do |x|
-              keys[x] = t.properties.headers[x - 1]
+              keys[x] = assume_utf8 t.properties.headers[x - 1]
             end
           end
           (first_row+1..spreadsheet.last_row).each do |y|
             output = (1..spreadsheet.last_column).inject(::ActiveSupport::OrderedHash.new) do |memo, x|
               if keys[x].present?
-                memo[keys[x]] = spreadsheet.cell(y, x).to_s.gsub(/<[^>]+>/, '').strip
+                memo[keys[x]] = assume_utf8 spreadsheet.cell(y, x).to_s.gsub(/<[^>]+>/, '').strip
               end
               memo
             end

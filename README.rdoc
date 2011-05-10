@@ -6,6 +6,13 @@ Open local or remote XLSX, XLS, ODS, CSV and fixed-width files.
 
 Used by http://data.brighterplanet.com and the data_miner gem (http://github.com/seamusabshere/data_miner)
 
+==Requirements
+
+* POSIX operating system (not windows)
+* curl, iconv, perl, cat, cut, tail, etc. accessible from /usr/local/bin:/usr/bin:/bin
+
+As this library matures, those should go away.
+
 ==Example
 
     ?> t = RemoteTable.new 'http://www.fueleconomy.gov/FEG/epadata/98guide6.zip', 'filename' => '98guide6.csv'

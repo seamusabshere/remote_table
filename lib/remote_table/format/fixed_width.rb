@@ -5,15 +5,16 @@ class RemoteTable
     class FixedWidth < Format
       include Textual
       def each(&blk)
-        fix_newlines!
         remove_useless_characters!
+        fix_newlines!
+        transliterate_whole_file_to_utf8!
         crop_rows!
         skip_rows!
         cut_columns!
         parser.parse[:rows].each do |row|
           row.reject! { |k, v| k.blank? }
           row.each do |k, v|
-            row[k] = recode_as_utf8 v.strip
+            row[k] = v.strip
           end
           yield row if t.properties.keep_blank_rows or row.any? { |k, v| v.present? }
         end
@@ -24,10 +25,11 @@ class RemoteTable
       private
       
       def parser
+        return @parser if @parser.is_a?(::FixedWidth::Parser)
         if ::FixedWidth::Section.private_instance_methods.map(&:to_sym).include?(:unpacker)
           raise "[remote_table] You need a different (newer) version of the FixedWidth gem that supports multibyte encoding, sometime after https://github.com/timonk/fixed_width/pull/1 was incorporated"
         end
-        @parser ||= ::FixedWidth::Parser.new definition, t.local_file.io
+        @parser = ::FixedWidth::Parser.new definition, t.local_file.encoded_io
       end
       
       def definition

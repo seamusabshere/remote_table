@@ -18,18 +18,19 @@ class RemoteTable
       def each(&blk)
         remove_useless_characters!
         fix_newlines!
+        transliterate_whole_file_to_utf8!
         skip_rows!
-        CSV.foreach(t.local_file.path, fastercsv_options) do |row|
+        CSV.new(t.local_file.encoded_io, fastercsv_options).each do |row|
           if row.is_a?(CSV::Row)
             hash = row.inject(::ActiveSupport::OrderedHash.new) do |memo, (k, v)|
               if k.present?
-                memo[k] = recode_as_utf8 v.to_s
+                memo[k] = v.to_s
               end
               memo
             end
             yield hash if t.properties.keep_blank_rows or hash.any? { |k, v| v.present? }
           elsif row.is_a?(::Array)
-            array = row.map { |v| recode_as_utf8 v.to_s }
+            array = row.map { |v| v.to_s }
             yield array if t.properties.keep_blank_rows or array.any? { |v| v.present? }
           end
         end
@@ -40,7 +41,6 @@ class RemoteTable
       private
 
       FASTERCSV_OPTIONS = %w{
-        encoding
         unconverted_fields
         col_sep
         headers

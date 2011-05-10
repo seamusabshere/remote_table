@@ -3,8 +3,15 @@ class RemoteTable
   # Represents the properties of a RemoteTable, whether they are explicitly set by the user or inferred automatically.
   class Properties
     attr_reader :t
+    attr_reader :current_options
+    
     def initialize(t)
       @t = t
+      @current_options = t.options.dup
+    end
+    
+    def update(options)
+      current_options.update options
     end
     
     # The parsed URI of the file to get.
@@ -22,19 +29,19 @@ class RemoteTable
     # * call each
     # Defaults to false.
     def streaming
-      t.options['streaming'] || false
+      current_options['streaming'] || false
     end
 
     # Defaults to true.
     def warn_on_multiple_downloads
-      t.options['warn_on_multiple_downloads'] != false
+      current_options['warn_on_multiple_downloads'] != false
     end
     
     # The headers specified by the user
     #
     # Default: :first_row
     def headers
-      t.options['headers'].nil? ? :first_row : t.options['headers']
+      current_options['headers'].nil? ? :first_row : current_options['headers']
     end
     
     def use_first_row_as_header?
@@ -49,60 +56,65 @@ class RemoteTable
     #
     # Default: 0
     def sheet
-      t.options['sheet'] || 0
+      current_options['sheet'] || 0
     end
     
     # Whether to keep blank rows
     #
     # Default: false
     def keep_blank_rows
-      t.options['keep_blank_rows'] || false
+      current_options['keep_blank_rows'] || false
     end
     
     # Form data to send in with the download request
     def form_data
-      t.options['form_data']
+      current_options['form_data']
     end
     
     # How many rows to skip
     #
     # Default: 0
     def skip
-      t.options['skip'].to_i
+      current_options['skip'].to_i
     end
     
-    # Likely external encoding
-    #
-    # Default: "UTF-8"
-    def encoding
-      @encoding ||= ::Array.wrap(t.options['encoding'] || [ 'ISO-8859-1', 'US-ASCII', 'WINDOWS-1252', 'ASCII-8BIT', 'UTF-8' ])
+    def internal_encoding
+      (current_options['encoding'] || 'UTF-8').upcase
+    end
+    
+    def external_encoding
+      'UTF-8'
+    end
+    
+    def external_encoding_iconv
+      'UTF-8//TRANSLIT'
     end
     
     # The delimiter
     #
     # Default: ","
     def delimiter
-      t.options['delimiter'] || ','
+      current_options['delimiter'] || ','
     end
     
     # The XPath used to find rows
     def row_xpath
-      t.options['row_xpath']
+      current_options['row_xpath']
     end
     
     # The XPath used to find columns
     def column_xpath
-      t.options['column_xpath']
+      current_options['column_xpath']
     end
 
     # The CSS selector used to find rows
     def row_css
-      t.options['row_css']
+      current_options['row_css']
     end
     
     # The CSS selector used to find columns
     def column_css
-      t.options['column_css']
+      current_options['column_css']
     end
     
     # The compression type.
@@ -111,8 +123,8 @@ class RemoteTable
     #
     # Can be specified as: "gz", "zip", "bz2", "exe" (treated as "zip")
     def compression
-      clue = if t.options['compression']
-        t.options['compression'].to_s
+      clue = if current_options['compression']
+        current_options['compression'].to_s
       else
         ::File.extname uri.path
       end
@@ -134,8 +146,8 @@ class RemoteTable
     #
     # Can be specified as: "tar"
     def packing
-      clue = if t.options['packing']
-        t.options['packing'].to_s
+      clue = if current_options['packing']
+        current_options['packing'].to_s
       else
         ::File.extname(uri.path.sub(/\.#{compression}\z/, ''))
       end
@@ -150,7 +162,7 @@ class RemoteTable
     # Example:
     #     RemoteTable.new 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', 'glob' => '/*.csv'
     def glob
-      t.options['glob']
+      current_options['glob']
     end
     
     # The filename, which can be used to pick a file out of an archive.
@@ -158,17 +170,17 @@ class RemoteTable
     # Example:
     #     RemoteTable.new 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', 'filename' => '2008_FE_guide_ALL_rel_dates_-no sales-for DOE-5-1-08.csv'
     def filename
-      t.options['filename']
+      current_options['filename']
     end
     
     # Cut columns up to this character
     def cut
-      t.options['cut']
+      current_options['cut']
     end
     
     # Crop rows after this line
     def crop
-      t.options['crop']
+      current_options['crop']
     end
     
     # The fixed-width schema, given as an array
@@ -183,31 +195,31 @@ class RemoteTable
     #                                  [  'spacer',  12 ],
     #                                  [  'header6', 10, { :type => :string } ]])
     def schema
-      t.options['schema']
+      current_options['schema']
     end
     
     # The name of the fixed-width schema according to FixedWidth
     def schema_name
-      t.options['schema_name']
+      current_options['schema_name']
     end
     
     # A proc to call to decide whether to return a row.
     def select
-      t.options['select']
+      current_options['select']
     end
     
     # A proc to call to decide whether to return a row.
     def reject
-      t.options['reject']
+      current_options['reject']
     end
     
     # A hash of options to create a new Errata instance (see the Errata gem at http://github.com/seamusabshere/errata) to be used on every row.
     def errata
-      return unless t.options.has_key? 'errata'
-      @errata ||= if t.options['errata'].is_a? ::Hash
-        ::Errata.new t.options['errata']
+      return unless current_options.has_key? 'errata'
+      @errata ||= if current_options['errata'].is_a? ::Hash
+        ::Errata.new current_options['errata']
       else
-        t.options['errata']
+        current_options['errata']
       end
     end
     
@@ -220,8 +232,8 @@ class RemoteTable
     # Can be specified as: "xlsx", "xls", "csv", "ods", "fixed_width", "html"
     def format
       return Format::Delimited if uri.host == 'spreadsheets.google.com'
-      clue = if t.options['format']
-        t.options['format'].to_s
+      clue = if current_options['format']
+        current_options['format'].to_s
       else
         ::File.extname t.local_file.path
       end

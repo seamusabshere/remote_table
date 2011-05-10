@@ -24,17 +24,24 @@ class RemoteTable
       @t = t
     end
     
-    def recode_as_utf8(raw_str)
-      if ::RUBY_VERSION >= '1.9'
-        $stderr.puts "[remote_table] Raw - #{raw_str}" if ::ENV['REMOTE_TABLE_DEBUG'] == 'true'
-        recoded_str = raw_str.ensure_encoding 'UTF-8', :external_encoding => t.properties.encoding, :invalid_characters => :transcode
-        $stderr.puts "[remote_table] Recoded - #{recoded_str}" if ::ENV['REMOTE_TABLE_DEBUG'] == 'true'
-        recoded_str
+    def transliterate_to_utf8(str)
+      return if str.nil?
+      $stderr.puts "[remote_table translit] Before:  #{str}" if ::ENV['REMOTE_TABLE_DEBUG'] and ::ENV['REMOTE_TABLE_DEBUG'].include?('translit')
+      transliterated_str = if ::RUBY_VERSION >= '1.9'
+        str.ensure_encoding t.properties.external_encoding, :external_encoding => t.properties.internal_encoding, :invalid_characters => :transcode
       else
-        $stderr.puts "[remote_table] Raw - #{raw_str}" if ::ENV['REMOTE_TABLE_DEBUG'] == 'true'
-        recoded_str = ::Iconv.conv('UTF-8//TRANSLIT', t.properties.encoding[0], raw_str.to_s + ' ')[0..-2]
-        $stderr.puts "[remote_table] Recoded - #{recoded_str}" if ::ENV['REMOTE_TABLE_DEBUG'] == 'true'
-        recoded_str
+        ::Iconv.conv(t.properties.external_encoding_iconv, t.properties.internal_encoding, str.to_s + ' ')[0..-2]
+      end
+      $stderr.puts "[remote_table translit] After:   #{transliterated_str}" if ::ENV['REMOTE_TABLE_DEBUG'] and ::ENV['REMOTE_TABLE_DEBUG'].include?('translit')
+      transliterated_str
+    end
+
+    def assume_utf8(str)
+      return if str.nil?
+      if ::RUBY_VERSION >= '1.9'
+        str.encode! t.properties.external_encoding
+      else
+        str
       end
     end
     

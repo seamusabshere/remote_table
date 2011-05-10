@@ -15,21 +15,20 @@ class RemoteTable
       @path
     end
     
-    def io
-      @io ||= if ::RUBY_VERSION >= '1.9'
-        ::File.open path, 'r', :external_encoding => t.properties.encoding[0]
+    def encoded_io
+      @encoded_io ||= if ::RUBY_VERSION >= '1.9'
+        ::File.open path, 'rb', :internal_encoding => t.properties.internal_encoding, :external_encoding => t.properties.external_encoding
       else
-        ::File.open path, 'r'
+        ::File.open path, 'rb'
       end
     end
     
-    def io_open?
-      defined? @io and @io.is_a?(::IO) and !@io.closed?
-    end
-    
     def delete
-      @io.close if io_open?
+      if @encoded_io.respond_to?(:closed?) and !@encoded_io.closed?
+        @encoded_io.close
+      end
       ::FileUtils.rm_rf staging_dir_path
+      @encoded_io = nil
       @path = nil
       @staging_dir_path = nil
     end

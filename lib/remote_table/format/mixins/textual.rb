@@ -9,10 +9,15 @@ class RemoteTable
       ]
       def remove_useless_characters!
         ::RemoteTable.executor.bang t.local_file.path, "perl -pe 's/#{USELESS_CHARACTERS.join '//g; s/'}//g'"
-        if t.properties.encoding[0] =~ /windows.?1252/i
+        if t.properties.internal_encoding =~ /windows.?1252/i
           # soft hyphen again, as I have seen it appear in windows 1252
           ::RemoteTable.executor.bang t.local_file.path, %q{perl -pe 's/\xad//g'}
         end
+      end
+      
+      def transliterate_whole_file_to_utf8!
+        ::RemoteTable.executor.bang t.local_file.path, "iconv -c -f #{::Escape.shell_single_word t.properties.internal_encoding} -t #{::Escape.shell_single_word t.properties.external_encoding_iconv}"
+        t.properties.update 'encoding' => t.properties.external_encoding
       end
       
       def fix_newlines!

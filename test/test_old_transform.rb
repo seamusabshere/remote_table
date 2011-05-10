@@ -1,36 +1,31 @@
 require 'helper'
 
-class FuelOilParser
+class NaturalGasParser
   def initialize(options = {})
     # nothing
   end
-  def add_hints!(bus)
-    bus[:sheet] = 'Data 1'
-    bus[:skip] = 2
-    bus[:select] = lambda { |row| row['year'] > 1989 }
-  end
   def apply(row)
     virtual_rows = []
-    row.keys.grep(/(.+) Residual Fuel Oil/) do |location_column_name|
-      first_part = $1
-      next if (cost = row[location_column_name]).blank? or (date = row['Date']).blank?
-      if first_part.start_with?('U.S.')
-        locatable = "united_states (Country)"
-      elsif first_part.include?('PADD')
-        /\(PADD (.*)\)/.match(first_part)
-        padd_part = $1
-        next if padd_part == '1' # skip PADD 1 because we always prefer subdistricts
-        locatable = "#{padd_part} (PetroleumAdministrationForDefenseDistrict)"
+    row.keys.grep(/\A(.*) Natural Gas/) do |location_column_name|
+      match_1 = $1
+      next if (price = row[location_column_name]).blank? or (date = row['Date']).blank?
+      if match_1 == 'U.S.'
+        locatable_id = 'US'
+        locatable_type = 'Country'
       else
-        locatable = "#{first_part} (State)"
+        locatable_id = match_1 # name
+        locatable_type = 'State'
       end
       date = Time.parse(date)
-      virtual_rows << {
-        'locatable' => locatable,
-        'cost' => cost,
-        'year' => date.year,
-        'month' => date.month
-      }
+      new_row = ActiveSupport::OrderedHash.new
+      new_row['locatable_id'] = locatable_id
+      new_row['locatable_type'] = locatable_type
+      new_row['price'] = price
+      new_row['year'] = date.year
+      new_row['month'] = date.month
+      row_hash = RemoteTable::Transform.row_hash new_row
+      new_row['row_hash'] = row_hash
+      virtual_rows << new_row
     end
     virtual_rows
   end
@@ -38,12 +33,12 @@ end
 
 class TestOldTransform < Test::Unit::TestCase
   should "open an XLS with a parser" do
-    ma_1990_01 = {"month"=>1, "cost"=>"54.0", "locatable"=>"Massachusetts (State)", "year"=>1990}
-    ga_1990_01 = {"month"=>1, "cost"=>"50.7", "locatable"=>"Georgia (State)", "year"=>1990}
-
-    t = RemoteTable.new(:url => 'http://tonto.eia.doe.gov/dnav/pet/xls/PET_PRI_RESID_A_EPPR_PTA_CPGAL_M.xls',
-                        :transform => { :class => FuelOilParser })
-    assert t.rows.include?(ma_1990_01)
-    assert t.rows.include?(ga_1990_01)
+    t = RemoteTable.new(:url => 'http://tonto.eia.doe.gov/dnav/ng/xls/ng_pri_sum_a_EPG0_FWA_DMcf_a.xls',
+           :sheet => 'Data 1',
+           :skip => 2,
+           :select => lambda { |row| row['year'].to_i > 1989 },
+           :transform => { :class => NaturalGasParser })
+    assert_equal 'Country', t[0]['locatable_type']
+    assert_equal 'US', t[0]['locatable_id']
   end
 end

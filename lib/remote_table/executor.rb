@@ -16,6 +16,9 @@ class RemoteTable
 
     def backtick_with_reporting(cmd, raise_on_error = false)
       cmd = cmd.gsub /\n/m, ' '
+      if ::ENV['REMOTE_TABLE_DEBUG'] and ::ENV['REMOTE_TABLE_DEBUG'].include? 'backtick'
+        $stderr.puts "[remote_table] Executing #{cmd}"
+      end
       pid = ::POSIX::Spawn.spawn({ 'PATH' => '/usr/local/bin:/usr/bin:/bin' }, cmd)
       stat = ::Process::waitpid pid
       if raise_on_error and not stat.success?

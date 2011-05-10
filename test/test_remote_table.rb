@@ -68,7 +68,7 @@ class TestRemoteTable < Test::Unit::TestCase
   end
   
   should %{transliterate characters from ISO-8859-1} do
-    t = RemoteTable.new :url => 'http://static.brighterplanet.com/science/data/consumables/pets/breed_genders.csv'
+    t = RemoteTable.new :url => 'http://static.brighterplanet.com/science/data/consumables/pets/breed_genders.csv', :encoding => 'ISO-8859-1'
     assert t.rows.detect { |row| row['name'] == 'Briquet Griffon Vendéen' }
   end
   
@@ -88,24 +88,30 @@ class TestRemoteTable < Test::Unit::TestCase
   
   {
   # IMPOSSIBLE "../support/list-en1-semic-3.office-2011-for-mac-sp1-excel-95.binary.xls" => {:format=>"xls",         :encoding=>"binary"},
-  "../support/list-en1-semic-3.office-2011-for-mac-sp1.binary.xlsx"         => {:format=>"xlsx",        :encoding=>"binary"},
-  "../support/list-en1-semic-3.office-2011-for-mac-sp1.binary.xls"          => {:format=>"xls",         :encoding=>"binary"},
-  "../support/list-en1-semic-3.neooffice.binary.ods"                        => {:format=>"ods",         :encoding=>"binary"},
+  "../support/list-en1-semic-3.office-2011-for-mac-sp1.binary.xlsx"         => {:format=>"xlsx"},
+  "../support/list-en1-semic-3.office-2011-for-mac-sp1.binary.xls"          => {:format=>"xls"},
+  "../support/list-en1-semic-3.neooffice.binary.ods"                        => {:format=>"ods"},
   "../support/list-en1-semic-3.neooffice.iso-8859-1.fixed_width-64"         => {:format=>"fixed_width", :encoding=>"iso-8859-1", :schema => [['name', 63, { :type => :string }], ['iso_3166', 2, { :type => :string }]]},
-  "../support/list-en1-semic-3.neooffice.utf-8.fixed_width-62"              => {:format=>"fixed_width", :encoding=>"utf-8", :schema => [['name', 61, { :type => :string }], ['iso_3166', 2, { :type => :string }]]},
-  # TODO "../support/list-en1-semic-3.office-2011-for-mac-sp1.utf-8.html"          => {:format=>"html",        :encoding=>"utf-8"},
-  # TODO "../support/list-en1-semic-3.office-2011-for-mac-sp1.iso-8859-1.html"     => {:format=>"html",        :encoding=>"iso-8859-1"},
-  # TODO "../support/list-en1-semic-3.neooffice.utf-8.html"                        => {:format=>"html",        :encoding=>"utf-8"},
-  "../support/list-en1-semic-3.neooffice.utf-8.xml"                         => {:format=>"xml",         :encoding=>"utf-8", :row_css => 'Row', :column_css => 'Data', :select => lambda { |row| row[1].to_s =~ /[A-Z]{2}/ }},
-  "../support/list-en1-semic-3.neooffice.iso-8859-1.csv"                    => {:format=>"csv",         :encoding=>"iso-8859-1", :delimiter => ';'},
-  "../support/list-en1-semic-3.original.iso-8859-1.csv"                     => {:format=>"csv",         :encoding=>"iso-8859-1", :delimiter => ';'},
-  "../support/list-en1-semic-3.office-2011-for-mac-sp1.mac.csv-comma"       => {:format=>"csv",         :encoding=>"MACROMAN"}, # comma because no option in excel
-  "../support/list-en1-semic-3.neooffice.utf-8.csv"                         => {:format=>"csv",         :encoding=>"utf-8", :delimiter => ';'}
+  "../support/list-en1-semic-3.neooffice.utf-8.fixed_width-62"              => {:format=>"fixed_width", :schema => [['name', 61, { :type => :string }], ['iso_3166', 2, { :type => :string }]]},
+  # TODO "../support/list-en1-semic-3.office-2011-for-mac-sp1.utf-8.html"          => {:format=>"html" },
+  # TODO "../support/list-en1-semic-3.office-2011-for-mac-sp1.iso-8859-1.html"     => {:format=>"html", :encoding=>"iso-8859-1"},
+  # TODO "../support/list-en1-semic-3.neooffice.utf-8.html"                        => {:format=>"html" },
+  "../support/list-en1-semic-3.neooffice.utf-8.xml"                         => {:format=>"xml", :row_css=>'Row', :column_css => 'Data', :select => lambda { |row| row[1].to_s =~ /[A-Z]{2}/ }},
+  "../support/list-en1-semic-3.neooffice.iso-8859-1.csv"                    => {:format=>"csv", :encoding=>"iso-8859-1", :delimiter => ';'},
+  "../support/list-en1-semic-3.original.iso-8859-1.csv"                     => {:format=>"csv", :encoding=>"iso-8859-1", :delimiter => ';'},
+  "../support/list-en1-semic-3.office-2011-for-mac-sp1.mac.csv-comma"       => {:format=>"csv", :encoding=>"MACROMAN"}, # comma because no option in excel
+  "../support/list-en1-semic-3.neooffice.utf-8.csv"                         => {:format=>"csv", :delimiter => ';'}
   }.each do |k, v|
-    should %{open #{v[:format]} encoded #{v[:encoding]} created by #{File.basename(k).split('.')[1]}} do
+    should %{open #{k} with encoding #{v[:encoding] || 'default'}} do
       options = v.merge(:headers => false, :skip => 2)
       t = RemoteTable.new "file://#{File.expand_path(k, __FILE__)}", options
-      assert_equal %{ÅLAND ISLANDS}, (t[1].is_a?(::Array) ? t[1][0] : t[1]['name'])
+      a = %{ÅLAND ISLANDS}
+      b = (t[1].is_a?(::Array) ? t[1][0] : t[1]['name'])
+      if RUBY_VERSION >= '1.9'
+        assert_equal 'UTF-8', a.encoding.to_s
+        assert_equal 'UTF-8', b.encoding.to_s
+      end
+      assert_equal a, b
     end
   end
   
