@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   
   s.add_dependency 'activesupport', '>=2.3.4'
   s.add_dependency 'roo', '~>1.9'
-  s.add_dependency 'fixed_width'
+  s.add_dependency 'fixed_width-multibyte' # TODO replace with fixed_width once timon gets off vacation
   s.add_dependency 'i18n' # activesupport?
   s.add_dependency 'builder' # roo?
   s.add_dependency 'zip' # roo
