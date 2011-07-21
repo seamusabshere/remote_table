@@ -58,6 +58,9 @@ class RemoteTable
         ::FileUtils.cp t.properties.uri.path, @path
       else
         # sabshere 1/20/11 FIXME: ::RemoteTable.config.curl_bin_path or smth
+        # sabshere 7/20/11 make web requests move more slowly so you don't get accused of DOS
+        sleep 1
+        $stderr.puts "[remote_table] Downloading #{t.properties.uri.to_s}"
         ::RemoteTable.executor.backtick_with_reporting %{
           curl
           --silent
