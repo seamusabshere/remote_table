@@ -59,7 +59,7 @@ class RemoteTable
       else
         # sabshere 1/20/11 FIXME: ::RemoteTable.config.curl_bin_path or smth
         # sabshere 7/20/11 make web requests move more slowly so you don't get accused of DOS
-        sleep 1
+        sleep t.properties.delay_between_requests if t.properties.delay_between_requests
         $stderr.puts "[remote_table] Downloading #{t.properties.uri.to_s}"
         ::RemoteTable.executor.backtick_with_reporting %{
           curl

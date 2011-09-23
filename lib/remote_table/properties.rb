@@ -14,6 +14,10 @@ class RemoteTable
       current_options.update options
     end
     
+    def delay_between_requests
+      current_options['delay_between_requests']
+    end
+    
     # The parsed URI of the file to get.
     def uri
       return @uri if @uri.is_a?(::URI)
