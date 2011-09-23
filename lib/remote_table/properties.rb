@@ -15,7 +15,7 @@ class RemoteTable
     end
     
     def delay_between_requests
-      current_options['delay_between_requests']
+      current_options['delay_between_requests'] || ::ENV['REMOTE_TABLE_DELAY_BETWEEN_REQUESTS']
     end
     
     # The parsed URI of the file to get.
