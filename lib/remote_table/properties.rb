@@ -15,7 +15,7 @@ class RemoteTable
     end
     
     def delay_between_requests
-      current_options['delay_between_requests'] || ::ENV['REMOTE_TABLE_DELAY_BETWEEN_REQUESTS']
+      current_options['delay_between_requests'] || (::ENV.has_key?('REMOTE_TABLE_DELAY_BETWEEN_REQUESTS') ? ::ENV['REMOTE_TABLE_DELAY_BETWEEN_REQUESTS'].to_i : nil)
     end
     
     # The parsed URI of the file to get.
