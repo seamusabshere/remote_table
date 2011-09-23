@@ -13,6 +13,7 @@ require 'active_support/version'
 }.each do |active_support_3_requirement|
   require active_support_3_requirement
 end if ::ActiveSupport::VERSION::MAJOR == 3
+require 'hash_digest'
 
 class Hash
   attr_accessor :row_hash
@@ -30,12 +31,11 @@ class RemoteTable
 
   # singletons
   autoload :Executor, 'remote_table/executor'
-  autoload :Hasher, 'remote_table/hasher'
   
   # Legacy
   class Transform
     def self.row_hash(row)
-      ::RemoteTable.hasher.hash row
+      ::HashDigest.hexdigest row
     end
   end
 
@@ -73,7 +73,7 @@ class RemoteTable
     else
       mark_download!
       retval = format.each do |row|
-        row.row_hash = ::RemoteTable.hasher.hash row
+        row.row_hash = ::HashDigest.hexdigest row
         transformer.transform(row).each do |virtual_row|
           if properties.errata
             next if properties.errata.rejects? virtual_row
@@ -119,11 +119,6 @@ class RemoteTable
   # Used internally to execute stuff in shells.
   def self.executor
     Executor.instance
-  end
-  
-  # Used internally to create unique hashes of rows.
-  def self.hasher
-    Hasher.instance
   end
   
   # Used internally to access to a downloaded copy of the file
