@@ -37,8 +37,7 @@ class RemoteTable
     end
 
     def assume_utf8(str)
-      return if str.nil?
-      if ::RUBY_VERSION >= '1.9'
+      if str.is_a?(::String) and ::RUBY_VERSION >= '1.9'
         str.encode! t.properties.external_encoding
       else
         str
