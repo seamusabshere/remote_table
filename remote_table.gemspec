@@ -20,14 +20,9 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_runtime_dependency 'activesupport', '>=2.3.4'
-  s.add_runtime_dependency 'roo', '~>1.9'
+  s.add_runtime_dependency 'roo', '>=1.9'
   s.add_runtime_dependency 'fixed_width-multibyte' # TODO replace with fixed_width once timon gets off vacation
   s.add_runtime_dependency 'i18n' # activesupport?
-  s.add_runtime_dependency 'builder' # roo?
-  s.add_runtime_dependency 'zip' # roo
-  s.add_runtime_dependency 'nokogiri', '>=1.4.1' # roo
-  s.add_runtime_dependency 'spreadsheet' #roo
-  s.add_runtime_dependency 'google-spreadsheet-ruby' #roo
   s.add_runtime_dependency 'escape', '>=0.0.4'
   s.add_runtime_dependency 'posix-spawn'
   s.add_runtime_dependency 'ensure-encoding'
