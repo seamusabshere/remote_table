@@ -111,7 +111,6 @@ class RemoteTable
   # clear the row cache to save memory
   def free
     cache.clear
-    ::GC.start
     nil
   end
   
