@@ -40,5 +40,6 @@ class TestOldTransform < Test::Unit::TestCase
            :transform => { :class => NaturalGasParser })
     assert_equal 'Country', t[0]['locatable_type']
     assert_equal 'US', t[0]['locatable_id']
+    assert(t[0].row_hash.present?)
   end
 end

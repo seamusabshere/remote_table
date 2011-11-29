@@ -73,8 +73,8 @@ class RemoteTable
     else
       mark_download!
       retval = format.each do |row|
-        row.row_hash = ::HashDigest.hexdigest row
         transformer.transform(row).each do |virtual_row|
+          virtual_row.row_hash = ::HashDigest.hexdigest row
           if properties.errata
             next if properties.errata.rejects? virtual_row
             properties.errata.correct! virtual_row
