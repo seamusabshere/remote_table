@@ -15,7 +15,7 @@ As this library matures, those should go away.
 
 ==Example
 
-    ?> t = RemoteTable.new 'http://www.fueleconomy.gov/FEG/epadata/98guide6.zip', 'filename' => '98guide6.csv'
+    ?> t = RemoteTable.new 'http://www.fueleconomy.gov/FEG/epadata/98guide6.zip', :filename => '98guide6.csv'
     => #<RemoteTable:0x359da50 [...]>
     ?> t[0]
     => {"cyl"=>"6", "eng dscr"=>"DOHC VTEC", "trans dscr"=>"2MODE CLKUP", "trans"=>"Auto(L4)", "cmb"=>"20", "2pv"=>nil, "carline name"=>"NSX", "displ"=>"3.0", "ucmb"=>"23.5311", "hpv"=>nil, "4pv"=>nil, "Class"=>"TWO SEATERS", "Manufacturer"=>"ACURA", "fl"=>"P", "2lv"=>nil, "G"=>nil, "hlv"=>nil, "drv"=>"R", "cty"=>"18", "ucty"=>"19.8733", "S"=>nil, "4lv"=>nil, "fcost"=>"1050", "T"=>nil, "hwy"=>"24", "uhwy"=>"30.3612"}

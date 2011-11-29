@@ -14,10 +14,9 @@ class RemoteTable
     end
     def legacy_transformer
       return @legacy_transformer if @legacy_transformer
-      return unless t.options['transform']
-      transform_options = t.options['transform'].dup
-      transform_options.stringify_keys!
-      @legacy_transformer = transform_options['class'].new transform_options.except('class')
+      return unless t.options[:transform]
+      transform_options = t.options[:transform].symbolize_keys
+      @legacy_transformer = transform_options[:class].new transform_options.except(:class)
     end
   end
 end

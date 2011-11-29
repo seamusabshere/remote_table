@@ -49,18 +49,17 @@ class RemoteTable
   #     RemoteTable.new(url, options = {})
   #
   # New syntax:
-  #     RemoteTable.new('www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', 'foo' => 'bar')
+  #     RemoteTable.new('www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :foo => 'bar')
   # Old syntax:
   #     RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :foo => 'bar')
   #
   # See the <tt>Properties</tt> object for the sorts of options you can pass.
   def initialize(*args)
-    @options = args.last.is_a?(::Hash) ? args.last.dup : {}
-    @options.stringify_keys!
+    @options = args.last.is_a?(::Hash) ? args.last.symbolize_keys : {}
     @url = if args.first.is_a? ::String
       args.first.dup
     else
-      @options['url'].dup
+      @options[:url].dup
     end
     @url.freeze
     @options.freeze

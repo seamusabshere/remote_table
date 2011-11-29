@@ -42,6 +42,7 @@ class RemoteTable
             d.rows do |row|
               row.trap(&everything)
               t.properties.schema.each do |name, width, options|
+                name = name.to_s
                 if name == 'spacer'
                   row.spacer width
                 else

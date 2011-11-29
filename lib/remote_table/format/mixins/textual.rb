@@ -17,7 +17,7 @@ class RemoteTable
       
       def transliterate_whole_file_to_utf8!
         ::RemoteTable.executor.bang t.local_file.path, "iconv -c -f #{::Escape.shell_single_word t.properties.internal_encoding} -t #{::Escape.shell_single_word t.properties.external_encoding_iconv}"
-        t.properties.update 'encoding' => t.properties.external_encoding
+        t.properties.update :encoding => t.properties.external_encoding
       end
       
       def fix_newlines!

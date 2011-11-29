@@ -80,14 +80,14 @@ class RemoteTable
       new_path = @path.chomp ".#{t.properties.compression}"
       raise_on_error = true
       cmd = case t.properties.compression
-      when 'zip', 'exe'
+      when :zip, :exe
         # can't set path yet because there may be multiple files
         raise_on_error = false
         "unzip -qq -n #{::Escape.shell_single_word @path} -d #{::File.dirname(@path)}"
-      when 'bz2'
+      when :bz2
         @path = new_path
         "bunzip2 --stdout #{::Escape.shell_single_word @path} > #{::Escape.shell_single_word new_path}"
-      when 'gz'
+      when :gz
         @path = new_path
         "gunzip --stdout #{::Escape.shell_single_word @path} > #{::Escape.shell_single_word new_path}"
       end
@@ -97,7 +97,7 @@ class RemoteTable
     def unpack
       return unless t.properties.packing
       cmd = case t.properties.packing
-      when 'tar'
+      when :tar
         "tar -xf #{::Escape.shell_single_word @path} -C #{::File.dirname(@path)}"
       end
       ::RemoteTable.executor.backtick_with_reporting cmd
