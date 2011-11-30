@@ -19,7 +19,7 @@ class RemoteTable
           yield row if t.properties.keep_blank_rows or row.any? { |k, v| v.present? }
         end
       ensure
-        t.local_file.delete
+        t.local_file.cleanup
       end
       
       private

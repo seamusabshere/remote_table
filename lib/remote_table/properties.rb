@@ -13,16 +13,12 @@ class RemoteTable
     def update(options)
       current_options.update options
     end
-    
-    def delay_between_requests
-      current_options[:delay_between_requests] || (::ENV.has_key?('REMOTE_TABLE_DELAY_BETWEEN_REQUESTS') ? ::ENV['REMOTE_TABLE_DELAY_BETWEEN_REQUESTS'].to_i : nil)
-    end
-    
+        
     # The parsed URI of the file to get.
     def uri
       return @uri if @uri.is_a?(::URI)
       @uri = ::URI.parse t.url
-      if @uri.host == 'spreadsheets.google.com'
+      if @uri.host == 'spreadsheets.google.com' or @uri.host == 'docs.google.com'
         @uri.query = 'output=csv&' + @uri.query.sub(/\&?output=.*?(\&|\z)/, '\1')
       end
       @uri
@@ -79,7 +75,7 @@ class RemoteTable
     #
     # Default: 0
     def skip
-      current_options[:skip].to_i
+      current_options[:skip] || 0
     end
     
     def internal_encoding
@@ -127,12 +123,10 @@ class RemoteTable
     #
     # Can be specified as: :gz, :zip, :bz2, :exe (treated as :zip)
     def compression
-      clue = if current_options[:compression]
-        current_options[:compression]
-      else
-        ::File.extname uri.path
+      if current_options.has_key?(:compression)
+        return current_options[:compression]
       end
-      case clue.to_s.downcase
+      case ::File.extname(uri.path).downcase
       when /gz/, /gunzip/
         :gz
       when /zip/
@@ -150,13 +144,10 @@ class RemoteTable
     #
     # Can be specified as: :tar
     def packing
-      clue = if current_options[:packing]
-        current_options[:packing]
-      else
-        ::File.extname(uri.path.sub(/\.#{compression}\z/, ''))
+      if current_options.has_key?(:packing)
+        return current_options[:packing]
       end
-      case clue.to_s.downcase
-      when /tar/
+      if uri.path =~ %r{\.tar(?:\.|$)}i
         :tar
       end
     end
@@ -235,11 +226,11 @@ class RemoteTable
     #
     # Can be specified as: :xlsx, :xls, :delimited (aka :csv and :tsv), :ods, :fixed_width, :html
     def format
-      return Format::Delimited if uri.host == 'spreadsheets.google.com'
-      clue = if current_options[:format]
+      return Format::Delimited if uri.host == 'spreadsheets.google.com' or @uri.host == 'docs.google.com'
+      clue = if current_options.has_key?(:format)
         current_options[:format]
       else
-        ::File.extname t.local_file.path
+        t.local_file.path
       end
       case clue.to_s.downcase
       when /xlsx/, /excelx/

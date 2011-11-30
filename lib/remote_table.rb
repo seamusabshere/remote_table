@@ -28,9 +28,7 @@ class RemoteTable
   autoload :Properties, 'remote_table/properties'
   autoload :LocalFile, 'remote_table/local_file'
   autoload :Transformer, 'remote_table/transformer'
-
-  # singletons
-  autoload :Executor, 'remote_table/executor'
+  autoload :Utils, 'remote_table/utils'
   
   # Legacy
   class Transform
@@ -112,11 +110,6 @@ class RemoteTable
   def free
     cache.clear
     nil
-  end
-  
-  # Used internally to execute stuff in shells.
-  def self.executor
-    Executor.instance
   end
   
   # Used internally to access to a downloaded copy of the file

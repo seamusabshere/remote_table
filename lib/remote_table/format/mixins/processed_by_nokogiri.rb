@@ -33,7 +33,7 @@ class RemoteTable
           end
         end
       ensure
-        t.local_file.delete
+        t.local_file.cleanup
       end
 
       private
