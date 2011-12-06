@@ -27,7 +27,9 @@ class RemoteTable
         @encoded_io.close
       end
       @encoded_io = nil
-      ::FileUtils.rm_f @path
+      if @path and ::File.exist?(@path)
+        ::FileUtils.rm_f @path
+      end
       @path = nil
       @generated = nil
     end
