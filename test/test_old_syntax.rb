@@ -114,27 +114,25 @@ class TestOldSyntax < Test::Unit::TestCase
   end
   
   %w{ csv ods xls }.each do |format|
-    eval %{
-      should "read #{format}" do
-        t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.#{format}')
-        # no blank headers
-        assert t.rows.all? { |row| row.keys.all?(&:present?) }
-        # correct values
-        t.rows.each_with_index do |row, index|
-          assert_equal row.except('row_hash'), $test2_rows[index]
-        end
+    should "read #{format}" do
+      t = RemoteTable.new(:url => "http://cloud.github.com/downloads/seamusabshere/remote_table/test2.#{format}")
+      # no blank headers
+      assert t.rows.all? { |row| row.keys.all?(&:present?) }
+      # correct values
+      t.rows.each_with_index do |row, index|
+        assert_equal $test2_rows[index], row.except('row_hash')
       end
-    
-      should "read #{format}, keeping blank rows" do
-        t = RemoteTable.new(:url => 'http://cloud.github.com/downloads/seamusabshere/remote_table/test2.#{format}', :keep_blank_rows => true)
-        # no blank headers
-        assert t.rows.all? { |row| row.keys.all?(&:present?) }
-        # correct values
-        t.rows.each_with_index do |row, index|
-          assert_equal row.except('row_hash'), $test2_rows_with_blanks[index]
-        end
+    end
+  
+    should "read #{format}, keeping blank rows" do
+      t = RemoteTable.new(:url => "http://cloud.github.com/downloads/seamusabshere/remote_table/test2.#{format}", :keep_blank_rows => true)
+      # no blank headers
+      assert t.rows.all? { |row| row.keys.all?(&:present?) }
+      # correct values
+      t.rows.each_with_index do |row, index|
+        assert_equal $test2_rows_with_blanks[index], row.except('row_hash')
       end
-    }
+    end
   end
   
   should "read fixed width correctly" do
