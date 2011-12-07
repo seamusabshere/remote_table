@@ -7,8 +7,9 @@ class RemoteTable
         raise "[remote_table] Need :row_css or :row_xpath in order to process XML or HTML" unless t.properties.row_css or t.properties.row_xpath
         remove_useless_characters!
         transliterate_whole_file_to_utf8!
-        first_row = true
-        keys = t.properties.headers if t.properties.headers.is_a?(::Array)
+        
+        headers = t.properties.headers
+
         xml = nokogiri_class.parse(unescaped_xml_without_soft_hyphens, nil, 'UTF-8')
         (row_css? ? xml.css(t.properties.row_css) : xml.xpath(t.properties.row_xpath)).each do |row|
           values = if column_css?
@@ -18,15 +19,14 @@ class RemoteTable
           else
             [row]
           end.map { |cell| assume_utf8 cell.content.gsub(/\s+/, ' ').strip }
-          if first_row and t.properties.use_first_row_as_header?
-            keys = values
-            first_row = false
+          if headers == :first_row
+            headers = values.select(&:present?)
             next
           end
           output = if t.properties.output_class == ::Array
             values
           else
-            zip keys, values
+            zip headers, values
           end
           if t.properties.keep_blank_rows or values.any?
             yield output

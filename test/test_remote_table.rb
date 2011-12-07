@@ -124,4 +124,15 @@ class TestRemoteTable < Test::Unit::TestCase
     t = RemoteTable.new 'https://openflights.svn.sourceforge.net/svnroot/openflights/openflights/data/airports.dat', :headers => false#, :encoding => 'UTF-8'
     assert_equal 'Goroka', t[0][1]
   end
+  
+  should "read only certain rows of an XLSX" do
+    t = RemoteTable.new 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :crop => 11..16, :headers => false
+    assert_equal "Permissioning and access groups for all content", t[0][0]
+    assert_equal "Manage Multiple Incentive Programs for Participants", t[4][0]
+    
+    t = RemoteTable.new 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :crop => 11..16, :headers => %w{ col1 }
+    assert_equal "Permissioning and access groups for all content", t[0]['col1']
+    assert_equal "Manage Multiple Incentive Programs for Participants", t[4]['col1']
+  end
+
 end
