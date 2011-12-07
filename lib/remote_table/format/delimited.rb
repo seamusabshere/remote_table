@@ -1,10 +1,10 @@
 if RUBY_VERSION >= '1.9'
   require 'csv'
-  ::RemoteTable::CSV = ::CSV
+  ::RemoteTable::MyCSV = ::CSV
 else
   begin
     require 'fastercsv'
-    ::RemoteTable::CSV = ::FasterCSV
+    ::RemoteTable::MyCSV = ::FasterCSV
   rescue ::LoadError
     $stderr.puts "[remote_table] You probably need to manually install the fastercsv gem and/or require it in your Gemfile."
     raise $!
@@ -20,8 +20,8 @@ class RemoteTable
         fix_newlines!
         transliterate_whole_file_to_utf8!
         skip_rows!
-        CSV.new(t.local_file.encoded_io, fastercsv_options).each do |row|
-          if row.is_a?(CSV::Row)
+        MyCSV.new(t.local_file.encoded_io, fastercsv_options).each do |row|
+          if row.is_a?(MyCSV::Row)
             hash = row.inject(::ActiveSupport::OrderedHash.new) do |memo, (k, v)|
               if k.present?
                 memo[k] = v.to_s
