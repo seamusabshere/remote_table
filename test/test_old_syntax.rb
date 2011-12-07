@@ -16,12 +16,14 @@ $test2_rows.freeze
 class TestOldSyntax < Test::Unit::TestCase
   should "open an XLSX like an array (numbered columns)" do
     t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :headers => false)
+    assert_equal "Requirements", t.rows[0][0]
     assert_equal "Software-As-A-Service", t.rows[5][0]
   end
 
   should "open an XLSX with custom headers" do
     t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :headers => %w{foo bar baz})
-    assert_equal "Secure encryption of all data", t.rows[5]['foo']
+    assert_equal "Requirements", t.rows[0]['foo']
+    assert_equal "Software-As-A-Service", t.rows[5]['foo']
   end
 
   should "open an XLSX" do
