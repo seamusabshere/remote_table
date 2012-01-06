@@ -20,10 +20,10 @@ class RemoteTable
         # --
         pid = ::POSIX::Spawn.spawn *argv, options
         ::Process.waitpid pid
-        raise SpawnError, "[remote_table] spawn #{argv.join(' ')} (#{in_out}) failed with exit status #{$?.exitstatus}" unless $?.success?
+        raise SpawnError, "Spawn #{argv.join(' ')} (#{in_out}) failed with exit status #{$?.exitstatus}" unless $?.success?
       else
         child = ::POSIX::Spawn::Child.new *argv
-        raise SpawnError, "[remote_table] spawn #{argv.join(' ')}) failed with #{child.err}" unless child.success?
+        raise SpawnError, "Spawn #{argv.join(' ')}) failed with #{child.err}" unless child.success?
       end
       nil
     end
@@ -42,7 +42,7 @@ class RemoteTable
       nil
     rescue SpawnError => e
       if options[:ignore_error]
-        $stderr.puts "#{e.inspect} (ignoring error...)"
+        $stderr.puts "[remote_table] #{e.inspect} (ignoring error...)"
         ::FileUtils.mv output, input
       else
         raise e
@@ -53,7 +53,7 @@ class RemoteTable
       output = tmp_path uri.path
 
       if uri.scheme == 'file'
-        $stderr.puts "[remote_table] Getting #{uri.path} from the local file system" if ::ENV['REMOTE_TABLE_VERBOSE'] == 'true'
+        $stdout.puts "[remote_table] Getting #{uri.path} from the local file system" if ::ENV['REMOTE_TABLE_VERBOSE'] == 'true'
         ::FileUtils.cp uri.path, output
         return output
       end
@@ -69,7 +69,7 @@ class RemoteTable
         ::Kernel.sleep ::ENV['REMOTE_TABLE_DELAY_BETWEEN_REQUESTS'].to_i
       end
 
-      $stderr.puts "[remote_table] Downloading #{uri.to_s}" if ::ENV['REMOTE_TABLE_VERBOSE'] == 'true'
+      $stdout.puts "[remote_table] Downloading #{uri.to_s}" if ::ENV['REMOTE_TABLE_VERBOSE'] == 'true'
       spawn *argv
       output
     end
@@ -83,7 +83,7 @@ class RemoteTable
       when :gz
         Utils.gunzip input
       else
-        raise ::ArgumentError, "[remote_table] Unrecognized compression #{compression}"
+        raise ::ArgumentError, "Unrecognized compression #{compression}"
       end
     end
     
@@ -92,24 +92,24 @@ class RemoteTable
       when :tar
         Utils.untar input
       else
-        raise ::ArgumentError, "[remote_table] Unrecognized packing #{packing}"
+        raise ::ArgumentError, "Unrecognized packing #{packing}"
       end
     end
     
     def self.pick(input, options = {})
       options = options.symbolize_keys
       if (options[:filename] or options[:glob]) and not ::File.directory?(input)
-        raise ::RuntimeError, "[remote_table] Expecting #{input} to be a directory"
+        raise ::RuntimeError, "Expecting #{input} to be a directory"
       end
       if filename = options[:filename]
         src = ::File.join input, filename
-        raise(::RuntimeError, "[remote_table] Expecting #{src} to be a file") unless ::File.file?(src)
+        raise(::RuntimeError, "Expecting #{src} to be a file") unless ::File.file?(src)
         output = tmp_path src
         ::FileUtils.mv src, output
         ::FileUtils.rm_rf input if ::File.dirname(input).start_with?(::Dir.tmpdir)
       elsif glob = options[:glob]
         src = ::Dir[input+glob].first
-        raise(::RuntimeError, "[remote_table] Expecting #{glob} to find a file in #{input}") unless src and ::File.file?(src)
+        raise(::RuntimeError, "Expecting #{glob} to find a file in #{input}") unless src and ::File.file?(src)
         output = tmp_path src
         ::FileUtils.mv src, output
         ::FileUtils.rm_rf input if ::File.dirname(input).start_with?(::Dir.tmpdir)

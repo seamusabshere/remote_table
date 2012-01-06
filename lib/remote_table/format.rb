@@ -26,13 +26,11 @@ class RemoteTable
     
     def transliterate_to_utf8(str)
       return if str.nil?
-      $stderr.puts "[remote_table translit] Before:  #{str}" if ::ENV['REMOTE_TABLE_DEBUG'] and ::ENV['REMOTE_TABLE_DEBUG'].include?('translit')
       transliterated_str = if ::RUBY_VERSION >= '1.9'
         str.ensure_encoding t.properties.external_encoding, :external_encoding => t.properties.internal_encoding, :invalid_characters => :transcode
       else
         ::Iconv.conv(t.properties.external_encoding_iconv, t.properties.internal_encoding, str.to_s + ' ')[0..-2]
       end
-      $stderr.puts "[remote_table translit] After:   #{transliterated_str}" if ::ENV['REMOTE_TABLE_DEBUG'] and ::ENV['REMOTE_TABLE_DEBUG'].include?('translit')
       transliterated_str
     end
 
@@ -45,8 +43,5 @@ class RemoteTable
     end
     
     include ::Enumerable
-    def each
-      raise "must be defined by format"
-    end
   end
 end

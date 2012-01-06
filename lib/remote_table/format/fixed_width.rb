@@ -27,7 +27,7 @@ class RemoteTable
       def parser
         return @parser if @parser.is_a?(::FixedWidth::Parser)
         if ::FixedWidth::Section.private_instance_methods.map(&:to_sym).include?(:unpacker)
-          raise "[remote_table] You need a different (newer) version of the FixedWidth gem that supports multibyte encoding, sometime after https://github.com/timonk/fixed_width/pull/1 was incorporated"
+          raise ::RuntimeError, "You need a different (newer) version of the FixedWidth gem that supports multibyte encoding, sometime after https://github.com/timonk/fixed_width/pull/1 was incorporated"
         end
         @parser = ::FixedWidth::Parser.new definition, t.local_file.encoded_io
       end
@@ -52,7 +52,7 @@ class RemoteTable
             end
           end
         else
-          raise "expecting schema_name to be a String or Symbol, or schema to be an Array"
+          raise ::ArgumentError, "expecting schema_name to be a String or Symbol, or schema to be an Array"
         end
       end
     end

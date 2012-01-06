@@ -6,7 +6,7 @@ else
     require 'fastercsv'
     ::RemoteTable::MyCSV = ::FasterCSV
   rescue ::LoadError
-    $stderr.puts "[remote_table] You probably need to manually install the fastercsv gem and/or require it in your Gemfile."
+    ::Kernel.warn "[remote_table] You probably need to manually install the fastercsv gem and/or require it in your Gemfile."
     raise $!
   end
 end

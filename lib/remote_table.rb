@@ -1,5 +1,5 @@
 if ::RUBY_VERSION < '1.9' and $KCODE != 'UTF8'
-  $stderr.puts "[remote_table] Ruby 1.8 detected, setting $KCODE to UTF8 so that ActiveSupport::Multibyte works properly."
+  ::Kernel.warn "[remote_table] Ruby 1.8 detected, setting $KCODE to UTF8 so that ActiveSupport::Multibyte works properly."
   $KCODE = 'UTF8'
 end
 
@@ -140,7 +140,7 @@ class RemoteTable
     @download_count ||= 0
     @download_count += 1
     if properties.warn_on_multiple_downloads and download_count > 1
-      $stderr.puts "[remote_table] Warning: #{url} has been downloaded #{download_count} times."
+      $stdout.puts "[remote_table] #{url} has been downloaded #{download_count} times."
     end
   end 
   
