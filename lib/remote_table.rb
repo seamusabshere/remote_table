@@ -40,7 +40,7 @@ class RemoteTable
   include ::Enumerable
   
   attr_reader :url
-  attr_reader :options
+  attr_reader :config
   
   # Create a new RemoteTable.
   #
@@ -53,14 +53,14 @@ class RemoteTable
   #
   # See the <tt>Config</tt> object for the sorts of options you can pass.
   def initialize(*args)
-    @options = args.last.is_a?(::Hash) ? args.last.symbolize_keys : {}
+    options = args.last.is_a?(::Hash) ? args.last.symbolize_keys : {}
+    
     @url = if args.first.is_a? ::String
       args.first.dup
     else
-      @options[:url].dup
+      options[:url].dup
     end
-    @url.freeze
-    @options.freeze
+    @config = Config.new self, options
   end
   
   # not thread safe
@@ -115,11 +115,6 @@ class RemoteTable
   # Used internally to access to a downloaded copy of the file
   def local_file
     @local_file ||= LocalFile.new self
-  end
-  
-  # Used internally to access to the config of the table, either set by the user or implied
-  def config
-    @config ||= Config.new self
   end
   
   # Used internally to access to the driver that reads the format

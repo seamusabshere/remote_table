@@ -54,7 +54,7 @@ class RemoteTable
       ]
 
       def fastercsv_options
-        hsh = t.options.slice *FASTERCSV_OPTIONS
+        hsh = t.config.user_specified_options.slice *FASTERCSV_OPTIONS
         hsh.merge! :skip_blanks => !t.config.keep_blank_rows
         hsh.reverse_merge! :headers => t.config.headers
         hsh.reverse_merge! :col_sep => t.config.delimiter

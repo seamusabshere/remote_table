@@ -1,5 +1,6 @@
 class RemoteTable
   class Transformer
+    extend ::ActiveSupport::Memoizable
     attr_reader :t
     def initialize(t)
       @t = t
@@ -13,10 +14,11 @@ class RemoteTable
       end
     end
     def legacy_transformer
-      return @legacy_transformer if @legacy_transformer
-      return unless t.options[:transform]
-      transform_options = t.options[:transform].symbolize_keys
-      @legacy_transformer = transform_options[:class].new transform_options.except(:class)
+      if transform_options = t.config.user_specified_options[:transform]
+        transform_options = transform_options.symbolize_keys
+        transform_options[:class].new transform_options.except(:class)
+      end
     end
+    memoize :legacy_transformer
   end
 end

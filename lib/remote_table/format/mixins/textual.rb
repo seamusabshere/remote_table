@@ -16,7 +16,7 @@ class RemoteTable
       
       def transliterate_whole_file_to_utf8!
         Utils.in_place t.local_file.path, 'iconv', '-c', '-f', t.config.internal_encoding, '-t', t.config.external_encoding_iconv, :ignore_error => true
-        t.config.update :encoding => t.config.external_encoding
+        t.config.user_specified_options.update :encoding => t.config.external_encoding
       end
       
       def fix_newlines!
