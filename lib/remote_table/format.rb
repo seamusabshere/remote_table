@@ -1,8 +1,4 @@
-if ::RUBY_VERSION >= '1.9'
-  require 'ensure/encoding'
-else
-  require 'iconv'
-end
+require 'iconv'
 
 class RemoteTable  
   class Format
@@ -25,13 +21,9 @@ class RemoteTable
     end
     
     def transliterate_to_utf8(str)
-      return if str.nil?
-      transliterated_str = if ::RUBY_VERSION >= '1.9'
-        str.ensure_encoding t.properties.external_encoding, :external_encoding => t.properties.internal_encoding, :invalid_characters => :transcode
-      else
-        ::Iconv.conv(t.properties.external_encoding_iconv, t.properties.internal_encoding, str.to_s + ' ')[0..-2]
+      if str.is_a?(::String)
+        [ iconv.iconv(str), iconv.iconv(nil) ].join
       end
-      transliterated_str
     end
 
     def assume_utf8(str)
@@ -40,6 +32,12 @@ class RemoteTable
       else
         str
       end
+    end
+    
+    private
+    
+    def iconv
+      @iconv ||= ::Iconv.new(t.properties.external_encoding_iconv, t.properties.internal_encoding)
     end
     
     include ::Enumerable
