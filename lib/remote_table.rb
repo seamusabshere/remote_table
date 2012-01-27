@@ -12,8 +12,14 @@ require 'active_support/version'
   active_support/core_ext/array
 }.each do |active_support_3_requirement|
   require active_support_3_requirement
-end if ::ActiveSupport::VERSION::MAJOR == 3
+end if ::ActiveSupport::VERSION::MAJOR >= 3
 require 'hash_digest'
+
+require 'remote_table/format'
+require 'remote_table/properties'
+require 'remote_table/local_file'
+require 'remote_table/transformer'
+require 'remote_table/utils'
 
 class Hash
   attr_accessor :row_hash
@@ -23,13 +29,7 @@ class Array
   attr_accessor :row_hash
 end
 
-class RemoteTable
-  autoload :Format, 'remote_table/format'
-  autoload :Properties, 'remote_table/properties'
-  autoload :LocalFile, 'remote_table/local_file'
-  autoload :Transformer, 'remote_table/transformer'
-  autoload :Utils, 'remote_table/utils'
-  
+class RemoteTable  
   # Legacy
   class Transform
     def self.row_hash(row)

@@ -1,5 +1,3 @@
-require 'nokogiri'
-require 'cgi'
 class RemoteTable
   class Format
     class XML < Format

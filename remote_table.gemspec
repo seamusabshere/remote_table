@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   
   s.add_runtime_dependency 'activesupport', '>=2.3.4'
   s.add_runtime_dependency 'roo', '>=1.9'
-  s.add_runtime_dependency 'fixed_width-multibyte' # TODO replace with fixed_width once timon gets off vacation
+  s.add_runtime_dependency 'fixed_width-multibyte', '>=0.2.3'
   s.add_runtime_dependency 'i18n' # activesupport?
   s.add_runtime_dependency 'posix-spawn'
   s.add_runtime_dependency 'fastercsv', '>=1.5.0'

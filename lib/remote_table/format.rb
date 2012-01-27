@@ -1,18 +1,17 @@
 require 'iconv'
 
+require 'remote_table/format/mixins/textual'
+require 'remote_table/format/mixins/processed_by_roo'
+require 'remote_table/format/mixins/processed_by_nokogiri'
+require 'remote_table/format/excel'
+require 'remote_table/format/excelx'
+require 'remote_table/format/delimited'
+require 'remote_table/format/open_office'
+require 'remote_table/format/fixed_width'
+require 'remote_table/format/html'
+require 'remote_table/format/xml'
 class RemoteTable  
   class Format
-    autoload :Excel, 'remote_table/format/excel'
-    autoload :Excelx, 'remote_table/format/excelx'
-    autoload :Delimited, 'remote_table/format/delimited'
-    autoload :OpenOffice, 'remote_table/format/open_office'
-    autoload :FixedWidth, 'remote_table/format/fixed_width'
-    autoload :HTML, 'remote_table/format/html'
-    autoload :XML, 'remote_table/format/xml'
-    
-    autoload :Textual, 'remote_table/format/mixins/textual'
-    autoload :ProcessedByRoo, 'remote_table/format/mixins/processed_by_roo'
-    autoload :ProcessedByNokogiri, 'remote_table/format/mixins/processed_by_nokogiri'
     
     attr_reader :t
 

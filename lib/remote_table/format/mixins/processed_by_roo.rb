@@ -1,8 +1,9 @@
-require 'roo'
 class RemoteTable
   class Format
     module ProcessedByRoo
       def each(&blk)
+        require 'roo'
+
         spreadsheet = roo_class.new t.local_file.path, nil, :ignore
         spreadsheet.default_sheet = t.properties.sheet.is_a?(::Numeric) ? spreadsheet.sheets[t.properties.sheet] : t.properties.sheet
         

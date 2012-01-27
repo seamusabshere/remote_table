@@ -1,10 +1,10 @@
-require 'fixed_width'
-
 class RemoteTable
   class Format
     class FixedWidth < Format
       include Textual
       def each(&blk)
+        require 'fixed_width-multibyte'
+
         remove_useless_characters!
         fix_newlines!
         transliterate_whole_file_to_utf8!

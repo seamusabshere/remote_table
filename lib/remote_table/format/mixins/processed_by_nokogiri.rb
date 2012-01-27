@@ -1,9 +1,10 @@
-require 'nokogiri'
-require 'cgi'
 class RemoteTable
   class Format
     module ProcessedByNokogiri
       def each
+        require 'nokogiri'
+        require 'cgi'
+        
         raise ::ArgumentError, "Need :row_css or :row_xpath in order to process XML or HTML" unless t.properties.row_css or t.properties.row_xpath
         remove_useless_characters!
         transliterate_whole_file_to_utf8!
