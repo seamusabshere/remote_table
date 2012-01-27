@@ -27,7 +27,7 @@ class RemoteTable
 
     def assume_utf8(str)
       if str.is_a?(::String) and ::RUBY_VERSION >= '1.9'
-        str.encode! t.properties.external_encoding
+        str.encode! t.config.external_encoding
       else
         str
       end
@@ -36,7 +36,7 @@ class RemoteTable
     private
     
     def iconv
-      @iconv ||= ::Iconv.new(t.properties.external_encoding_iconv, t.properties.internal_encoding)
+      @iconv ||= ::Iconv.new(t.config.external_encoding_iconv, t.config.internal_encoding)
     end
     
     include ::Enumerable

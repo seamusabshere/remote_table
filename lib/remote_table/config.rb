@@ -1,7 +1,7 @@
 require 'uri'
 class RemoteTable
-  # Represents the properties of a RemoteTable, whether they are explicitly set by the user or inferred automatically.
-  class Properties
+  # Represents the config of a RemoteTable, whether they are explicitly set by the user or inferred automatically.
+  class Config
     attr_reader :t
     attr_reader :current_options
     

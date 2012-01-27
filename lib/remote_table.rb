@@ -16,7 +16,7 @@ end if ::ActiveSupport::VERSION::MAJOR >= 3
 require 'hash_digest'
 
 require 'remote_table/format'
-require 'remote_table/properties'
+require 'remote_table/config'
 require 'remote_table/local_file'
 require 'remote_table/transformer'
 require 'remote_table/utils'
@@ -51,7 +51,7 @@ class RemoteTable
   # Old syntax:
   #     RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :foo => 'bar')
   #
-  # See the <tt>Properties</tt> object for the sorts of options you can pass.
+  # See the <tt>Config</tt> object for the sorts of options you can pass.
   def initialize(*args)
     @options = args.last.is_a?(::Hash) ? args.last.symbolize_keys : {}
     @url = if args.first.is_a? ::String
@@ -72,17 +72,17 @@ class RemoteTable
       retval = format.each do |row|
         transformer.transform(row).each do |virtual_row|
           virtual_row.row_hash = ::HashDigest.hexdigest row
-          if properties.errata
-            next if properties.errata.rejects? virtual_row
-            properties.errata.correct! virtual_row
+          if config.errata
+            next if config.errata.rejects? virtual_row
+            config.errata.correct! virtual_row
           end
-          next if properties.select and !properties.select.call(virtual_row)
-          next if properties.reject and properties.reject.call(virtual_row)
-          cache.push virtual_row unless properties.streaming
+          next if config.select and !config.select.call(virtual_row)
+          next if config.reject and config.reject.call(virtual_row)
+          cache.push virtual_row unless config.streaming
           yield virtual_row
         end
       end
-      fully_cached! unless properties.streaming
+      fully_cached! unless config.streaming
       retval
     end
   end
@@ -117,14 +117,14 @@ class RemoteTable
     @local_file ||= LocalFile.new self
   end
   
-  # Used internally to access to the properties of the table, either set by the user or implied
-  def properties
-    @properties ||= Properties.new self
+  # Used internally to access to the config of the table, either set by the user or implied
+  def config
+    @config ||= Config.new self
   end
   
   # Used internally to access to the driver that reads the format
   def format
-    @format ||= properties.format.new self
+    @format ||= config.format.new self
   end
   
   # Used internally to acess the transformer (aka parser).
@@ -139,7 +139,7 @@ class RemoteTable
   def mark_download!
     @download_count ||= 0
     @download_count += 1
-    if properties.warn_on_multiple_downloads and download_count > 1
+    if config.warn_on_multiple_downloads and download_count > 1
       $stdout.puts "[remote_table] #{url} has been downloaded #{download_count} times."
     end
   end 

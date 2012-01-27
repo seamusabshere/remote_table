@@ -28,10 +28,10 @@ class RemoteTable
               end
               memo
             end
-            yield hash if t.properties.keep_blank_rows or hash.any? { |k, v| v.present? }
+            yield hash if t.config.keep_blank_rows or hash.any? { |k, v| v.present? }
           elsif row.is_a?(::Array)
             array = row.map { |v| v.to_s }
-            yield array if t.properties.keep_blank_rows or array.any? { |v| v.present? }
+            yield array if t.config.keep_blank_rows or array.any? { |v| v.present? }
           end
         end
       ensure
@@ -55,9 +55,9 @@ class RemoteTable
 
       def fastercsv_options
         hsh = t.options.slice *FASTERCSV_OPTIONS
-        hsh.merge! :skip_blanks => !t.properties.keep_blank_rows
-        hsh.reverse_merge! :headers => t.properties.headers
-        hsh.reverse_merge! :col_sep => t.properties.delimiter
+        hsh.merge! :skip_blanks => !t.config.keep_blank_rows
+        hsh.reverse_merge! :headers => t.config.headers
+        hsh.reverse_merge! :col_sep => t.config.delimiter
       end
     end
   end
