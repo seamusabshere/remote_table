@@ -2,6 +2,10 @@
 
 Open local or remote XLSX, XLS, ODS, CSV and fixed-width files.
 
+## Production usage
+
+Used by [the Brighter Planet Reference Data web service](http://data.brighterplanet.com), the [`data_miner` gem](https://github.com/seamusabshere/data_miner), and the [`earth` gem](https://github.com/brighterplanet/earth).
+
 ## Example
 
     $ irb
@@ -413,10 +417,6 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
                                 [ 'header3', 10, { :type => :string } ],
                                 [ 'spacer',  1 ],
                                 [ 'header1', 10, { :type => :string } ]]
-
-## Production usage
-
-Used by [the Brighter Planet Reference Data web service](http://data.brighterplanet.com), the [`data_miner` gem](https://github.com/seamusabshere/data_miner), and the [`earth` gem](https://github.com/brighterplanet/earth).
 
 ## Requirements
 
