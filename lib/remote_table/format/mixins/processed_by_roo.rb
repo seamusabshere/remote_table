@@ -2,6 +2,7 @@ class RemoteTable
   class Format
     module ProcessedByRoo
       def each(&blk)
+        require 'iconv'
         require 'roo'
 
         spreadsheet = roo_class.new t.local_file.path, nil, :ignore
