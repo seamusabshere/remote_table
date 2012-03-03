@@ -243,6 +243,8 @@ class RemoteTable
         Format::HTML
       when /xml/
         Format::XML
+      when /yaml/, /yml/
+        Format::Yaml
       else
         Format::Delimited
       end

@@ -22,6 +22,14 @@ class TestRemoteTable < Test::Unit::TestCase
     assert_equal 'name', t[0]['col2']
     assert_equal 'Seamus Abshere', t[1]['col2']
   end
+
+  should "open a yaml" do
+    t = RemoteTable.new "file://#{File.expand_path('../fixtures/data.yml', __FILE__)}"
+    assert_equal 'Seamus Abshere', t[0]['name']
+    assert_equal 'Madison', t[0]['city']
+    assert_equal 'Derek Kastner', t[1]['name']
+    assert_equal 'Lansing', t[1]['city']
+  end
   
   should "return an ordered hash" do
     t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'

@@ -10,6 +10,7 @@ require 'remote_table/format/open_office'
 require 'remote_table/format/fixed_width'
 require 'remote_table/format/html'
 require 'remote_table/format/xml'
+require 'remote_table/format/yaml'
 class RemoteTable  
   class Format
     
