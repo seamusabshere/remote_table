@@ -1,8 +1,8 @@
+require 'iconv'
 if RUBY_VERSION >= '1.9'
   # for an excellent explanation see http://blog.segment7.net/2010/12/17/from-iconv-iconv-to-string-encode
   Kernel.warn "[remote_table] Apologies - using iconv because Ruby 1.9.x's String#encode doesn't have transliteration tables (yet)"
 end
-require 'iconv'
 
 require 'remote_table/format/mixins/textual'
 require 'remote_table/format/mixins/processed_by_roo'

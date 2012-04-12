@@ -1,0 +1,19 @@
+1.4.0 / 2012-04-12
+
+* Enhancements
+
+  * DRY up spawning code with UnixUtils
+  * Switch to minitest
+  * Stop defining MyCSV globally
+  * Test on MRI 1.8.7, MRI 1.9.3, and JRuby 1.6.7
+  * Warn users about ODS not working on JRuby
+  * Move all warnings to Kernel.warn
+  * Start keeping a CHANGELOG!
+  * Ensure we clean up temporary files
+
+* Bug fixes
+
+  * Make sure headers (keys) on rows created with Roo are ordered in Ruby 1.8.7
+  * Make tests green (for now) by fixing URLs and sometimes :row_xpaths (hello FAA aircraft lookup guide)
+  * Use Hash#fetch for default options
+  * Don't try to set default_sheet if user doesn't specify a sheet name

@@ -1,27 +1,23 @@
-if RUBY_VERSION >= '1.9'
-  require 'csv'
-  ::RemoteTable::MyCSV = ::CSV
-else
-  begin
-    require 'fastercsv'
-    ::RemoteTable::MyCSV = ::FasterCSV
-  rescue ::LoadError
-    ::Kernel.warn "[remote_table] You probably need to manually install the fastercsv gem and/or require it in your Gemfile."
-    raise $!
-  end
-end
-
 class RemoteTable
   class Format
     class Delimited < Format
+      if ::RUBY_VERSION >= '1.9'
+        require 'csv'
+        Engine = ::CSV
+      else
+        require 'fastercsv'
+        Engine = ::FasterCSV
+      end
+
       include Textual
+
       def each(&blk)
         remove_useless_characters!
         fix_newlines!
         transliterate_whole_file_to_utf8!
         skip_rows!
-        MyCSV.new(t.local_file.encoded_io, fastercsv_options).each do |row|
-          if row.is_a?(MyCSV::Row)
+        Engine.new(t.local_file.encoded_io, fastercsv_options).each do |row|
+          if row.is_a?(Engine::Row)
             hash = row.inject(::ActiveSupport::OrderedHash.new) do |memo, (k, v)|
               if k.present?
                 memo[k] = v.to_s
@@ -55,7 +51,7 @@ class RemoteTable
 
       def fastercsv_options
         hsh = t.config.user_specified_options.slice *FASTERCSV_OPTIONS
-        hsh.merge! :skip_blanks => !t.config.keep_blank_rows
+        hsh[:skip_blanks] = !t.config.keep_blank_rows
         hsh.reverse_merge! :headers => t.config.headers
         hsh.reverse_merge! :col_sep => t.config.delimiter
       end

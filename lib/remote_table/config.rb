@@ -25,7 +25,7 @@ class RemoteTable
     # * call each
     # Defaults to false.
     def streaming
-      user_specified_options[:streaming] || false
+      user_specified_options.fetch :streaming, false
     end
 
     # Defaults to true.
@@ -49,17 +49,15 @@ class RemoteTable
     end
     
     # The sheet specified by the user as a number or a string
-    #
-    # Default: 0
     def sheet
-      user_specified_options[:sheet] || 0
+      user_specified_options[:sheet]
     end
     
     # Whether to keep blank rows
     #
     # Default: false
     def keep_blank_rows
-      user_specified_options[:keep_blank_rows] || false
+      user_specified_options.fetch :keep_blank_rows, false
     end
     
     # Form data to send in with the download request
@@ -71,11 +69,11 @@ class RemoteTable
     #
     # Default: 0
     def skip
-      user_specified_options[:skip] || 0
+      user_specified_options.fetch :skip, 0
     end
     
     def internal_encoding
-      (user_specified_options[:encoding] || 'UTF-8').upcase
+      user_specified_options.fetch(:encoding, 'UTF-8').upcase
     end
     
     def external_encoding
@@ -90,7 +88,7 @@ class RemoteTable
     #
     # Default: ","
     def delimiter
-      user_specified_options[:delimiter] || ','
+      user_specified_options.fetch :delimiter, ','
     end
     
     # The XPath used to find rows

@@ -30,30 +30,32 @@ class AircraftGuru
   end
 end
 
-class TestErrata < Test::Unit::TestCase
-  should "be able to apply Errata instances directly" do
-    t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-G.htm",
-                        :encoding => 'windows-1252',
-                        :row_xpath => '//table/tr[2]/td/table/tr',
-                        :column_xpath => 'td',
-                        :errata => Errata.new(:url => 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw',
-                                              :responder => AircraftGuru.new)
-    g1 = t.rows.detect { |row| row['Model'] =~ /Gulfstream I/ }
-    assert g1
-    assert_equal 'GULFSTREAM AEROSPACE', g1['Manufacturer']
-    assert_equal 'Gulfstream I', g1['Model']
-  end
-  
-  should "be able to apply erratas given a hash of options" do
-    t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-G.htm",
-                        :encoding => 'windows-1252',
-                        :row_xpath => '//table/tr[2]/td/table/tr',
-                        :column_xpath => 'td',
-                        :errata => { :url => 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw',
-                                     :responder => AircraftGuru.new }
-    g1 = t.rows.detect { |row| row['Model'] =~ /Gulfstream I/ }
-    assert g1
-    assert_equal 'GULFSTREAM AEROSPACE', g1['Manufacturer']
-    assert_equal 'Gulfstream I', g1['Model']
+describe RemoteTable do
+  describe "when using an errata file" do
+    it "be able to apply Errata instances directly" do
+      t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-G.htm",
+                          :encoding => 'windows-1252',
+                          :row_xpath => '//table[2]//table[1]//tr[3]//tr',
+                          :column_xpath => 'td',
+                          :errata => Errata.new(:url => 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw',
+                                                :responder => AircraftGuru.new)
+      g1 = t.rows.detect { |row| row['Model'] =~ /Gulfstream I/ }
+      g1.wont_be_nil
+      g1['Manufacturer'].must_equal 'GULFSTREAM AEROSPACE'
+      g1['Model'].must_equal 'Gulfstream I'
+    end
+    
+    it "be able to apply erratas given a hash of options" do
+      t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-G.htm",
+                          :encoding => 'windows-1252',
+                          :row_xpath => '//table[2]//table[1]//tr[3]//tr',
+                          :column_xpath => 'td',
+                          :errata => { :url => 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw',
+                                       :responder => AircraftGuru.new }
+      g1 = t.rows.detect { |row| row['Model'] =~ /Gulfstream I/ }
+      g1.wont_be_nil
+      g1['Manufacturer'].must_equal 'GULFSTREAM AEROSPACE'
+      g1['Model'].must_equal 'Gulfstream I'
+    end
   end
 end

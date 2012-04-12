@@ -31,15 +31,17 @@ class NaturalGasParser
   end
 end
 
-class TestOldTransform < Test::Unit::TestCase
-  should "open an XLS with a parser" do
-    t = RemoteTable.new(:url => 'http://tonto.eia.doe.gov/dnav/ng/xls/ng_pri_sum_a_EPG0_FWA_DMcf_a.xls',
-           :sheet => 'Data 1',
-           :skip => 2,
-           :select => lambda { |row| row['year'].to_i > 1989 },
-           :transform => { :class => NaturalGasParser })
-    assert_equal 'Country', t[0]['locatable_type']
-    assert_equal 'US', t[0]['locatable_id']
-    assert(t[0].row_hash.present?)
+describe RemoteTable do
+  describe "when using old-style parser" do
+    it "open an XLS with a parser" do
+      t = RemoteTable.new(:url => 'http://www.eia.gov/dnav/ng/xls/ng_pri_sum_a_EPG0_FWA_DMcf_a.xls',
+             :sheet => 'Data 1',
+             :skip => 2,
+             :select => proc { |row| row['year'].to_i > 1989 },
+             :transform => { :class => NaturalGasParser })
+      t[0]['locatable_type'].must_equal 'Country'
+      t[0]['locatable_id'].must_equal 'US'
+      t[0].row_hash.must_be :present?
+    end
   end
 end

@@ -1,97 +1,99 @@
 # encoding: utf-8
 require 'helper'
+require 'tempfile'
 
-class TestRemoteTable < Test::Unit::TestCase
-  should "open an XLSX" do
+describe RemoteTable do
+  it "open an XLSX" do
     t = RemoteTable.new 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx'
-    assert_equal "Secure encryption of all data", t[5]["Requirements"]
+    t[5]["Requirements"].must_equal "Secure encryption of all data"
   end
   
-  should "add a row hash to every row" do
+  it "add a row hash to every row" do
     t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx')
-    assert_equal "06d8a738551c17735e2731e25c8d0461", t[5].row_hash
+    t[5].row_hash.must_equal "06d8a738551c17735e2731e25c8d0461"
   end
   
-  should "open a google doc" do
+  it "open a google doc" do
     t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'
-    assert_equal 'Seamus Abshere', t[0]['name']
+    t[0]['name'].must_equal 'Seamus Abshere'
   end
   
-  should "open a csv with custom headers" do
+  it "open a csv with custom headers" do
     t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw', :headers => %w{ col1 col2 col3 }
-    assert_equal 'name', t[0]['col2']
-    assert_equal 'Seamus Abshere', t[1]['col2']
+    t[0]['col2'].must_equal 'name'
+    t[1]['col2'].must_equal 'Seamus Abshere'
   end
 
-  should "open a yaml" do
+  it "open a yaml" do
     t = RemoteTable.new "file://#{File.expand_path('../fixtures/data.yml', __FILE__)}"
-    assert_equal 'Seamus Abshere', t[0]['name']
-    assert_equal 'Madison', t[0]['city']
-    assert_equal 'Derek Kastner', t[1]['name']
-    assert_equal 'Lansing', t[1]['city']
+    t[0]['name'].must_equal 'Seamus Abshere'
+    t[0]['city'].must_equal 'Madison'
+    t[1]['name'].must_equal 'Derek Kastner'
+    t[1]['city'].must_equal 'Lansing'
   end
   
-  should "return an ordered hash" do
+  it "return an ordered hash" do
     t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'
-    assert_equal ::ActiveSupport::OrderedHash, t[0].class
+    t[0].class.must_equal ::ActiveSupport::OrderedHash
   end
   
-  should "pass through fastercsv options" do
+  it "pass through fastercsv options" do
     f = Tempfile.new 'pass-through-fastercsv-options'
     f.write %{3,Title example,Body example with a <a href="">link</a>,test category}
     f.flush
     t = RemoteTable.new "file://#{f.path}", :quote_char => %{'}, :headers => nil
-    assert_equal %{Body example with a <a href="">link</a>}, t[0][2]
+    t[0][2].must_equal %{Body example with a <a href="">link</a>}
     f.close
   end
   
-  should "open a csv inside a zip file" do
+  it "open a csv inside a zip file" do
     t = RemoteTable.new  'http://www.epa.gov/climatechange/emissions/downloads10/2010-Inventory-Annex-Tables.zip',
                          :filename => 'Annex Tables/Annex 3/Table A-93.csv',
                          :skip => 1,
                          :select => lambda { |row| row['Vehicle Age'].to_i.to_s == row['Vehicle Age'] }
-    assert_equal '9.09%', t[0]['LDGV']
+    t[0]['LDGV'].must_equal '9.09%'
   end
   
-  should 'not blow up if each is called twice' do
+  it 'not blow up if each is called twice' do
     t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'
-    assert_nothing_raised do
-      t.each { |row| }
-      t.each { |row| }
-    end
+    count = 0
+    t.each { |row| count += 1 }
+    first_run = count
+    t.each { |row| count += 1}
+    count.must_equal first_run*2
   end
   
-  should 'allow itself to be cleared for save memory' do
+  it 'allow itself to be cleared for save memory' do
     t = RemoteTable.new 'http://spreadsheets.google.com/pub?key=tObVAGyqOkCBtGid0tJUZrw'
     t.to_a
-    assert t.send(:cache).length > 0
+    t.send(:cache).length.must_be :>, 0
     t.free
-    assert t.send(:cache).length == 0
+    t.send(:cache).length.must_equal 0
   end
     
   # fixes ArgumentError: invalid byte sequence in UTF-8
-  should %{safely strip soft hyphens and read windows-1252 html} do
-    t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-A.htm", :row_xpath => '//table/tr[2]/td/table/tr', :column_xpath => 'td', :encoding => 'windows-1252'
-    assert t.rows.detect { |row| row['Model'] == 'A300B4600' }
+  it %{safely strip soft hyphens and read windows-1252 html} do
+    t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-A.htm", :row_xpath => '//table[2]//table[1]//tr[3]//tr', :column_xpath => 'td', :encoding => 'windows-1252'
+    t.rows.detect { |row| row['Model'] == 'A300B4600' }.wont_equal nil
   end
   
-  should %{transliterate characters from ISO-8859-1} do
+  it %{transliterate characters from ISO-8859-1} do
     t = RemoteTable.new :url => 'http://static.brighterplanet.com/science/data/consumables/pets/breed_genders.csv', :encoding => 'ISO-8859-1'
-    assert t.rows.detect { |row| row['name'] == 'Briquet Griffon Vendéen' }
+    t.rows.detect { |row| row['name'] == 'Briquet Griffon Vendéen' }.wont_equal nil
   end
   
-  should %{read xml with css selectors} do
+  it %{read xml with css selectors} do
     t = RemoteTable.new 'http://www.nanonull.com/TimeService/TimeService.asmx/getCityTime?city=Chicago', :format => :xml, :row_css => 'string', :headers => false
-    assert /(AM|PM)/.match(t[0][0])
+    /(AM|PM)/.match(t[0][0]).wont_equal nil
   end
   
-  should %{optionally stream rows instead of caching them} do
+  it %{optionally stream rows instead of caching them} do
     t = RemoteTable.new 'http://www.earthtools.org/timezone/40.71417/-74.00639', :format => :xml, :row_xpath => '//timezone/isotime', :headers => false, :streaming => true
     time1 = t[0][0]
-    assert /\d\d\d\d-\d\d-\d\d/.match(time1)
+    /\d\d\d\d-\d\d-\d\d/.match(time1).wont_equal nil
     sleep 1
     time2 = t[0][0]
-    assert(time1 != time2)
+    time1.wont_equal time2
   end
   
   {
@@ -110,37 +112,37 @@ class TestRemoteTable < Test::Unit::TestCase
   "../support/list-en1-semic-3.office-2011-for-mac-sp1.mac.csv-comma"       => {:format=>"csv", :encoding=>"MACROMAN"}, # comma because no option in excel
   "../support/list-en1-semic-3.neooffice.utf-8.csv"                         => {:format=>"csv", :delimiter => ';'}
   }.each do |k, v|
-    should %{open #{k} with encoding #{v[:encoding] || 'default'}} do
+    it %{open #{k} with encoding #{v[:encoding] || 'default'}} do
       options = v.merge(:headers => false, :skip => 2)
       t = RemoteTable.new "file://#{File.expand_path(k, __FILE__)}", options
       a = %{ÅLAND ISLANDS}
       b = (t[1].is_a?(::Array) ? t[1][0] : t[1]['name'])
       if RUBY_VERSION >= '1.9'
-        assert_equal 'UTF-8', a.encoding.to_s
-        assert_equal 'UTF-8', b.encoding.to_s
+        a.encoding.to_s.must_equal 'UTF-8'
+        b.encoding.to_s.must_equal 'UTF-8'
       end
-      assert_equal a, b
+      b.must_equal a
     end
   end
   
-  should %{recode as UTF-8 even ISO-8859-1 (or any other encoding)} do
+  it %{recode as UTF-8 even ISO-8859-1 (or any other encoding)} do
     t = RemoteTable.new 'http://www.iso.org/iso/list-en1-semic-3.txt', :skip => 2, :headers => false, :delimiter => ';', :encoding => 'ISO-8859-1'
-    assert_equal %{ÅLAND ISLANDS}, t[1][0]
+    t[1][0].must_equal %{ÅLAND ISLANDS}
   end
   
-  should %{parse a big CSV that is not UTF-8} do
+  it %{parse a big CSV that is not UTF-8} do
     t = RemoteTable.new 'https://openflights.svn.sourceforge.net/svnroot/openflights/openflights/data/airports.dat', :headers => false#, :encoding => 'UTF-8'
-    assert_equal 'Goroka', t[0][1]
+    t[0][1].must_equal 'Goroka'
   end
   
-  should "read only certain rows of an XLSX" do
+  it "read only certain rows of an XLSX" do
     t = RemoteTable.new 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :crop => 11..16, :headers => false
-    assert_equal "Permissioning and access groups for all content", t[0][0]
-    assert_equal "Manage Multiple Incentive Programs for Participants", t[4][0]
+    t[0][0].must_equal "Permissioning and access groups for all content"
+    t[4][0].must_equal "Manage Multiple Incentive Programs for Participants"
     
     t = RemoteTable.new 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :crop => 11..16, :headers => %w{ col1 }
-    assert_equal "Permissioning and access groups for all content", t[0]['col1']
-    assert_equal "Manage Multiple Incentive Programs for Participants", t[4]['col1']
+    t[0]['col1'].must_equal "Permissioning and access groups for all content"
+    t[4]['col1'].must_equal "Manage Multiple Incentive Programs for Participants"
   end
 
 end

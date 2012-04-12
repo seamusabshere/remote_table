@@ -6,7 +6,9 @@ class RemoteTable
         require 'roo'
 
         spreadsheet = roo_class.new t.local_file.path, nil, :ignore
-        spreadsheet.default_sheet = t.config.sheet.is_a?(::Numeric) ? spreadsheet.sheets[t.config.sheet] : t.config.sheet
+        if t.config.sheet
+          spreadsheet.default_sheet = t.config.sheet
+        end
         
         first_row = if t.config.crop
           t.config.crop.first + 1
@@ -28,7 +30,7 @@ class RemoteTable
             yield output if t.config.keep_blank_rows or output.any? { |v| v.present? }
           end
         else
-          headers = {}
+          headers = ::ActiveSupport::OrderedHash.new
           if t.config.use_first_row_as_header?
             (1..spreadsheet.last_column).each do |x|
               v = spreadsheet.cell(first_row, x)

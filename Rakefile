@@ -1,25 +1,17 @@
-require 'bundler'
-Bundler::GemHelper.install_tasks
+#!/usr/bin/env rake
+require "bundler/gem_tasks"
 
 require 'rake'
 require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
+  test.libs << 'test'
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
 end
 
-begin
-  require 'rake/rdoctask'
-  Rake::RDocTask.new do |rdoc|
-    rdoc.rdoc_dir = 'rdoc'
-    rdoc.title = 'remote_table'
-    rdoc.options << '--line-numbers' << '--inline-source'
-    rdoc.rdoc_files.include('README*')
-    rdoc.rdoc_files.include('lib/**/*.rb')
-  end
-rescue LoadError
-   puts "Rdoc is not available"
+require 'yard'
+YARD::Rake::YardocTask.new do |y|
+  y.options << '--no-private'
 end
 
 task :default => :test

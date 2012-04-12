@@ -1,14 +1,13 @@
 require 'rubygems'
-require 'bundler'
-Bundler.setup
-require 'test/unit'
-require 'shoulda'
+require 'bundler/setup'
+require 'minitest/spec'
+require 'minitest/autorun'
+require 'minitest/reporters'
+MiniTest::Unit.runner = MiniTest::SuiteRunner.new
+MiniTest::Unit.runner.reporters << MiniTest::Reporters::SpecReporter.new
+require 'remote_table'
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'remote_table'))
-
-class Test::Unit::TestCase
+class MiniTest::Spec
   def setup
     if RUBY_VERSION >= '1.9'
       @old_default_internal = Encoding.default_internal

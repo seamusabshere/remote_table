@@ -5,7 +5,7 @@ class RemoteTable
   class LocalFile #:nodoc:all
     class << self
       def decompress(input, compression)
-        case compression
+        output = case compression
         when :zip, :exe
           ::UnixUtils.unzip input
         when :bz2
@@ -15,15 +15,19 @@ class RemoteTable
         else
           raise ::ArgumentError, "Unrecognized compression #{compression}"
         end
+        ::FileUtils.rm_f input
+        output
       end
       
       def unpack(input, packing)
-        case packing
+        output = case packing
         when :tar
           ::UnixUtils.untar input
         else
           raise ::ArgumentError, "Unrecognized packing #{packing}"
         end
+        ::FileUtils.rm_f input
+        output
       end
       
       def pick(input, options = {})
@@ -95,6 +99,10 @@ class RemoteTable
     end
         
     def generate
+      # sabshere 7/20/11 make web requests move more slowly so you don't get accused of DOS
+      if ::ENV.has_key?('REMOTE_TABLE_DELAY_BETWEEN_REQUESTS')
+        ::Kernel.sleep ::ENV['REMOTE_TABLE_DELAY_BETWEEN_REQUESTS'].to_i
+      end
       tmp_path = ::UnixUtils.curl t.config.uri.to_s, t.config.form_data
       if compression = t.config.compression
         tmp_path = LocalFile.decompress tmp_path, compression

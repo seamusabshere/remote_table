@@ -129,7 +129,7 @@ class RemoteTable
     @download_count ||= 0
     @download_count += 1
     if config.warn_on_multiple_downloads and download_count > 1
-      $stdout.puts "[remote_table] #{url} has been downloaded #{download_count} times."
+      ::Kernel.warn "[remote_table] #{url} has been downloaded #{download_count} times."
     end
   end 
   
