@@ -5,21 +5,15 @@ end
 
 require 'active_support'
 require 'active_support/version'
-%w{
-  active_support/core_ext/hash
-  active_support/core_ext/string
-  active_support/core_ext/module
-  active_support/core_ext/array
-}.each do |active_support_3_requirement|
-  require active_support_3_requirement
-end if ::ActiveSupport::VERSION::MAJOR >= 3
+if ::ActiveSupport::VERSION::MAJOR >= 3
+  require 'active_support/core_ext'
+end
 require 'hash_digest'
 
 require 'remote_table/format'
 require 'remote_table/config'
 require 'remote_table/local_file'
 require 'remote_table/transformer'
-require 'remote_table/utils'
 
 class Hash
   attr_accessor :row_hash
@@ -122,7 +116,7 @@ class RemoteTable
     @format ||= config.format.new self
   end
   
-  # Used internally to acess the transformer (aka parser).
+  # Used internally to access the transformer (aka parser).
   def transformer
     @transformer ||= Transformer.new self
   end
