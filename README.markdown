@@ -2,9 +2,19 @@
 
 Open local or remote XLSX, XLS, ODS, CSV and fixed-width files.
 
-## Production usage
+## Real-world usage
 
-Used by [the Brighter Planet Reference Data web service](http://data.brighterplanet.com), the [`data_miner` gem](https://github.com/seamusabshere/data_miner), and the [`earth` gem](https://github.com/brighterplanet/earth).
+<p><a href="http://brighterplanet.com"><img src="https://s3.amazonaws.com/static.brighterplanet.com/assets/logos/flush-left/inline/green/rasterized/brighter_planet-160-transparent.png" alt="Brighter Planet logo"/></a></p>
+
+We use `remote_table` for [data science at Brighter Planet](http://brighterplanet.com/research) and in production at
+
+* [Brighter Planet's impact estimate web service](http://impact.brighterplanet.com)
+* [Brighter Planet's reference data web service](http://data.brighterplanet.com)
+
+It's also a big part of
+
+* the [`data_miner`](https://github.com/seamusabshere/data_miner) library
+* the [`earth`](https://github.com/brighterplanet/earth) library
 
 ## Example
 
