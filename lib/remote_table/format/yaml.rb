@@ -4,10 +4,10 @@ class RemoteTable
   class Format
     class Yaml < Format
       def each(&blk)
-        data = YAML.load_file t.local_file.path
+        data = YAML.load_file t.local_copy.path
         data.each &blk
       ensure
-        t.local_file.cleanup
+        t.local_copy.cleanup
       end
     end
   end

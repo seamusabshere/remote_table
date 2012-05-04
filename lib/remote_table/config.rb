@@ -224,7 +224,7 @@ class RemoteTable
       clue = if user_specified_options.has_key?(:format)
         user_specified_options[:format]
       else
-        t.local_file.path
+        t.local_copy.path
       end
       case clue.to_s.downcase
       when /xlsx/, /excelx/

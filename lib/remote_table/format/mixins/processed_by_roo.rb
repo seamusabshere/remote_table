@@ -5,7 +5,7 @@ class RemoteTable
         require 'iconv'
         require 'roo'
 
-        spreadsheet = roo_class.new t.local_file.path, nil, :ignore
+        spreadsheet = roo_class.new t.local_copy.path, nil, :ignore
         if t.config.sheet
           spreadsheet.default_sheet = t.config.sheet
         end
@@ -56,7 +56,7 @@ class RemoteTable
           end
         end
       ensure
-        t.local_file.cleanup
+        t.local_copy.cleanup
       end
     end
   end

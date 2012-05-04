@@ -3,6 +3,8 @@ if ::RUBY_VERSION < '1.9' and $KCODE != 'UTF8'
   $KCODE = 'UTF8'
 end
 
+require 'thread'
+
 require 'active_support'
 require 'active_support/version'
 if ::ActiveSupport::VERSION::MAJOR >= 3
@@ -12,19 +14,25 @@ require 'hash_digest'
 
 require 'remote_table/format'
 require 'remote_table/config'
-require 'remote_table/local_file'
+require 'remote_table/local_copy'
 require 'remote_table/transformer'
 
 class Hash
+  # Added by remote_table to store a hash (think checksum) of the data with which a particular Hash is initialized.
+  # @return [String]
   attr_accessor :row_hash
 end
 
 class Array
+  # Added by remote_table to store a hash (think checksum) of the data with which a particular Array is initialized.
+  # @return [String]
   attr_accessor :row_hash
 end
 
-class RemoteTable  
-  # Legacy
+# Open local or remote XLSX, XLS, ODS, CSV and fixed-width files.
+class RemoteTable
+  # @private
+  # Here to support legacy code.
   class Transform
     def self.row_hash(row)
       ::HashDigest.hexdigest row
@@ -33,37 +41,68 @@ class RemoteTable
 
   include ::Enumerable
   
+  # The URL of the local or remote file.
+  #
+  # * Local: "file:///Users/myuser/Desktop/holidays.csv"
+  # * Remote: "http://data.brighterplanet.com/countries.csv"
+  #
+  # @return [String]
   attr_reader :url
+
+  # The remote table configuration. Mostly for internal use.
+  # @return [RemoteTable::Config]
   attr_reader :config
-  
-  # Create a new RemoteTable.
+
+  # A cache of rows, created unless +:streaming+ is enabled.
+  # @return [Array<Hash,Array>]
+  attr_reader :cache
+
+  # How many times this file has been downloaded. RemoteTable will emit a warning if you download it more than once.
+  # @return [Integer]
+  attr_reader :download_count
+
+  # Create a new RemoteTable, which is an Enumerable.
   #
-  #     RemoteTable.new(url, options = {})
+  # Does not immediately download/parse... it's lazy-loading.
   #
-  # New syntax:
-  #     RemoteTable.new('www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :foo => 'bar')
-  # Old syntax:
-  #     RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :foo => 'bar')
+  # @overload initialize(config)
+  #   @param [Hash] config Settings including +:url+.
   #
-  # See the <tt>Config</tt> object for the sorts of options you can pass.
+  # @overload initialize(url, config)
+  #   @param [String] url The URL to the local or remote file.
+  #   @param [Hash] config Settings.
+  #
+  # @example Open an XLSX
+  #   RemoteTable.new('http://www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :foo => 'bar')
+  #
+  # @see RemoteTable::Config What configuration settings are available.
   def initialize(*args)
+    @cache = []
+    @download_count = 0
     options = args.last.is_a?(::Hash) ? args.last.symbolize_keys : {}
-    
     @url = if args.first.is_a? ::String
       args.first.dup
     else
       options[:url].dup
     end
     @config = Config.new self, options
+    @local_copy_mutex = ::Mutex.new
+    @format_mutex = ::Mutex.new
+    @transformer_mutex = ::Mutex.new
+    @download_count_mutex = ::Mutex.new
   end
   
-  # not thread safe
-  def each(&blk)
+  # Yield each row.
+  #
+  # @yield [Hash,Array] A hash or an array depending on whether the RemoteTable has named headers (column names).
+  def each
     if fully_cached?
-      cache.each(&blk)
+      cache.each do |row|
+        yield row
+      end
     else
       mark_download!
-      retval = format.each do |row|
+      memo = format.each do |row|
         transformer.transform(row).each do |virtual_row|
           virtual_row.row_hash = ::HashDigest.hexdigest row
           if config.errata
@@ -72,16 +111,21 @@ class RemoteTable
           end
           next if config.select and !config.select.call(virtual_row)
           next if config.reject and config.reject.call(virtual_row)
-          cache.push virtual_row unless config.streaming
+          unless config.streaming
+            cache.push virtual_row
+          end
           yield virtual_row
         end
       end
-      fully_cached! unless config.streaming
-      retval
+      unless config.streaming
+        fully_cached!
+      end
+      memo
     end
   end
   alias :each_row :each
   
+  # @return [Array<Hash,Array>] All rows.
   def to_a
     if fully_cached?
       cache.dup
@@ -89,9 +133,12 @@ class RemoteTable
       map { |row| row }
     end
   end
+
   alias :rows :to_a
   
-  # Get a row by row number
+  # Get a row by row number. Zero-based.
+  #
+  # @return [Hash,Array]
   def [](row_number)
     if fully_cached?
       cache[row_number]
@@ -100,34 +147,42 @@ class RemoteTable
     end
   end
   
-  # clear the row cache to save memory
+  # Clear the row cache in case it helps your GC.
+  #
+  # @return [nil]
   def free
+    @fully_cached = false
     cache.clear
     nil
   end
   
-  # Used internally to access to a downloaded copy of the file
-  def local_file
-    @local_file ||= LocalFile.new self
+  # Used internally to access to a downloaded copy of the file.
+  def local_copy
+    @local_copy || @local_copy_mutex.synchronize do
+      @local_copy ||= LocalCopy.new self
+    end
   end
   
   # Used internally to access to the driver that reads the format
   def format
-    @format ||= config.format.new self
+    @format || @format_mutex.synchronize do
+      @format ||= config.format.new self
+    end
   end
   
   # Used internally to access the transformer (aka parser).
   def transformer
-    @transformer ||= Transformer.new self
+    @transformer || @transformer_mutex.synchronize do
+      @transformer ||= Transformer.new self
+    end
   end
-  
-  attr_reader :download_count
   
   private
   
   def mark_download!
-    @download_count ||= 0
-    @download_count += 1
+    @download_count_mutex.synchronize do
+      @download_count += 1
+    end
     if config.warn_on_multiple_downloads and download_count > 1
       ::Kernel.warn "[remote_table] #{url} has been downloaded #{download_count} times."
     end
@@ -139,9 +194,5 @@ class RemoteTable
   
   def fully_cached?
     !!@fully_cached
-  end
-  
-  def cache
-    @cache ||= []
   end
 end

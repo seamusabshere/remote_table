@@ -34,7 +34,7 @@ class RemoteTable
           end
         end
       ensure
-        t.local_file.cleanup
+        t.local_copy.cleanup
       end
 
       private
@@ -60,7 +60,7 @@ class RemoteTable
 
       # should we be doing this in ruby?
       def unescaped_xml_without_soft_hyphens
-        str = ::CGI.unescapeHTML t.local_file.encoded_io.read
+        str = ::CGI.unescapeHTML t.local_copy.encoded_io.read
         # get rid of MS Office baddies
         str.gsub! '&shy;', ''
         str

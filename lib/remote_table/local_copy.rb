@@ -2,7 +2,7 @@ require 'fileutils'
 require 'unix_utils'
 
 class RemoteTable
-  class LocalFile #:nodoc:all
+  class LocalCopy #:nodoc:all
     class << self
       def decompress(input, compression)
         output = case compression
@@ -105,12 +105,12 @@ class RemoteTable
       end
       tmp_path = ::UnixUtils.curl t.config.uri.to_s, t.config.form_data
       if compression = t.config.compression
-        tmp_path = LocalFile.decompress tmp_path, compression
+        tmp_path = LocalCopy.decompress tmp_path, compression
       end
       if packing = t.config.packing
-        tmp_path = LocalFile.unpack tmp_path, packing
+        tmp_path = LocalCopy.unpack tmp_path, packing
       end
-      @path = LocalFile.pick tmp_path, :filename => t.config.filename, :glob => t.config.glob
+      @path = LocalCopy.pick tmp_path, :filename => t.config.filename, :glob => t.config.glob
       @generated = true
     end
   end

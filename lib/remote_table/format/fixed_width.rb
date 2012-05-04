@@ -19,7 +19,7 @@ class RemoteTable
           yield row if t.config.keep_blank_rows or row.any? { |k, v| v.present? }
         end
       ensure
-        t.local_file.cleanup
+        t.local_copy.cleanup
       end
       
       private
@@ -29,7 +29,7 @@ class RemoteTable
         if ::FixedWidth::Section.private_instance_methods.map(&:to_sym).include?(:unpacker)
           raise ::RuntimeError, "You need a different (newer) version of the FixedWidth gem that supports multibyte encoding, sometime after https://github.com/timonk/fixed_width/pull/1 was incorporated"
         end
-        @parser = ::FixedWidth::Parser.new definition, t.local_file.encoded_io
+        @parser = ::FixedWidth::Parser.new definition, t.local_copy.encoded_io
       end
       
       def definition

@@ -16,7 +16,7 @@ class RemoteTable
         fix_newlines!
         transliterate_whole_file_to_utf8!
         skip_rows!
-        Engine.new(t.local_file.encoded_io, fastercsv_options).each do |row|
+        Engine.new(t.local_copy.encoded_io, fastercsv_options).each do |row|
           if row.is_a?(Engine::Row)
             hash = row.inject(::ActiveSupport::OrderedHash.new) do |memo, (k, v)|
               if k.present?
@@ -31,7 +31,7 @@ class RemoteTable
           end
         end
       ensure
-        t.local_file.cleanup
+        t.local_copy.cleanup
       end
 
       private
