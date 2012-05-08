@@ -7,8 +7,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Seamus Abshere", "Andy Rossmeissl"]
   s.email       = ["seamus@abshere.net"]
   s.homepage    = "https://github.com/seamusabshere/remote_table"
-  s.summary     = "Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV, TSV (tab separated), other delimited, fixed-width files."
-  s.description = %q{Gives you a standard way to parse various formats and treat them as an array of hashes.}
+  s.summary     = %{Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), other delimited, fixed-width files.}
+  s.description = %{Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), other delimited, fixed-width files. Returns an Array of Arrays or Hashes, depending on whether there are headers.}
 
   s.rubyforge_project = "remotetable"
 

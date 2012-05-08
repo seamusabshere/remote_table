@@ -1,3 +1,20 @@
+2.0.0 / 2012-05-08
+
+* Breaking changes
+
+  * New names for options... (not really breaking, these deprecated options are still accepted)
+    :errata -> :errata_settings
+    :transform -> :transform_settings
+    :select -> :pre_select (to avoid conflict with Enumerable#select)
+    :reject -> :pre_reject
+    :encoding -> :internal_encoding
+
+* Enhancements
+
+  * Every option is documented
+  * Refactored to simplify and DRY
+  * Thread safe
+
 1.4.0 / 2012-04-12
 
 * Enhancements

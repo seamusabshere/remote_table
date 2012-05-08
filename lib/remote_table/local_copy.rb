@@ -59,6 +59,8 @@ class RemoteTable
     
     def initialize(t)
       @t = t
+      @encoded_io_mutex = ::Mutex.new
+      @generate_mutex = ::Mutex.new
     end
 
     def in_place(*args)
@@ -68,15 +70,17 @@ class RemoteTable
     end
     
     def path
-      generate unless generated?
+      generate unless @generated
       @path
     end
     
     def encoded_io
-      @encoded_io ||= if ::RUBY_VERSION >= '1.9'
-        ::File.open path, 'rb', :internal_encoding => t.config.internal_encoding, :external_encoding => t.config.external_encoding
-      else
-        ::File.open path, 'rb'
+      @encoded_io || @encoded_io_mutex.synchronize do
+        @encoded_io ||= if ::RUBY_VERSION >= '1.9'
+          ::File.open path, 'rb', :internal_encoding => t.internal_encoding, :external_encoding => RemoteTable::EXTERNAL_ENCODING
+        else
+          ::File.open path, 'rb'
+        end
       end
     end
     
@@ -94,24 +98,24 @@ class RemoteTable
     
     private
     
-    def generated?
-      @generated == true
-    end
-        
     def generate
-      # sabshere 7/20/11 make web requests move more slowly so you don't get accused of DOS
-      if ::ENV.has_key?('REMOTE_TABLE_DELAY_BETWEEN_REQUESTS')
-        ::Kernel.sleep ::ENV['REMOTE_TABLE_DELAY_BETWEEN_REQUESTS'].to_i
+      return if @generated
+      @generate_mutex.synchronize do
+        return if @generated
+        @generated = true
+        # sabshere 7/20/11 make web requests move more slowly so you don't get accused of DOS
+        if ::ENV.has_key?('REMOTE_TABLE_DELAY_BETWEEN_REQUESTS')
+          ::Kernel.sleep ::ENV['REMOTE_TABLE_DELAY_BETWEEN_REQUESTS'].to_i
+        end
+        tmp_path = ::UnixUtils.curl t.url, t.form_data
+        if compression = t.compression
+          tmp_path = LocalCopy.decompress tmp_path, compression
+        end
+        if packing = t.packing
+          tmp_path = LocalCopy.unpack tmp_path, packing
+        end
+        @path = LocalCopy.pick tmp_path, :filename => t.filename, :glob => t.glob
       end
-      tmp_path = ::UnixUtils.curl t.config.uri.to_s, t.config.form_data
-      if compression = t.config.compression
-        tmp_path = LocalCopy.decompress tmp_path, compression
-      end
-      if packing = t.config.packing
-        tmp_path = LocalCopy.unpack tmp_path, packing
-      end
-      @path = LocalCopy.pick tmp_path, :filename => t.config.filename, :glob => t.config.glob
-      @generated = true
     end
   end
 end

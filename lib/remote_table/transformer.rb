@@ -3,6 +3,7 @@ class RemoteTable
     attr_reader :t
     def initialize(t)
       @t = t
+      @legacy_transformer_mutex = ::Mutex.new
     end
     # eventually this will support a different way of specifying a transformer
     def transform(row)
@@ -14,12 +15,15 @@ class RemoteTable
     end
     def legacy_transformer
       return @legacy_transformer[0] if @legacy_transformer.is_a?(::Array)
-      memo = if (transform_options = t.config.user_specified_options[:transform])
-        transform_options = transform_options.symbolize_keys
-        transform_options[:class].new transform_options.except(:class)
+      @legacy_transformer_mutex.synchronize do
+        return @legacy_transformer[0] if @legacy_transformer.is_a?(::Array)
+        memo = if (transform_settings = t.transform_settings)
+          transform_settings = transform_settings.symbolize_keys
+          transform_settings[:class].new transform_settings.except(:class)
+        end
+        @legacy_transformer = [memo]
+        memo
       end
-      @legacy_transformer = [memo]
-      memo
     end
   end
 end

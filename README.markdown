@@ -1,6 +1,8 @@
 # remote_table
 
-Open local or remote XLSX, XLS, ODS, CSV and fixed-width files.
+Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), other delimited, fixed-width files.
+
+Tested on MRI 1.8, MRI 1.9, and JRuby 1.6.7+. Thread-safe.
 
 ## Real-world usage
 
@@ -18,18 +20,19 @@ It's also a big part of
 
 ## Example
 
-    $ irb
-    1.9.3-p0 :001 > require 'remote_table'
+    >> require 'remote_table'
+    remote_table.rb:8:in `<top (required)>': iconv will be deprecated in the future, use String#encode instead.
+    [remote_table] Apologies - using iconv because Ruby 1.9.x's String#encode doesn't have transliteration tables (yet)
     => true
-    1.9.3-p0 :002 > t = RemoteTable.new 'http://www.fueleconomy.gov/FEG/epadata/98guide6.zip', :filename => '98guide6.csv'
-    => #<RemoteTable:0x00000100851d98 @options={:filename=>"98guide6.csv"}, @url="http://www.fueleconomy.gov/FEG/epadata/98guide6.zip">
-    1.9.3-p0 :003 > t.rows.length
+    >> t = RemoteTable.new 'http://www.fueleconomy.gov/FEG/epadata/98guide6.zip', :filename => '98guide6.csv'
+    => #<RemoteTable:0x00000101b87390 @download_count_mutex=#<Mutex:0x00000101b87228>, @iconv_mutex=#<Mutex:0x00000101b87200>, @extend_bang_mutex=#<Mutex:0x00000101b871d8>, @errata_mutex=#<Mutex:0x00000101b871b0>, @cache=[], @download_count=0, @url="http://www.fueleconomy.gov/FEG/epadata/98guide6.zip", @format=nil, @headers=:first_row, @compression=:zip, @packing=nil, @streaming=false, @warn_on_multiple_downloads=true, @delimiter=",", @sheet=nil, @keep_blank_rows=false, @form_data=nil, @skip=0, @internal_encoding="UTF-8", @row_xpath=nil, @column_xpath=nil, @row_css=nil, @column_css=nil, @glob=nil, @filename="98guide6.csv", @transform_settings=nil, @cut=nil, @crop=nil, @schema=nil, @schema_name=nil, @pre_select=nil, @pre_reject=nil, @errata_settings=nil, @other_options={}, @transformer=#<RemoteTable::Transformer:0x00000101b8c2f0 @t=#<RemoteTable:0x00000101b87390 ...>, @legacy_transformer_mutex=#<Mutex:0x00000101b8c2a0>>, @local_copy=#<RemoteTable::LocalCopy:0x00000101b8bf58 @t=#<RemoteTable:0x00000101b87390 ...>, @encoded_io_mutex=#<Mutex:0x00000101b8be18>, @generate_mutex=#<Mutex:0x00000101b8bdc8>>>
+    >> t.rows.length
     => 806
-    1.9.3-p0 :004 > t.rows.first.length
+    >> t.rows.first.length
     => 26
-    1.9.3-p0 :005 > require 'pp'
+    >> require 'pp'
     => true
-    1.9.3-p0 :006 > pp t[23]
+    >> pp t[23]
     {"Class"=>"TWO SEATERS",
      "Manufacturer"=>"PORSCHE",
      "carline name"=>"BOXSTER",
@@ -57,7 +60,19 @@ It's also a big part of
      "eng dscr"=>"",
      "trans dscr"=>""}
 
-You get an <code>Array</code> of <code>Hash</code>es with **string keys**. If you set <code>:headers => false</code>, then you get an <code>Array</code> of <code>Array</code>s.
+## Columns and rows
+
+* If there are headers, you get an <code>Array</code> of <code>Hash</code>es with **string keys**.
+* If you set <code>:headers => false</code>, then you get an <code>Array</code> of <code>Array</code>s.
+
+## Row keys
+
+Row keys are **strings**. Row keys are NOT symbolized.
+
+    row['foobar'] # correct
+    row[:foobar]  # incorrect
+
+You can call <code>symbolize_keys</code> yourself, but we don't do it automatically to avoid creating loads of garbage symbols.
 
 ## Supported formats
 
@@ -69,7 +84,7 @@ You get an <code>Array</code> of <code>Hash</code>es with **string keys**. If yo
   </tr>
   <tr>
     <td>Delimited (CSV, TSV, etc.)</td>
-    <td>All <code>RemoteTable::Format::Delimited::FASTERCSV_OPTIONS</code>, for example <code>:col_sep</code>, are passed directly to fastercsv.</td>
+    <td>All <code>RemoteTable::Delimited::PASSTHROUGH_CSV_SETTINGS</code>, for example <code>:col_sep</code>, are passed directly to fastercsv.</td>
     <td>
       <a href="http://fastercsv.rubyforge.org/">fastercsv</a> (1.8);
       <a href="http://www.ruby-doc.org/stdlib-1.9.3/libdoc/csv/rdoc/index.html">stdlib</code></a> (1.9)
@@ -157,12 +172,12 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
                     :row_xpath => '//table/tr[2]/td/table/tr',
                     :column_xpath => 'td',
                     :errata => { RemoteTable.new('https://spreadsheets.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdGVBRnhkRGhSaVptSDJ5bXJGbkpUSWc&output=csv', :responder => Aircraft::Guru.new },
-                    :select => lambda { |record| manufacturer_whitelist? record['Manufacturer'] })
+                    :select => proc { |record| manufacturer_whitelist? record['Manufacturer'] })
 
     # OpenFlights.org airports database
     RemoteTable.new('https://openflights.svn.sourceforge.net/svnroot/openflights/openflights/data/airports.dat',
                     :headers => %w{ id name city country_name iata_code icao_code latitude longitude altitude timezone daylight_savings },
-                    :select => lambda { |record| record['iata_code'].present? },
+                    :select => proc { |record| record['iata_code'].present? },
                     :errata => { RemoteTable.new('https://spreadsheets.google.com/pub?key=0AoQJbWqPrREqdFc2UzhQYU5PWEQ0N21yWFZGNmc2a3c&gid=0&output=csv', :responder => Airport::Guru.new }) # see https://github.com/brighterplanet/earth/blob/master/lib/earth/air/aircraft/data_miner.rb
 
     # T100 flight segment data for #{month.strftime('%B %Y')}
@@ -172,7 +187,7 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
                     :compression => :zip,
                     :glob => '/*.csv',
                     :errata => { RemoteTable.new('https://spreadsheets.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdGxpYU1qWFR3d0syTVMyQVVOaDd0V3c&output=csv', :responder => FlightSegment::Guru.new },
-                    :select => lambda { |record| record['DEPARTURES_PERFORMED'].to_i > 0 })
+                    :select => proc { |record| record['DEPARTURES_PERFORMED'].to_i > 0 })
 
     # 1995 Fuel Economy Guide
     # for definition of `:fuel_economy_guide_b` and `AutomobileMakeModelYearVariant::ParserB` see https://github.com/brighterplanet/earth/blob/master/lib/earth/automobile/automobile_make_model_year_variant/data_miner.rb
@@ -181,7 +196,7 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
                     :format => :fixed_width,
                     :cut => '13-',
                     :schema_name => :fuel_economy_guide_b,
-                    :select => lambda { |row| row['model'].present? and (row['suppress_code'].blank? or row['suppress_code'].to_f == 0) and row['state_code'] == 'F' },
+                    :select => proc { |row| row['model'].present? and (row['suppress_code'].blank? or row['suppress_code'].to_f == 0) and row['state_code'] == 'F' },
                     :transform => { :class => AutomobileMakeModelYearVariant::ParserB, :year => 1995 },
                     :errata => { :url => "https://docs.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdDkxTElWRVlvUXB3Uy04SDhSYWkzakE&output=csv", :responder => AutomobileMakeModelYearVariant::Guru.new })
 
@@ -191,30 +206,30 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
                     :filename => '98guide6.csv',
                     :transform => { :class => AutomobileMakeModelYearVariant::ParserC, :year => 1998 },
                     :errata => { :url => "https://docs.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdDkxTElWRVlvUXB3Uy04SDhSYWkzakE&output=csv", :responder => AutomobileMakeModelYearVariant::Guru.new },
-                    :select => lambda { |row| row['model'].present? })
+                    :select => proc { |row| row['model'].present? })
 
     # annual corporate average fuel economy data for domestic and imported vehicle fleets from the NHTSA
     RemoteTable.new('https://spreadsheets.google.com/pub?key=0AoQJbWqPrREqdEdXWXB6dkVLWkowLXhYSFVUT01sS2c&hl=en&gid=0&output=csv',
                     :errata => { 'url' => 'http://static.brighterplanet.com/science/data/transport/automobiles/make_fleet_years/errata.csv' },
-                    :select => lambda { |row| row['volume'].to_i > 0 })
+                    :select => proc { |row| row['volume'].to_i > 0 })
 
     # total vehicle miles travelled by gasoline passenger cars from the 2010 EPA GHG Inventory
     RemoteTable.new('http://www.epa.gov/climatechange/emissions/downloads10/2010-Inventory-Annex-Tables.zip',
                     :filename => 'Annex Tables/Annex 3/Table A-87.csv',
                     :skip => 1,
-                    :select => lambda { |row| row['Year'].to_i.to_s == row['Year'] })
+                    :select => proc { |row| row['Year'].to_i.to_s == row['Year'] })
 
     # total vehicle miles travelled from the 2010 EPA GHG Inventory
     RemoteTable.new('http://www.epa.gov/climatechange/emissions/downloads10/2010-Inventory-Annex-Tables.zip',
                     :filename => 'Annex Tables/Annex 3/Table A-87.csv',
                     :skip => 1,
-                    :select => lambda { |row| row['Year'].to_i.to_s == row['Year'] })
+                    :select => proc { |row| row['Year'].to_i.to_s == row['Year'] })
 
     # total travel distribution from the 2010 EPA GHG Inventory
     RemoteTable.new('http://www.epa.gov/climatechange/emissions/downloads10/2010-Inventory-Annex-Tables.zip',
                     :filename => 'Annex Tables/Annex 3/Table A-93.csv',
                     :skip => 1,
-                    :select => lambda { |row| row['Vehicle Age'].to_i.to_s == row['Vehicle Age'] })
+                    :select => proc { |row| row['Vehicle Age'].to_i.to_s == row['Vehicle Age'] })
 
     # building characteristics from the 2003 EIA Commercial Building Energy Consumption Survey
     RemoteTable.new('http://www.eia.gov/emeu/cbecs/cbecs2003/public_use_2003/data/FILE02.csv',
@@ -225,7 +240,7 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
     # for definition of `CbecsEnergyIntensity::NAICS_CODE_SYNTHESIZER` see https://github.com/brighterplanet/earth/blob/master/lib/earth/industry/cbecs_energy_intensity/data_miner.rb
     RemoteTable.new("http://www.eia.gov/emeu/cbecs/cbecs2003/detailed_tables_2003/2003set10/2003excel/C17.xls",
                     :headers => false,
-                    :select => ::Proc.new { |row| CbecsEnergyIntensity::NAICS_CODE_SYNTHESIZER.call(row) },
+                    :select => proc { |row| CbecsEnergyIntensity::NAICS_CODE_SYNTHESIZER.call(row) },
                     :crop => (21..37))
 
     # U.S. Census 2002 NAICS code list
@@ -248,13 +263,13 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
     RemoteTable.new('http://www.census.gov/popest/about/geo/state_geocodes_v2009.txt',
                     :skip => 6,
                     :headers => %w{ Region Division FIPS Name },
-                    :select => ::Proc.new { |row| row['Division'].to_i > 0 and row['FIPS'].to_i == 0 })
+                    :select => proc { |row| row['Division'].to_i > 0 and row['FIPS'].to_i == 0 })
 
     # state census divisions from the U.S. Census
     RemoteTable.new('http://www.census.gov/popest/about/geo/state_geocodes_v2009.txt',
                     :skip => 8,
                     :headers => ['Region', 'Division', 'State FIPS', 'Name'],
-                    :select => ::Proc.new { |row| row['State FIPS'].to_i > 0 })
+                    :select => proc { |row| row['State FIPS'].to_i > 0 })
 
     # OpenGeoCode.org's Country Codes to Country Names list
     RemoteTable.new('http://opengeocode.org/download/countrynames.txt',
@@ -277,19 +292,19 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
     RemoteTable.new('http://www.epa.gov/cleanenergy/documents/egridzips/eGRID2010V1_1_STIE_USGC.xls',
                     :sheet => 'STIE07',
                     :skip => 4,
-                    :select => lambda { |row| row['eGRID2010 year 2007 file state sequence number'].to_i.between?(1, 51) })
+                    :select => proc { |row| row['eGRID2010 year 2007 file state sequence number'].to_i.between?(1, 51) })
 
     # eGRID 2010 subregions and electricity emission factors
     RemoteTable.new('http://www.epa.gov/cleanenergy/documents/egridzips/eGRID2010_Version1-1_xls_only.zip',
                     :filename => 'eGRID2010V1_1_year07_AGGREGATION.xls',
                     :sheet => 'SRL07',
                     :skip => 4,
-                    :select => lambda { |row| row['SEQSRL07'].to_i.between?(1, 26) })
+                    :select => proc { |row| row['SEQSRL07'].to_i.between?(1, 26) })
 
     # U.S. Census State ANSI Code file
     RemoteTable.new('http://www.census.gov/geo/www/ansi/state.txt',
                     :delimiter => '|',
-                    :select => lambda { |record| record['STATE'].to_i < 60 })
+                    :select => proc { |record| record['STATE'].to_i < 60 })
 
     # Mapping Hacks zipcode database
     RemoteTable.new('http://mappinghacks.com/data/zipcode.zip',
@@ -305,18 +320,18 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
     # Brighter Planet's list of cat and dog breeds, genders, and weights
     RemoteTable.new('http://static.brighterplanet.com/science/data/consumables/pets/breed_genders.csv',
                     :encoding => 'ISO-8859-1',
-                    :select => lambda { |row| row['gender'].present? })
+                    :select => proc { |row| row['gender'].present? })
 
     # residential electricity prices from the EIA
     RemoteTable.new('http://www.eia.doe.gov/cneaf/electricity/page/sales_revenue.xls',
-                    :select => lambda { |row| row['Year'].to_s.first(4).to_i > 1989 })
+                    :select => proc { |row| row['Year'].to_s.first(4).to_i > 1989 })
 
     # residential natural gas prices from the EIA
     # for definition of `NaturalGasParser` see https://github.com/brighterplanet/earth/blob/master/lib/earth/residence/residence_fuel_price/data_miner.rb
     RemoteTable.new('http://tonto.eia.doe.gov/dnav/ng/xls/ng_pri_sum_a_EPG0_FWA_DMcf_a.xls',
                     :sheet => 'Data 1',
                     :skip => 2,
-                    :select => lambda { |row| row['year'].to_i > 1989 },
+                    :select => proc { |row| row['year'].to_i > 1989 },
                     :transform => { :class => NaturalGasParser })
 
     # 2005 EIA Residential Energy Consumption Survey microdata
@@ -385,7 +400,7 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
                     :format => :fixed_width,
                     :crop => 21..26, # inclusive
                     :cut => '2-',
-                    :select => lambda { |row| /\A[A-Z]/.match row['code'] },
+                    :select => proc { |row| /\A[A-Z]/.match row['code'] },
                     :schema => [[ 'code',   2, { :type => :string }  ],
                                 [ 'spacer', 2 ],
                                 [ 'name',   52, { :type => :string } ]]
@@ -430,14 +445,11 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
 
 ## Requirements
 
-* MRI (not JRuby)
-* Unix tools like curl, iconv, perl, cat, cut, tail, etc. accessible from `ENV['PATH']`
-
-As this library matures, that requirement should go away.
+* Unix tools like curl, iconv, perl, cat, cut, tail, etc. accessible from your `$PATH`
 
 ## Wishlist
 
-* JRuby and Win32 compat
+* Win32 compat
 * The new "custom parser" syntax (aka transformer) hasn't been defined yet... only the old-style syntax is available
 
 ## Authors

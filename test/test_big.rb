@@ -31,7 +31,7 @@ describe RemoteTable do
                           :format => :fixed_width,
                           :crop => 21..26, # inclusive
                           :cut => '2-',
-                          :select => lambda { |row| /\A[A-Z]/.match row['code'] },
+                          :select => proc { |row| /\A[A-Z]/.match row['code'] },
                           :schema => [[ 'code',   2, { :type => :string }  ],
                                       [ 'spacer', 2 ],
                                       [ 'name',   52, { :type => :string } ]])
