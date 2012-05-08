@@ -149,8 +149,11 @@ class RemoteTable
   
   # The URL of the local or remote file.
   #
-  # * Local: "file:///Users/myuser/Desktop/holidays.csv"
-  # * Remote: "http://data.brighterplanet.com/countries.csv"
+  # @example Local
+  #   file:///Users/myuser/Desktop/holidays.csv
+  #
+  # @example Remote
+  #   http://data.brighterplanet.com/countries.csv
   #
   # @return [String]
   attr_reader :url

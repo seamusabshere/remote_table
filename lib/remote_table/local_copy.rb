@@ -2,7 +2,8 @@ require 'fileutils'
 require 'unix_utils'
 
 class RemoteTable
-  class LocalCopy #:nodoc:all
+  # @private
+  class LocalCopy
     class << self
       def decompress(input, compression)
         output = case compression
