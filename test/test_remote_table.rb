@@ -150,4 +150,8 @@ describe RemoteTable do
     t[4]['col1'].must_equal "Manage Multiple Incentive Programs for Participants"
   end
 
+  it "doesn't get confused by :format => nil" do
+    t = RemoteTable.new :url => 'http://www.fueleconomy.gov/FEG/epadata/00data.zip', :filename => 'G6080900.xls', :format => nil
+    t[0]['Class'].must_equal 'TWO SEATERS'
+  end
 end
