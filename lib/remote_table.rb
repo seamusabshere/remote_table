@@ -5,16 +5,11 @@ end
 
 require 'thread'
 
-require 'iconv'
-if RUBY_VERSION >= '1.9'
-  # for an excellent explanation see http://blog.segment7.net/2010/12/17/from-iconv-iconv-to-string-encode
-  Kernel.warn "[remote_table] Apologies - using iconv because Ruby 1.9.x's String#encode doesn't have transliteration tables (yet)"
-end
-
 require 'active_support'
 require 'active_support/version'
 if ::ActiveSupport::VERSION::MAJOR >= 3
   require 'active_support/core_ext'
+  require 'active_support/inflector/transliterate'
 end
 require 'hash_digest'
 
@@ -350,7 +345,6 @@ class RemoteTable
   #                   :pre_select => proc { |row| row['Vehicle Age'].strip =~ /^\d+$/ }
   def initialize(*args)
     @download_count_mutex = ::Mutex.new
-    @iconv_mutex = ::Mutex.new
     @extend_bang_mutex = ::Mutex.new
     @errata_mutex = ::Mutex.new
 
@@ -512,15 +506,9 @@ class RemoteTable
     !!@fully_cached
   end
 
-  def iconv
-    @iconv || @iconv_mutex.synchronize do
-      @iconv ||= ::Iconv.new(EXTERNAL_ENCODING_ICONV, internal_encoding)
-    end
-  end
-
   def transliterate_to_utf8(str)
     if str.is_a?(::String)
-      [ iconv.iconv(str), iconv.iconv(nil) ].join
+      ::ActiveSupport::Inflector.transliterate str
     end
   end
 

@@ -1,3 +1,10 @@
+2.0.1 / 2012-05-16
+
+* Enhancements
+
+  * For single-string transliteration to UTF-8, use ActiveSupport::Inflector.transliterate instead of Iconv - possibly a future-proof solution.
+  * For whole-file transliteration to UTF-8, warn users if iconv binary is not available in their $PATH.
+
 2.0.0 / 2012-05-08
 
 * Breaking changes

@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'unix_utils'
 
 class RemoteTable
   # Helper methods that act on plaintext files before they are parsed
@@ -15,12 +16,16 @@ class RemoteTable
       local_copy.in_place :perl, "s/#{CONSIDERED_HARMFUL.join('//g; s/')}//g"
     end
     
-    # No matter what the file encoding is SUPPOSED to be, run it through iconv to make sure it's UTF-8
+    # No matter what the file encoding is SUPPOSED to be, run it through the system iconv binary to make sure it's UTF-8
     #
     # @example
     #   iconv -c -t UTF-8//TRANSLIT -f WINDOWS-1252
     def transliterate_whole_file_to_utf8!
-      local_copy.in_place :iconv, RemoteTable::EXTERNAL_ENCODING_ICONV, internal_encoding
+      if ::UnixUtils.available?('iconv')
+        local_copy.in_place :iconv, RemoteTable::EXTERNAL_ENCODING_ICONV, internal_encoding
+      else
+        ::Kernel.warn %{[remote_table] iconv not available in your $PATH, not performing transliteration}
+      end
       # now that we've force-transliterated to UTF-8, act as though this is what the user had specified
       @internal_encoding = RemoteTable::EXTERNAL_ENCODING
     end
