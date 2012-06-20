@@ -3,17 +3,30 @@ require 'unix_utils'
 
 class RemoteTable
   # Helper methods that act on plaintext files before they are parsed
-  module Plaintext      
-    CONSIDERED_HARMFUL = [
-      '\xef\xbb\xbf',   # UTF-8 byte order mark
-      '\xc2\xad',       # soft hyphen, often inserted by MS Office (html: &shy;)
-      '\xad'            # any remaining soft hyphens (sometimes seen in windows-1252)
-    ]
+  module Plaintext
+    class << self
+      # @private
+      # Code for the soft hyphen, often inserted by MS Office (html: &shy;)
+      def soft_hyphen(encoding)
+        case encoding
+        when /775/, /85[02578]/
+          '\xF0'
+        when /utf-?8/i
+          '\xc2\xad'
+        else # iso-8859-1, latin1, windows-1252, etc...
+          '\xad'
+        end
+      end
+    end
+
+    # UTF-8 byte order mark
+    UTF8_BOM = '\xef\xbb\xbf'
     EOL_TO_UNIX = 's/\r\n|\n|\r/\n/g'
 
     # Remove bytes that are both useless and harmful in the vast majority of cases.
     def delete_harmful!
-      local_copy.in_place :perl, "s/#{CONSIDERED_HARMFUL.join('//g; s/')}//g"
+      harmful = [ Plaintext.soft_hyphen(internal_encoding), UTF8_BOM ]
+      local_copy.in_place :perl, "s/#{harmful.join('//g; s/')}//g"
     end
     
     # No matter what the file encoding is SUPPOSED to be, run it through the system iconv binary to make sure it's UTF-8

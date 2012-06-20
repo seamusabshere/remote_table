@@ -8,6 +8,11 @@ describe RemoteTable do
     t[5]["Requirements"].must_equal "Secure encryption of all data"
   end
 
+  it "doesn't screw up UTF-8" do
+    t = RemoteTable.new "file://#{File.expand_path('../support/airports.utf8.csv', __FILE__)}"
+    t[3]['city'].must_equal "Puerto Inírida"
+  end
+
   it "does its best to download urls without http://" do
     t = RemoteTable.new 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx'
     t[5]["Requirements"].must_equal "Secure encryption of all data"

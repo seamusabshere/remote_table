@@ -1,3 +1,9 @@
+unreleased / 2012-06-20
+
+* Bug fixes
+
+  * Don't bork UTF-8 by incorrectly treating \xAD as a soft hyphen
+
 2.0.1 / 2012-05-16
 
 * Enhancements

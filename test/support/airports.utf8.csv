@@ -1,0 +1,5 @@
+id,name,city,country_name,iata_code,icao_code,latitude,longitude,altitude,timezone,daylight_savings
+6060,"Capitán Av. German Quiroga G. Airport","San Borja","Bolivia","SRJ","SLSB",-14.8592,-66.7375,633,-4,"U"
+6058,"Capitán Av. Selin Zeitun Lopez Airport","Riberalta","Bolivia","RIB","SLRI",-11,-66,462,-4,"U"
+6056,"Capitán de Av. Emilio Beltrán Airport","Guayaramerín","Bolivia","GYA","SLGY",-10.8206,-65.3456,557,-4,"U"
+6054,"Obando Airport","Puerto Inírida","Colombia","PDA","SKPD",3.85,-67.91,460,-5,"U"
