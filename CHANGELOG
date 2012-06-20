@@ -1,5 +1,9 @@
 unreleased / 2012-06-20
 
+* Secrets revealed
+
+  * Indeed it is OK to omit the file:// as long as you are using an absolute path to a local file... e.g., RemoteTable.new('/path/to/foo')
+
 * Bug fixes
 
   * Don't bork UTF-8 by incorrectly treating \xAD as a soft hyphen

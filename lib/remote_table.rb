@@ -147,6 +147,9 @@ class RemoteTable
   # @example Local
   #   file:///Users/myuser/Desktop/holidays.csv
   #
+  # @example Local using an absolute path
+  #   /Users/myuser/Desktop/holidays.csv
+  #
   # @example Remote
   #   http://data.brighterplanet.com/countries.csv
   #

@@ -13,6 +13,12 @@ describe RemoteTable do
     t[3]['city'].must_equal "Puerto Inírida"
   end
 
+  it "likes paths as much as urls for local files" do
+    by_url = RemoteTable.new "file://#{File.expand_path('../support/airports.utf8.csv', __FILE__)}"
+    by_path = RemoteTable.new File.expand_path('../support/airports.utf8.csv', __FILE__)
+    by_path.rows.must_equal by_url.rows
+  end
+
   it "does its best to download urls without http://" do
     t = RemoteTable.new 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx'
     t[5]["Requirements"].must_equal "Secure encryption of all data"
