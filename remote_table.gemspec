@@ -7,8 +7,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Seamus Abshere", "Andy Rossmeissl"]
   s.email       = ["seamus@abshere.net"]
   s.homepage    = "https://github.com/seamusabshere/remote_table"
-  s.summary     = %{Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), other delimited, fixed-width files.}
-  s.description = %{Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), other delimited, fixed-width files. Returns an Array of Arrays or Hashes, depending on whether there are headers.}
+  s.summary     = %{Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), other delimited, fixed-width files, and shapefiles.}
+  s.description = %{Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), other delimited, fixed-width files, and shapefiles. Returns an Array of Arrays or Hashes, depending on whether there are headers.}
 
   s.rubyforge_project = "remotetable"
 
@@ -26,6 +26,8 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'hash_digest'
 
   s.add_development_dependency 'errata', '>=0.2.0'
+  s.add_development_dependency 'georuby'
+  s.add_development_dependency 'dbf'
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'minitest-reporters'
   s.add_development_dependency 'rake'
