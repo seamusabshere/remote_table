@@ -24,4 +24,10 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'unix_utils', '>=0.0.8'
   s.add_runtime_dependency 'fastercsv', '>=1.5.0'
   s.add_runtime_dependency 'hash_digest'
+
+  s.add_development_dependency 'errata', '>=0.2.0'
+  s.add_development_dependency 'minitest'
+  s.add_development_dependency 'minitest-reporters'
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'yard'
 end
