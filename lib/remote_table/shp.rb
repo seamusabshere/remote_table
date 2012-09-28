@@ -27,14 +27,10 @@ class RemoteTable
 
           envelope = row.geometry.envelope
           hsh['center'] = envelope.center
-          hsh['upper_corner'] = {
-            'x' => envelope.upper_corner.x,
-            'y' => envelope.upper_corner.y,
-          }
-          hsh['lower_corner'] = {
-            'x' => envelope.lower_corner.x,
-            'y' => envelope.lower_corner.y,
-          }
+          hsh['upper_corner_x'] = envelope.upper_corner.x
+          hsh['upper_corner_y'] = envelope.upper_corner.y
+          hsh['lower_corner_x'] = envelope.lower_corner.x
+          hsh['lower_corner_y'] = envelope.lower_corner.y
 
           yield hsh
         end
