@@ -6,21 +6,8 @@ class RemoteTable
 
       shp = Dir[File.join(local_copy.path, '*.shp')].first
       GeoRuby::Shp4r::ShpFile.open(shp) do |shapefile|
-        first_row = if crop
-          crop.first
-        else
-          skip
-        end
-        last_row = if crop
-          crop.last
-        else
-          shapefile.records.length
-        end
-
-        (first_row..last_row).each do |row_num|
+        shapefile.each do |row|
           hsh = {}
-          row = shapefile.records[row_num]
-
           row.data.attributes.each do |name, value|
             hsh[name] = value
           end
