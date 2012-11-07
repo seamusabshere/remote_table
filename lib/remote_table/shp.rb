@@ -3,6 +3,7 @@ class RemoteTable
   module Shp
     def _each
       require 'geo_ruby'
+      require 'geo_ruby/shp4r/shp'
 
       shp = Dir[File.join(local_copy.path, '*.shp')].first
       GeoRuby::Shp4r::ShpFile.open(shp) do |shapefile|
