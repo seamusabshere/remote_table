@@ -5,7 +5,7 @@ class RemoteTable
       base.extend ProcessedByRoo
     end
     def roo_class
-      ::Excel
+      Roo::Excel
     end
   end
 end
