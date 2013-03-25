@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_runtime_dependency 'activesupport', '>=2.3.4'
-  s.add_runtime_dependency 'roo', '~> 1.10.3'
+  s.add_runtime_dependency 'roo', '>= 1.10.3'
   s.add_runtime_dependency 'fixed_width-multibyte', '>=0.2.3'
   s.add_runtime_dependency 'i18n' # activesupport?
   s.add_runtime_dependency 'unix_utils', '>=0.0.8'

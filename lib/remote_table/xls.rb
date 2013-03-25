@@ -5,7 +5,7 @@ class RemoteTable
       base.extend ProcessedByRoo
     end
     def roo_class
-      Roo::Excel
+      Roo.const_defined?(:Excel) ? Roo::Excel : ::Excel
     end
   end
 end
