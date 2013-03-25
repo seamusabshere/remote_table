@@ -161,7 +161,7 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
 
     # BTS aircraft type lookup table
     RemoteTable.new("http://www.transtats.bts.gov/Download_Lookup.asp?Lookup=L_AIRCRAFT_TYPE",
-                    :errata => { RemoteTable.new('https://spreadsheets.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdEZ2d3JQMzV5T1o1T3JmVlFyNUZxdEE&output=csv' })
+                    :errata => { :url => RemoteTable.new('https://spreadsheets.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdEZ2d3JQMzV5T1o1T3JmVlFyNUZxdEE&output=csv' })
 
     # aircraft made by whitelisted manufacturers whose ICAO code starts with 'B' from the FAA
     # for definition of `Aircraft::Guru` and `manufacturer_whitelist?` see https://github.com/brighterplanet/earth/blob/master/lib/earth/air/aircraft/data_miner.rb
@@ -169,14 +169,14 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
                     :encoding => 'windows-1252',
                     :row_xpath => '//table/tr[2]/td/table/tr',
                     :column_xpath => 'td',
-                    :errata => { RemoteTable.new('https://spreadsheets.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdGVBRnhkRGhSaVptSDJ5bXJGbkpUSWc&output=csv', :responder => Aircraft::Guru.new },
+                    :errata => { :url => 'https://spreadsheets.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdGVBRnhkRGhSaVptSDJ5bXJGbkpUSWc&output=csv', :responder => Aircraft::Guru.new },
                     :select => proc { |record| manufacturer_whitelist? record['Manufacturer'] })
 
     # OpenFlights.org airports database
     RemoteTable.new('https://openflights.svn.sourceforge.net/svnroot/openflights/openflights/data/airports.dat',
                     :headers => %w{ id name city country_name iata_code icao_code latitude longitude altitude timezone daylight_savings },
                     :select => proc { |record| record['iata_code'].present? },
-                    :errata => { RemoteTable.new('https://spreadsheets.google.com/pub?key=0AoQJbWqPrREqdFc2UzhQYU5PWEQ0N21yWFZGNmc2a3c&gid=0&output=csv', :responder => Airport::Guru.new }) # see https://github.com/brighterplanet/earth/blob/master/lib/earth/air/aircraft/data_miner.rb
+                    :errata => { :url => RemoteTable.new('https://spreadsheets.google.com/pub?key=0AoQJbWqPrREqdFc2UzhQYU5PWEQ0N21yWFZGNmc2a3c&gid=0&output=csv', :responder => Airport::Guru.new }) # see https://github.com/brighterplanet/earth/blob/master/lib/earth/air/aircraft/data_miner.rb
 
     # T100 flight segment data for #{month.strftime('%B %Y')}
     # for definition of `form_data` and `FlightSegment::Guru` see https://github.com/brighterplanet/earth/blob/master/lib/earth/air/flight_segment/data_miner.rb
@@ -184,7 +184,7 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
                     :form_data => form_data,
                     :compression => :zip,
                     :glob => '/*.csv',
-                    :errata => { RemoteTable.new('https://spreadsheets.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdGxpYU1qWFR3d0syTVMyQVVOaDd0V3c&output=csv', :responder => FlightSegment::Guru.new },
+                    :errata => { :url => RemoteTable.new('https://spreadsheets.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdGxpYU1qWFR3d0syTVMyQVVOaDd0V3c&output=csv', :responder => FlightSegment::Guru.new },
                     :select => proc { |record| record['DEPARTURES_PERFORMED'].to_i > 0 })
 
     # 1995 Fuel Economy Guide
@@ -279,7 +279,7 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
     # heating degree day data from WRI CAIT
     RemoteTable.new('https://docs.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdDN4MkRTSWtWRjdfazhRdWllTkVSMkE&output=csv',
                     :select => Proc.new { |record| record['country'] != 'European Union (27)' },
-                    :errata => { RemoteTable.new('https://docs.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdDNSMUtCV0h4cUF4UnBKZlNkczlNbFE&output=csv' })
+                    :errata => { :url => RemoteTable.new('https://docs.google.com/spreadsheet/pub?key=0AoQJbWqPrREqdDNSMUtCV0h4cUF4UnBKZlNkczlNbFE&output=csv' })
 
     # US average grid loss factor derived eGRID 2007 data
     RemoteTable.new('http://www.epa.gov/cleanenergy/documents/egridzips/eGRID2010V1_1_STIE_USGC.xls',
