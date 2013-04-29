@@ -310,7 +310,7 @@ class RemoteTable
   # @return [Hash]
   attr_reader :transform_settings
   
-  # A hash of settings to initialize an Errata instance to be used on every row. Previously passed as +:errata+.
+  # A hash to initialize an Errata instance to be used on every row. Applied after creating +row_hash+ and before passing to +:synthesize+ procs, etc. Previously passed as +:errata+.
   #
   # See the Errata library at https://github.com/seamusabshere/errata
   #
@@ -331,6 +331,8 @@ class RemoteTable
   attr_reader :other_options
 
   # Create a new RemoteTable, which is an Enumerable.
+  #
+  # Options are set at creation using any of the attributes listed... RDoc will say they're "read-only" because you can't set/change them after creation.
   #
   # Does not immediately download/parse... it's lazy-loading.
   #
