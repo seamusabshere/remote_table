@@ -1,5 +1,6 @@
 * Breaking changes
 
+  * Just use :encoding to specify a file's internal/initial/original encoding. No more :internal_encoding, this was jargony.
   * No more shapefile support - hard to imagine a shapefile as a table
   * No more :transform, legacy or not
   * For :errata, now you pass an object that responds to #rejects?(row) and #correct!(row)

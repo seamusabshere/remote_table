@@ -128,11 +128,10 @@ class RemoteTable
     :headers => :first_row,
     :keep_blank_rows => false,
     :skip => 0,
-    :internal_encoding => 'UTF-8',
+    :encoding => 'UTF-8',
     :delimiter => ','
   }
   OLD_SETTING_NAMES = {
-    :internal_encoding => [:encoding],
     :pre_select => [:select],
     :pre_reject => [:reject],
   }
@@ -196,9 +195,9 @@ class RemoteTable
   # @return [Integer]
   attr_reader :skip
 
-  # The original encoding of the source file. Default is UTF-8. Previously passed as +:encoding+.
+  # The original encoding of the source file. Default is UTF-8.
   # @return [String]
-  attr_reader :internal_encoding
+  attr_reader :encoding
   
   # The delimiter, a.k.a. column separator. Passed to Ruby CSV as +:col_sep+. Default is :delimited.
   # @return [String]
@@ -375,7 +374,7 @@ class RemoteTable
     @keep_blank_rows = grab settings, :keep_blank_rows
     @form_data = grab settings, :form_data
     @skip = grab settings, :skip
-    @internal_encoding = grab settings, :internal_encoding
+    @encoding = grab settings, :encoding
     @row_xpath = grab settings, :row_xpath
     @column_xpath = grab settings, :column_xpath
     @row_css = grab settings, :row_css

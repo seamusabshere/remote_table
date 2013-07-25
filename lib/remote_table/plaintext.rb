@@ -25,7 +25,7 @@ class RemoteTable
 
     # Remove bytes that are both useless and harmful in the vast majority of cases.
     def delete_harmful!
-      harmful = [ Plaintext.soft_hyphen(internal_encoding), UTF8_BOM ]
+      harmful = [ Plaintext.soft_hyphen(encoding), UTF8_BOM ]
       local_copy.in_place :perl, "s/#{harmful.join('//g; s/')}//g"
     end
     
@@ -35,12 +35,12 @@ class RemoteTable
     #   iconv -c -t UTF-8//TRANSLIT -f WINDOWS-1252
     def transliterate_whole_file_to_utf8!
       if ::UnixUtils.available?('iconv')
-        local_copy.in_place :iconv, RemoteTable::EXTERNAL_ENCODING_ICONV, internal_encoding
+        local_copy.in_place :iconv, RemoteTable::EXTERNAL_ENCODING_ICONV, encoding
       else
         ::Kernel.warn %{[remote_table] iconv not available in your $PATH, not performing transliteration}
       end
       # now that we've force-transliterated to UTF-8, act as though this is what the user had specified
-      @internal_encoding = RemoteTable::EXTERNAL_ENCODING
+      @encoding = RemoteTable::EXTERNAL_ENCODING
     end
     
     # No matter what the EOL are SUPPOSED to be, run it through Perl with a regex that will convert all EOLS to \n

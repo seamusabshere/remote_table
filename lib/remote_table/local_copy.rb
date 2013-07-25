@@ -78,7 +78,7 @@ class RemoteTable
     def encoded_io
       @encoded_io || @encoded_io_mutex.synchronize do
         @encoded_io ||= if ::RUBY_VERSION >= '1.9'
-          ::File.open path, 'rb', :internal_encoding => t.internal_encoding, :external_encoding => RemoteTable::EXTERNAL_ENCODING
+          ::File.open path, 'rb', :internal_encoding => t.encoding, :external_encoding => RemoteTable::EXTERNAL_ENCODING
         else
           ::File.open path, 'rb'
         end
