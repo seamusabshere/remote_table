@@ -1,6 +1,6 @@
 # remote_table
 
-Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), SHP (ESRI shapefiles), other delimited, fixed-width files.
+Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), other delimited, fixed-width files.
 
 Tested on MRI 1.8, MRI 1.9, and JRuby 1.6.7+. Thread-safe.
 
@@ -440,12 +440,6 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
                                 [ 'header3', 10, { :type => :string } ],
                                 [ 'spacer',  1 ],
                                 [ 'header1', 10, { :type => :string } ]]
-
-    # ESRI Shapefile from NREL
-    require 'geo_ruby'
-    require 'dbf'
-    RemoteTable.new 'http://www.nrel.gov/gis/cfm/data/GIS_Data_Technology_Specific/United_States/Solar/High_Resolution/Lower_48_DNI_High_Resolution.zip',
-      :format => :shp
 
 ## Requirements
 

@@ -26,7 +26,6 @@ require 'remote_table/fixed_width'
 require 'remote_table/html'
 require 'remote_table/xml'
 require 'remote_table/yaml'
-require 'remote_table/shp'
 
 class Hash
   # Added by remote_table to store a hash (think checksum) of the data with which a particular Hash is initialized.
@@ -89,8 +88,6 @@ class RemoteTable
         :xml
       when /yaml/, /yml/
         :yaml
-      when /shp/
-        :shp
       end
     end
 
@@ -123,7 +120,7 @@ class RemoteTable
   VALID = {
     :compression => [:gz, :zip, :bz2, :exe],
     :packing => [:tar],
-    :format => [:xlsx, :xls, :delimited, :ods, :fixed_width, :html, :xml, :yaml, :csv, :shp],
+    :format => [:xlsx, :xls, :delimited, :ods, :fixed_width, :html, :xml, :yaml, :csv],
   }
   DEFAULT = {
     :streaming => false,
