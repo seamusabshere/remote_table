@@ -1,3 +1,8 @@
+* Breaking changes
+
+  * For :errata, now you pass an object that responds to #rejects?(row) and #correct!(row)
+  * No more :errata_settings
+
 2.1.1 / 2013-03-25
 
 * Enhancements

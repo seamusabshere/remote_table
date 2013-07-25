@@ -140,7 +140,6 @@ class RemoteTable
     :transform_settings => [:transform],
     :pre_select => [:select],
     :pre_reject => [:reject],
-    :errata_settings => [:errata],
   }
 
   include ::Enumerable
@@ -310,12 +309,15 @@ class RemoteTable
   # @return [Hash]
   attr_reader :transform_settings
   
-  # A hash to initialize an Errata instance to be used on every row. Applied after creating +row_hash+ and before passing to +:synthesize+ procs, etc. Previously passed as +:errata+.
+  # An object that responds to #rejects?(row) and #correct!(row). Applied after creating +row_hash+.
   #
-  # See the Errata library at https://github.com/seamusabshere/errata
+  # * #rejects?(row) - if row should be treated like it doesn't exist
+  # * #correct!(row) - destructively update a row to fix something
+  #
+  # See the Errata library at https://github.com/seamusabshere/errata for an example implementation.
   #
   # @return [Hash]
-  attr_reader :errata_settings
+  attr_reader :errata
   
   # The format of the source file. Can be specified as: :xlsx, :xls, :delimited (aka :csv), :ods, :fixed_width, :html, :xml, :yaml
   #
@@ -354,7 +356,6 @@ class RemoteTable
   def initialize(*args)
     @download_count_mutex = ::Mutex.new
     @extend_bang_mutex = ::Mutex.new
-    @errata_mutex = ::Mutex.new
 
     @cache = []
     @download_count = 0
@@ -401,7 +402,7 @@ class RemoteTable
     @schema_name = grab settings, :schema_name
     @pre_select = grab settings, :pre_select
     @pre_reject = grab settings, :pre_reject
-    @errata_settings = grab settings, :errata_settings
+    @errata = grab settings, :errata
 
     @other_options = settings
     
@@ -476,23 +477,8 @@ class RemoteTable
   # @return [nil]
   def free
     @fully_cached = false
-    @errata = nil
     cache.clear
     nil
-  end
-
-  # @private
-  def errata
-    @errata || @errata_mutex.synchronize do
-      @errata ||= begin
-        if defined?(::Errata) and errata_settings.is_a?(::Errata)
-          ::Kernel.warn %{[remote_table] Passing :errata_settings as an Errata object is deprecated. Please pass a Hash of settings instead.}
-          errata_settings
-        elsif errata_settings.is_a?(::Hash)
-          ::Errata.new errata_settings
-        end
-      end
-    end
   end
 
   private
