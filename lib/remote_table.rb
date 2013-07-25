@@ -103,14 +103,6 @@ class RemoteTable
     end
   end
 
-  # @private
-  # Here to support legacy code.
-  class Transform
-    def self.row_hash(row)
-      ::HashDigest.hexdigest row
-    end
-  end
-
   EXTERNAL_ENCODING = 'UTF-8'
   EXTERNAL_ENCODING_ICONV = 'UTF-8//TRANSLIT'
   GOOGLE_DOCS_SPREADSHEET = [

@@ -67,19 +67,6 @@ describe RemoteTable do
       t.rows.last['Model'].must_equal 'EZ King Cobra'
     end
     
-    it "hash rows without paying attention to order" do
-      x = ActiveSupport::OrderedHash.new
-      x[:a] = 1
-      x[:b] = 2
-    
-      y = ActiveSupport::OrderedHash.new
-      y[:b] = 2
-      y[:a] = 1
-    
-      Marshal.dump(x).wont_equal Marshal.dump(y)
-      RemoteTable::Transform.row_hash(y).must_equal RemoteTable::Transform.row_hash(x)
-    end
-    
     it "open a Google Docs url (as a CSV)" do
       t = RemoteTable.new(:url => 'http://spreadsheets.google.com/pub?key=t5HM1KbaRngmTUbntg8JwPA')
       t.rows.first['PAD district name'].must_equal 'Gulf Coast'
