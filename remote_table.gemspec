@@ -26,8 +26,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'hash_digest'
 
   s.add_development_dependency 'errata', '>=0.2.0'
-  s.add_development_dependency 'georuby'
-  s.add_development_dependency 'dbf'
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'minitest-reporters'
   s.add_development_dependency 'rake'
