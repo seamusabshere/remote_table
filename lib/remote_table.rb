@@ -306,6 +306,20 @@ class RemoteTable
   # @return [Hash]
   attr_reader :format
 
+  # @private
+  class NullParser
+    def parse(row)
+      [row]
+    end
+  end
+
+  # An object that responds to #parse(row) and returns an array of one or more rows.
+  #
+  # @return [#parse]
+  def parser
+    @final_parser ||= (@parser || NullParser.new)
+  end
+
   # Options passed by the user that may be passed through to the underlying parsing library.
   # @return [Hash]
   attr_reader :other_options
@@ -380,6 +394,7 @@ class RemoteTable
     @pre_select = grab settings, :pre_select
     @pre_reject = grab settings, :pre_reject
     @errata = grab settings, :errata
+    @parser = grab settings, :parser
 
     @other_options = settings
     
@@ -400,8 +415,7 @@ class RemoteTable
     else
       mark_download!
       memo = _each do |row|
-        # transformer.transform(row).each do |virtual_row|
-        virtual_row = row
+        parser.parse(row).each do |virtual_row|
           virtual_row.row_hash = ::HashDigest.hexdigest row
           if errata
             next if errata.rejects? virtual_row
@@ -413,7 +427,7 @@ class RemoteTable
             cache.push virtual_row
           end
           yield virtual_row
-        # end
+        end
       end
       unless streaming
         fully_cached!

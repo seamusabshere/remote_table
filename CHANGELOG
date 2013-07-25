@@ -6,6 +6,10 @@
   * For :errata, now you pass an object that responds to #rejects?(row) and #correct!(row)
   * No more :errata_settings
 
+* Enhancements
+
+  * :parser option takes an object that responds to #parse(row) and returns an array of one or more rows.
+
 2.1.1 / 2013-03-25
 
 * Enhancements
