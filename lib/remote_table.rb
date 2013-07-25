@@ -14,7 +14,6 @@ end
 require 'hash_digest'
 
 require 'remote_table/local_copy'
-require 'remote_table/transformer'
 
 require 'remote_table/plaintext'
 require 'remote_table/processed_by_roo'
@@ -137,7 +136,6 @@ class RemoteTable
   }
   OLD_SETTING_NAMES = {
     :internal_encoding => [:encoding],
-    :transform_settings => [:transform],
     :pre_select => [:select],
     :pre_reject => [:reject],
   }
@@ -167,10 +165,6 @@ class RemoteTable
   # How many times this file has been downloaded. RemoteTable will emit a warning if you download it more than once.
   # @return [Integer]
   attr_reader :download_count
-
-  # @private
-  # Used internally to access the transformer (aka parser).
-  attr_reader :transformer
 
   # @private
   # Used internally to access to a downloaded copy of the file.
@@ -305,10 +299,6 @@ class RemoteTable
   # @return [Proc]
   attr_reader :pre_reject
 
-  # Settings to create a transformer.
-  # @return [Hash]
-  attr_reader :transform_settings
-  
   # An object that responds to #rejects?(row) and #correct!(row). Applied after creating +row_hash+.
   #
   # * #rejects?(row) - if row should be treated like it doesn't exist
@@ -395,7 +385,6 @@ class RemoteTable
     @column_css = grab settings, :column_css
     @glob = grab settings, :glob
     @filename = grab settings, :filename
-    @transform_settings = grab settings, :transform_settings
     @cut = grab settings, :cut
     @crop = grab settings, :crop
     @schema = grab settings, :schema
@@ -406,7 +395,6 @@ class RemoteTable
 
     @other_options = settings
     
-    @transformer = Transformer.new self
     @local_copy = LocalCopy.new self
   end
 
@@ -424,7 +412,8 @@ class RemoteTable
     else
       mark_download!
       memo = _each do |row|
-        transformer.transform(row).each do |virtual_row|
+        # transformer.transform(row).each do |virtual_row|
+        virtual_row = row
           virtual_row.row_hash = ::HashDigest.hexdigest row
           if errata
             next if errata.rejects? virtual_row
@@ -436,7 +425,7 @@ class RemoteTable
             cache.push virtual_row
           end
           yield virtual_row
-        end
+        # end
       end
       unless streaming
         fully_cached!

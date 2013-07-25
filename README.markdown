@@ -455,7 +455,6 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
 ## Wishlist
 
 * Win32 compat
-* The new "custom parser" syntax (aka transformer) hasn't been defined yet... only the old-style syntax is available
 
 ## Authors
 

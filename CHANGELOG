@@ -1,5 +1,6 @@
 * Breaking changes
 
+  * No more :transform, legacy or not
   * For :errata, now you pass an object that responds to #rejects?(row) and #correct!(row)
   * No more :errata_settings
 
