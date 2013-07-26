@@ -1,3 +1,5 @@
+3.0.0.alpha / 2013-07-25
+
 * Breaking changes
 
   * Just use :encoding to specify a file's internal/initial/original encoding. No more :internal_encoding, this was jargony.
