@@ -42,6 +42,14 @@ end
 # Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), other delimited, fixed-width files.
 class RemoteTable
   class << self
+    # Transpose two columns into a mapping from one to the other.
+    def transpose(url, key_key, value_key, options = {})
+      new(url, options).inject({}) do |memo, row|
+        memo[row[key_key]] = row[value_key]
+        memo
+      end
+    end
+
     # Guess compression based on URL. Used internally.
     # @return [Symbol,nil]
     def guess_compression(url)
