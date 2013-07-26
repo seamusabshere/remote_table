@@ -13,7 +13,7 @@ describe RemoteTable do
           end
         end
       end
-      t = RemoteTable.new "file://#{File.expand_path('../support/ranges.csv', __FILE__)}", parser: GradeRangeParser.new
+      t = RemoteTable.new "file://#{File.expand_path('../data/ranges.csv', __FILE__)}", parser: GradeRangeParser.new
       t[0].must_equal 'description' => 'great', 'grade' => 'A'
       t[1].must_equal 'description' => 'great', 'grade' => 'B'
       t[2].must_equal 'description' => 'ok', 'grade' => 'C'
