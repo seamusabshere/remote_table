@@ -9,7 +9,7 @@ class RemoteTable
 
     # @private
     def after_extend
-      @parser_mutex = ::Mutex.new
+      @fixed_width_parser_mutex = ::Mutex.new
       @definition_mutex = ::Mutex.new
     end
 
@@ -23,7 +23,7 @@ class RemoteTable
       skip_rows!
       cut_columns!
 
-      parser.parse[:rows].each do |row|
+      fixed_width_parser.parse[:rows].each do |row|
         some_value_present = false
         hash = ::ActiveSupport::OrderedHash.new
         row.each do |k, v|
@@ -43,9 +43,9 @@ class RemoteTable
 
     private
     
-    def parser
-      @parser || @parser_mutex.synchronize do
-        @parser ||= begin
+    def fixed_width_parser
+      @fixed_width_parser || @fixed_width_parser_mutex.synchronize do
+        @fixed_width_parser ||= begin
           if ::FixedWidth::Section.private_instance_methods.map(&:to_sym).include?(:unpacker)
             raise ::RuntimeError, "[remote_table] You need to use exclusively the fixed_width-multibyte library https://github.com/seamusabshere/fixed_width"
           end
