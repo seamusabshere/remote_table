@@ -53,7 +53,7 @@ class RemoteTable
     # Guess compression based on URL. Used internally.
     # @return [Symbol,nil]
     def guess_compression(url)
-      extname = ::File.extname(::URI.parse(url).path).downcase
+      extname = extname(url).downcase
       case extname
       when /gz/, /gunzip/
         :gz
@@ -69,7 +69,7 @@ class RemoteTable
     # Guess packing from URL. Used internally.
     # @return [Symbol,nil]
     def guess_packing(url)
-      basename = ::File.basename(::URI.parse(url).path).downcase
+      basename = basename(url).downcase
       if basename.include?('.tar') or basename.include?('.tgz')
         :tar
       end
@@ -96,6 +96,24 @@ class RemoteTable
         :xml
       when /yaml/, /yml/
         :yaml
+      end
+    end
+
+    private
+
+    def basename(url)
+      ::File.basename path(url)
+    end
+
+    def extname(url)
+      ::File.extname path(url)
+    end
+
+    def path(url)
+      if url.include?('://')
+        ::URI.parse(url).path
+      else
+        File.expand_path url
       end
     end
 

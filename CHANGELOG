@@ -1,3 +1,9 @@
+unreleased
+
+* Enhancements
+
+  * Support relative paths with spaces
+
 3.0.0.alpha / 2013-07-25
 
 * Breaking changes
