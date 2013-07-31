@@ -5,6 +5,11 @@ class RemoteTable
     SINGLE_SPACE = ' '
     SOFT_HYPHEN = '&shy;'
 
+    def preprocess!
+      delete_harmful!
+      transliterate_whole_file_to_utf8!
+    end
+
     # Yield each row using Nokogiri.
     def _each
       require 'nokogiri'
@@ -16,9 +21,6 @@ class RemoteTable
       unless row_css or row_xpath
         raise ::ArgumentError, "[remote_table] Need :row_css or :row_xpath in order to process XML or HTML"
       end
-
-      delete_harmful!
-      transliterate_whole_file_to_utf8!
       
       xml = nokogiri_class.parse(unescaped_xml_without_soft_hyphens, nil, RemoteTable::EXTERNAL_ENCODING)
       (row_css ? xml.css(row_css) : xml.xpath(row_xpath)).each do |row|

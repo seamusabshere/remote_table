@@ -14,24 +14,15 @@ class RemoteTable
       Engine = ::FasterCSV
     end
 
-    PASSTHROUGH_CSV_SETTINGS = [
-      :unconverted_fields,
-      :col_sep,
-      :row_sep,
-      :return_headers,
-      :header_converters,
-      :quote_char,
-      :converters,
-      :force_quotes,
-    ]
-
-    # Yield each row using Ruby's CSV parser (FasterCSV on Ruby 1.8).
-    def _each
+    def preprocess!
       delete_harmful!
       convert_eol_to_unix!
       transliterate_whole_file_to_utf8!
       skip_rows!
+    end
 
+    # Yield each row using Ruby's CSV parser (FasterCSV on Ruby 1.8).
+    def _each
       Engine.new(local_copy.encoded_io, csv_options).each do |row|
 
         some_value_present = false
@@ -55,7 +46,6 @@ class RemoteTable
           # represent the row as a hash
           hash = ::ActiveSupport::OrderedHash.new
           row.each do |k, v|
-            next unless k.present?
             v = v.to_s
             if not some_value_present and not keep_blank_rows and v.present?
               some_value_present = true
@@ -81,11 +71,31 @@ class RemoteTable
     #
     # @return [Hash]
     def csv_options
-      memo = other_options.slice(*PASSTHROUGH_CSV_SETTINGS)
-      memo[:skip_blanks] = !keep_blank_rows
-      memo[:headers] ||= headers
-      memo[:col_sep] ||= delimiter
-      memo
+      {
+        skip_blanks: !keep_blank_rows,
+        headers:     headers,
+        col_sep:     delimiter,
+        quote_char:  quote_char,
+      }
+    end
+
+    def headers
+      return @_headers if defined?(@_headers)
+      @_headers = case @headers
+      when FalseClass, NilClass
+        false
+      when :first_row, TrueClass
+        i = 0
+        line = local_copy.encoded_io.gets
+        Engine.parse_line(line).map do |v|
+          header = v.to_s.gsub(/\s+/, ' ').strip
+          header.present? ? header : "empty_#{i+=1}"
+        end
+      when Array
+        @headers
+      else
+        raise "Invalid headers: #{headers.inspect}"
+      end
     end
   end
 end

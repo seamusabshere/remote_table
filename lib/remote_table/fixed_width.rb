@@ -13,15 +13,17 @@ class RemoteTable
       @definition_mutex = ::Mutex.new
     end
 
-    def _each
-      require 'fixed_width-multibyte'
-
+    def preprocess!
       delete_harmful!
       convert_eol_to_unix!
       transliterate_whole_file_to_utf8!
       crop_rows!
       skip_rows!
       cut_columns!
+    end
+
+    def _each
+      require 'fixed_width-multibyte'
 
       fixed_width_parser.parse[:rows].each do |row|
         some_value_present = false

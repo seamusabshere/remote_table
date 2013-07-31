@@ -147,11 +147,13 @@ class RemoteTable
     :keep_blank_rows => false,
     :skip => 0,
     :encoding => 'UTF-8',
-    :delimiter => ','
+    :delimiter => ',',
+    :quote_char => '"',
   }
   OLD_SETTING_NAMES = {
     :pre_select => [:select],
     :pre_reject => [:reject],
+    :delimiter  => [:col_sep],
   }
 
   include ::Enumerable
@@ -196,6 +198,13 @@ class RemoteTable
   # Headers specified by the user: +:first_row+ (the default), +false+, or a list of headers.
   # @return [:first_row,false,Array<String>]
   attr_reader :headers
+
+  # Quote character for delimited files.
+  #
+  # Defaults to double quotes.
+  #
+  # @return [String]
+  attr_reader :quote_char
     
   # The sheet specified by the user as a number or a string.
   # @return[String,Integer]
@@ -217,7 +226,7 @@ class RemoteTable
   # @return [String]
   attr_reader :encoding
   
-  # The delimiter, a.k.a. column separator. Passed to Ruby CSV as +:col_sep+. Default is :delimited.
+  # The delimiter, a.k.a. column separator. Passed to Ruby CSV as +:col_sep+. Default is ','.
   # @return [String]
   attr_reader :delimiter
   
@@ -395,6 +404,7 @@ class RemoteTable
     if headers.is_a?(::Array) and headers.any?(&:blank?)
       raise ::ArgumentError, "[remote_table] If you specify headers, none of them can be blank"
     end
+    @quote_char = grab settings, :quote_char
 
     @compression = grab(settings, :compression) || RemoteTable.guess_compression(url)
     @packing = grab(settings, :packing) || RemoteTable.guess_packing(url)
@@ -440,6 +450,7 @@ class RemoteTable
       end
     else
       mark_download!
+      preprocess!
       memo = _each do |row|
         parser.parse(row).each do |virtual_row|
           virtual_row.row_hash = ::HashDigest.hexdigest row
@@ -499,6 +510,10 @@ class RemoteTable
   end
 
   private
+
+  def preprocess!
+    # noop, overridden sometimes
+  end
   
   def mark_download!
     @download_count_mutex.synchronize do

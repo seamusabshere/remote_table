@@ -1,5 +1,11 @@
 unreleased
 
+* Breaking changes
+
+  * Strip whitespace from headers unless you provide them as an array
+  * Not passing anything options on to CSV... use :delimiter instead of :col_sep
+  * Include columns with blank headers as "empty_N"
+
 * Enhancements
 
   * Support relative paths with spaces

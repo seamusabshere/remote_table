@@ -14,6 +14,13 @@ describe RemoteTable do
     by_path.rows.must_equal by_url.rows
   end
 
+  it "strips whitespace from headers" do
+    t = RemoteTable.new 'test/data/lots of spaces.csv'
+    t[0]['a one'].must_equal 'a1'
+    t[0]['b two'].must_equal 'b2'
+    t[0]['c three'].must_equal 'c3'
+  end
+
   {
   # IMPOSSIBLE "../data/list-en1-semic-3.office-2011-for-mac-sp1-excel-95.binary.xls" => {:format=>"xls",         :encoding=>"binary"},
   "../data/list-en1-semic-3.office-2011-for-mac-sp1.binary.xlsx"         => {:format=>"xlsx"},
