@@ -99,6 +99,17 @@ class RemoteTable
       end
     end
 
+    # Given a Google Docs spreadsheet URL, make sure it uses CSV output.
+    # @return [String]
+    def google_spreadsheet_csv_url(url)
+      uri = ::URI.parse url
+      params = uri.query.split('&')
+      params.delete_if { |param| param.start_with?('output=') }
+      params << 'output=csv'
+      uri.query = params.join('&')
+      uri.to_s
+    end
+
     private
 
     def basename(url)
@@ -115,17 +126,6 @@ class RemoteTable
       else
         File.expand_path url
       end
-    end
-
-    # Given a Google Docs spreadsheet URL, make sure it uses CSV output.
-    # @return [String]
-    def google_spreadsheet_csv_url(url)
-      uri = ::URI.parse url
-      params = uri.query.split('&')
-      params.delete_if { |param| param.start_with?('output=') }
-      params << 'output=csv'
-      uri.query = params.join('&')
-      uri.to_s
     end
   end
 
