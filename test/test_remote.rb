@@ -36,11 +36,12 @@ describe RemoteTable do
     end
 
     it "open a csv inside a zip file" do
-      t = RemoteTable.new  'http://www.epa.gov/climatechange/emissions/downloads10/2010-Inventory-Annex-Tables.zip',
-                           :filename => 'Annex Tables/Annex 3/Table A-93.csv',
-                           :skip => 1,
-                           :select => proc { |row| row['Vehicle Age'].strip =~ /^\d+$/ }
-      t[0]['LDGV'].must_equal '9.09%'
+      t = RemoteTable.new('http://www.epa.gov/climatechange/Downloads/ghgemissions/2011-Annex-Tables.zip',
+            :filename => 'Annex Tables/Table A-93.csv',
+            :skip => 1,
+            :headers => %w{ age LDGV LDGT HDGV LDDV LDDT HDDT MC },
+            :select => proc { |row| row['age'].to_i.to_s == row['age'] })
+      t[0]['LDGV'].must_equal '5.20%'
     end
 
     it 'not blow up if each is called twice' do
@@ -58,12 +59,6 @@ describe RemoteTable do
       t.send(:cache).length.must_be :>, 0
       t.free
       t.send(:cache).length.must_equal 0
-    end
-
-    # fixes ArgumentError: invalid byte sequence in UTF-8
-    it %{safely strip soft hyphens and read windows-1252 html} do
-      t = RemoteTable.new :url => "http://www.faa.gov/air_traffic/publications/atpubs/CNT/5-2-A.htm", :row_xpath => '//table[2]//table[1]//tr[3]//tr', :column_xpath => 'td', :encoding => 'windows-1252'
-      t.rows.detect { |row| row['Model'] == 'A300B4600' }.wont_equal nil
     end
 
     it %{transliterate characters from ISO-8859-1} do
@@ -85,8 +80,8 @@ describe RemoteTable do
       time1.wont_equal time2
     end
 
-    it %{recode as UTF-8 even ISO-8859-1 (or any other encoding)} do
-      t = RemoteTable.new 'http://www.iso.org/iso/list-en1-semic-3.txt', :skip => 2, :headers => false, :delimiter => ';', :encoding => 'ISO-8859-1'
+    it %{reads country names} do
+      t = RemoteTable.new 'http://www.iso.org/iso/country_names_and_code_elements_txt', :skip => 1, :headers => false, :delimiter => ';'
       t[1][0].must_equal %{ÅLAND ISLANDS}
     end
 
