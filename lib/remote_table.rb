@@ -343,14 +343,14 @@ class RemoteTable
 
   # @private
   class NullParser
-    def parse(row)
+    def call(row)
       [row]
     end
   end
 
-  # An object that responds to #parse(row) and returns an array of one or more rows.
+  # An object that responds to #call(row) and returns an array of one or more rows.
   #
-  # @return [#parse]
+  # @return [#call]
   def parser
     @final_parser ||= (@parser || NullParser.new)
   end
@@ -452,7 +452,7 @@ class RemoteTable
       mark_download!
       preprocess!
       memo = _each do |row|
-        parser.parse(row).each do |virtual_row|
+        parser.call(row).each do |virtual_row|
           virtual_row.row_hash = ::HashDigest.hexdigest row
           if errata
             next if errata.rejects? virtual_row
