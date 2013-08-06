@@ -1,8 +1,6 @@
 class RemoteTable
   # Mixed in to process XML and XHTML.
   module ProcessedByNokogiri
-    WHITESPACE = /\s+/
-    SINGLE_SPACE = ' '
     SOFT_HYPHEN = '&shy;'
 
     def preprocess!
@@ -34,8 +32,7 @@ class RemoteTable
         end.map do |cell|
           memo = cell.content.dup
           memo = assume_utf8 memo
-          memo.gsub! WHITESPACE, SINGLE_SPACE
-          memo.strip!
+          memo = RemoteTable.normalize_whitespace memo
           if not some_value_present and not keep_blank_rows and memo.present?
             some_value_present = true
           end

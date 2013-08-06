@@ -1,6 +1,7 @@
 * Breaking changes
 
   * :parser object must respond to #call(row), not #parse(row)
+  * Whitespace now automatically "normalized" (/\s+/ -> ' ', stripped) for CSV
 
 3.0.0.beta / 2013-07-30
 

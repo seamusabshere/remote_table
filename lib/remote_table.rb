@@ -110,6 +110,13 @@ class RemoteTable
       uri.to_s
     end
 
+    def normalize_whitespace(v)
+      v = v.to_s.dup
+      v.gsub! WHITESPACE, SINGLE_SPACE
+      v.strip!
+      v
+    end
+
     private
 
     def basename(url)
@@ -129,6 +136,8 @@ class RemoteTable
     end
   end
 
+  WHITESPACE = /\s+/
+  SINGLE_SPACE = ' '
   EXTERNAL_ENCODING = 'UTF-8'
   EXTERNAL_ENCODING_ICONV = 'UTF-8//TRANSLIT'
   GOOGLE_DOCS_SPREADSHEET = [

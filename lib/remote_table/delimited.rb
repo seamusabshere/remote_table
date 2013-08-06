@@ -31,7 +31,7 @@ class RemoteTable
 
           # represent the row as an array
           array = row.map do |v|
-            v = v.to_s
+            v = RemoteTable.normalize_whitespace v
             if not some_value_present and not keep_blank_rows and v.present?
               some_value_present = true
             end
@@ -46,7 +46,7 @@ class RemoteTable
           # represent the row as a hash
           hash = ::ActiveSupport::OrderedHash.new
           row.each do |k, v|
-            v = v.to_s
+            v = RemoteTable.normalize_whitespace v
             if not some_value_present and not keep_blank_rows and v.present?
               some_value_present = true
             end
@@ -62,14 +62,6 @@ class RemoteTable
       local_copy.cleanup
     end
 
-    # Passes user-specified options in PASSTHROUGH_CSV_SETTINGS.
-    #
-    # Also maps:
-    # * +:headers+ directly
-    # * +:keep_blank_rows+ to the CSV option +:skip_blanks+
-    # * +:delimiter+ to the CSV option +:col_sep+
-    #
-    # @return [Hash]
     def csv_options
       {
         skip_blanks: !keep_blank_rows,
@@ -88,7 +80,7 @@ class RemoteTable
         i = 0
         line = local_copy.encoded_io.gets
         Engine.parse_line(line).map do |v|
-          header = v.to_s.gsub(/\s+/, ' ').strip
+          header = RemoteTable.normalize_whitespace v
           header.present? ? header : "empty_#{i+=1}"
         end
       when Array
