@@ -1,3 +1,5 @@
+3.0.0.rc1 / 2013-08-08
+
 * Breaking changes
 
   * :parser object must respond to #call(row), not #parse(row)
