@@ -1,3 +1,5 @@
+3.0.0.rc2 / 2013-08-30
+
 * Breaking changes
 
   * skip blank lines at the top of CSV files when looking for headers
