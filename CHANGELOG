@@ -1,3 +1,7 @@
+* Bug fixes
+
+  * pass CSV options to header parser - before, options like delimiter weren't passed so it couldn't read TSVs
+
 3.0.0.rc1 / 2013-08-08
 
 * Breaking changes

@@ -23,7 +23,7 @@ class RemoteTable
 
     # Yield each row using Ruby's CSV parser (FasterCSV on Ruby 1.8).
     def _each
-      Engine.new(local_copy.encoded_io, csv_options).each do |row|
+      Engine.new(local_copy.encoded_io, csv_options.merge(headers: headers)).each do |row|
 
         some_value_present = false
 
@@ -65,7 +65,6 @@ class RemoteTable
     def csv_options
       {
         skip_blanks: !keep_blank_rows,
-        headers:     headers,
         col_sep:     delimiter,
         quote_char:  quote_char,
       }
@@ -79,7 +78,7 @@ class RemoteTable
       when :first_row, TrueClass
         i = 0
         line = local_copy.encoded_io.gets
-        Engine.parse_line(line).map do |v|
+        Engine.parse_line(line, csv_options).map do |v|
           header = RemoteTable.normalize_whitespace v
           header.present? ? header : "empty_#{i+=1}"
         end
