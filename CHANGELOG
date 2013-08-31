@@ -1,6 +1,7 @@
 * Breaking changes
 
   * skip blank lines at the top of CSV files when looking for headers
+  * require rubyzip2 for Roo compatibility with Ruby 1.9
 
 * Enhancements
 
