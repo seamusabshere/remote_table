@@ -11,7 +11,14 @@ class RemoteTable
       if ::RUBY_PLATFORM == 'java'
         ::Kernel.warn "[remote_table] Opening ODS files on JRuby is known to fail because of a flaw in the underlying Roo library"
       end
-      Roo.const_defined?(:Openoffice) ? Roo::Openoffice : ::Openoffice
+      [:Openoffice, :OpenOffice]
+      if ::Roo.const_defined?(:OpenOffice)
+        ::Roo::OpenOffice
+      elsif ::Roo.const_defined?(:Openoffice)
+        ::Roo::Openoffice
+      else
+        raise "Couldn't find roo's OpenOffice class, maybe you need a newer version?"
+      end
     end
   end
 end
