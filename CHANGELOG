@@ -1,3 +1,7 @@
+* Breaking changes
+
+  * skip blank lines at the top of CSV files when looking for headers
+
 * Enhancements
 
   * eagerly load format-specific methods (instead of waiting for #each to be called)

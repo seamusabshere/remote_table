@@ -77,10 +77,17 @@ class RemoteTable
         false
       when :first_row, TrueClass
         i = 0
-        line = local_copy.encoded_io.gets
-        Engine.parse_line(line, csv_options).map do |v|
-          header = RemoteTable.normalize_whitespace v
-          header.present? ? header : "empty_#{i+=1}"
+        begin
+          line = local_copy.encoded_io.gets.strip
+        end while line.length == 0
+        proto_headers = Engine.parse_line(line, csv_options)
+        if proto_headers
+          proto_headers.map do |v|
+            header = RemoteTable.normalize_whitespace v
+            header.present? ? header : "empty_#{i+=1}"
+          end
+        else
+          raise "No headers found in first line: #{line.inspect}"
         end
       when Array
         @headers
