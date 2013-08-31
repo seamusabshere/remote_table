@@ -444,6 +444,7 @@ class RemoteTable
     @other_options = settings
     
     @local_copy = LocalCopy.new self
+    extend!
   end
 
   # Yield each row.
@@ -452,7 +453,6 @@ class RemoteTable
   #
   # @yield [Hash,Array] A hash or an array depending on whether the RemoteTable has named headers (column names).
   def each
-    extend!
     if fully_cached?
       cache.each do |row|
         yield row
