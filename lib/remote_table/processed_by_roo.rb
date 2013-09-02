@@ -6,27 +6,25 @@ class RemoteTable
 
     # Yield each row using Roo.
     def _each
-      # sometimes Roo forgets to require iconv.
-      require 'iconv'
       require 'roo'
 
       spreadsheet = roo_class.new local_copy.path, nil, :ignore
       if sheet
         spreadsheet.default_sheet = sheet
       end
-      
+
       first_row = if crop
         crop.first + 1
       else
         skip + 1
       end
-        
+
       last_row = if crop
         crop.last
       else
         spreadsheet.last_row
       end
-      
+
       if not headers
 
         # create an array to represent this row
@@ -48,7 +46,7 @@ class RemoteTable
         end
 
       else
-        
+
         # create a hash to represent this row
         current_headers = ::ActiveSupport::OrderedHash.new
         if headers == :first_row
