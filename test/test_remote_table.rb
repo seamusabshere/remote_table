@@ -96,8 +96,7 @@ describe RemoteTable do
     'foo.html' => :html,
     'foo.xml' => :xml,
     'foo.yaml' => :yaml,
-    'foo.yml' => :yaml,
-    'foo.shp' => :shp
+    'foo.yml' => :yaml
   }.each do |basename, format|
     it "detects the #{format} format from the filename #{basename}" do
       RemoteTable.guess_format(basename).must_equal format
