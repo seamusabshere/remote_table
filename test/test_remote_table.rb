@@ -165,4 +165,33 @@ describe RemoteTable do
     t = RemoteTable.new :url => 'http://www.fueleconomy.gov/FEG/epadata/00data.zip', :filename => 'G6080900.xls', :format => nil
     t[0]['Class'].must_equal 'TWO SEATERS'
   end
+
+  {
+    'foo.ods' => :ods,
+    'foo.open_office' => :ods,
+    'foo.xlsx' => :xlsx,
+    'foo.excelx' => :xlsx,
+    'foo.xls' => :xls,
+    'foo.excel' => :xls,
+    'foo.csv' => :delimited,
+    'foo.tsv' => :delimited,
+    'foo.delimited' => :delimited,
+    'foo.fixed_width' => :fixed_width,
+    'foo.htm' => :html,
+    'foo.html' => :html,
+    'foo.xml' => :xml,
+    'foo.yaml' => :yaml,
+    'foo.yml' => :yaml,
+    'foo.shp' => :shp
+  }.each do |basename, format|
+    it "detects the #{format} format from the filename #{basename}" do
+      RemoteTable.guess_format(basename).must_equal format
+    end
+  end
+
+  it "detects the correct extension name without confusion from basename" do
+    [ 'foo.xls', 'xlsx.xls', 'foo_xls' ].each do |basename|
+      RemoteTable.guess_format(basename).must_equal :xls
+    end
+  end
 end

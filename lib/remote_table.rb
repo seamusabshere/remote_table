@@ -72,25 +72,25 @@ class RemoteTable
     # Guess file format from the basename. Since a file might be decompressed and/or pulled out of an archive with a glob, this usually can't be called until a file is downloaded.
     # @return [Symbol,nil]
     def guess_format(basename)
-      case basename.to_s.downcase
-      when /ods/, /open_?office/
+      case basename.to_s.downcase.strip
+      when /ods\z/, /open_?office\z/
         :ods
-      when /xlsx/, /excelx/
+      when /xlsx\z/, /excelx\z/
         :xlsx
-      when /xls/, /excel/
+      when /xls\z/, /excel\z/
         :xls
-      when /csv/, /tsv/, /delimited/
+      when /csv\z/, /tsv\z/, /delimited\z/
         # note that there is no RemoteTable::Csv class - it's normalized to :delimited
         :delimited
-      when /fixed_?width/
+      when /fixed_?width\z/
         :fixed_width
-      when /htm/
+      when /html?\z/
         :html
-      when /xml/
+      when /xml\z/
         :xml
-      when /yaml/, /yml/
+      when /yaml\z/, /yml\z/
         :yaml
-      when /shp/
+      when /shp\z/
         :shp
       end
     end
@@ -144,7 +144,7 @@ class RemoteTable
   }
 
   include ::Enumerable
-  
+
   # The URL of the local or remote file.
   #
   # @example Local
@@ -185,23 +185,23 @@ class RemoteTable
   # Whether to warn the user on multiple downloads. Defaults to true.
   # @return [true,false]
   attr_reader :warn_on_multiple_downloads
-  
+
   # Headers specified by the user: +:first_row+ (the default), +false+, or a list of headers.
   # @return [:first_row,false,Array<String>]
   attr_reader :headers
-    
+
   # The sheet specified by the user as a number or a string.
   # @return[String,Integer]
   attr_reader :sheet
-  
+
   # Whether to keep blank rows. Default is false.
   # @return [true,false]
   attr_reader :keep_blank_rows
-  
+
   # Form data to POST in the download request. It should probably be in +application/x-www-form-urlencoded+.
   # @return [String]
   attr_reader :form_data
-  
+
   # How many rows to skip at the beginning of the file or table. Default is 0.
   # @return [Integer]
   attr_reader :skip
@@ -209,15 +209,15 @@ class RemoteTable
   # The original encoding of the source file. Default is UTF-8. Previously passed as +:encoding+.
   # @return [String]
   attr_reader :internal_encoding
-  
+
   # The delimiter, a.k.a. column separator. Passed to Ruby CSV as +:col_sep+. Default is :delimited.
   # @return [String]
   attr_reader :delimiter
-  
+
   # The XPath used to find rows in HTML or XML.
   # @return [String]
   attr_reader :row_xpath
-  
+
   # The XPath used to find columns in HTML or XML.
   # @return [String]
   attr_reader :column_xpath
@@ -225,11 +225,11 @@ class RemoteTable
   # The CSS selector used to find rows in HTML or XML.
   # @return [String]
   attr_reader :row_css
-  
+
   # The CSS selector used to find columns in HTML or XML.
   # @return [String]
   attr_reader :column_css
-  
+
   # The format of the source file. Can be +:xlsx+, +:xls+, +:delimited+, +:ods+, +:fixed_width+, +:html+, +:xml+, +:yaml+.
   # @return [Symbol]
   attr_reader :format
@@ -241,7 +241,7 @@ class RemoteTable
   # The packing type. Guessed from URL if not provided. Only +:tar+ is supported.
   # @return [Symbol]
   attr_reader :packing
-  
+
   # The glob used to pick a file out of an archive.
   #
   # @return [String]
@@ -249,7 +249,7 @@ class RemoteTable
   # @example Pick out the only CSV in a ZIP file
   #   RemoteTable.new 'http://www.fueleconomy.gov/FEG/epadata/08data.zip', :glob => '/*.csv'
   attr_reader :glob
-  
+
   # The filename, which can be used to pick a file out of an archive.
   #
   # @return [String]
@@ -267,7 +267,7 @@ class RemoteTable
   #   # ALMOST
   #   RemoteTable.new 'file:///atoz.txt', :cut => '1,12,13,15,19,20'
   attr_reader :cut
-  
+
   # Use a range of rows in a plaintext file.
   #
   # @return [Range]
@@ -278,7 +278,7 @@ class RemoteTable
   #                   :select => proc { |row| CbecsEnergyIntensity::NAICS_CODE_SYNTHESIZER.call(row) },
   #                   :crop => (21..37))
   attr_reader :crop
-  
+
   # The fixed-width schema, given as a multi-dimensional array.
   #
   # @return [Array<Array{String,Integer,Hash}>]
@@ -293,15 +293,15 @@ class RemoteTable
   #                                [  'spacer',  12 ],
   #                                [  'header6', 10, { :type => :string } ]])
   attr_reader :schema
-  
+
   # If you somehow already defined a fixed-width schema (so you can re-use it?), specify it here.
   # @return [String,Symbol]
   attr_reader :schema_name
-  
+
   # A proc that decides whether to include a row. Previously passed as +:select+.
   # @return [Proc]
   attr_reader :pre_select
-  
+
   # A proc that decides whether to include a row. Previously passed as +:reject+.
   # @return [Proc]
   attr_reader :pre_reject
@@ -309,14 +309,14 @@ class RemoteTable
   # Settings to create a transformer.
   # @return [Hash]
   attr_reader :transform_settings
-  
+
   # A hash to initialize an Errata instance to be used on every row. Applied after creating +row_hash+ and before passing to +:synthesize+ procs, etc. Previously passed as +:errata+.
   #
   # See the Errata library at https://github.com/seamusabshere/errata
   #
   # @return [Hash]
   attr_reader :errata_settings
-  
+
   # The format of the source file. Can be specified as: :xlsx, :xls, :delimited (aka :csv), :ods, :fixed_width, :html, :xml, :yaml
   #
   # Note: treats all +docs.google.com+ and +spreadsheets.google.com+ URLs as +:delimited+.
@@ -404,7 +404,7 @@ class RemoteTable
     @errata_settings = grab settings, :errata_settings
 
     @other_options = settings
-    
+
     @transformer = Transformer.new self
     @local_copy = LocalCopy.new self
   end
@@ -447,7 +447,7 @@ class RemoteTable
 
   # @deprecated
   alias :each_row :each
-  
+
   # @return [Array<Hash,Array>] All rows.
   def to_a
     if fully_cached?
@@ -459,7 +459,7 @@ class RemoteTable
 
   # @deprecated
   alias :rows :to_a
-  
+
   # Get a row by row number. Zero-based.
   #
   # @return [Hash,Array]
@@ -470,7 +470,7 @@ class RemoteTable
       to_a[row_number]
     end
   end
-  
+
   # Clear the row cache in case it helps your GC.
   #
   # @return [nil]
@@ -496,7 +496,7 @@ class RemoteTable
   end
 
   private
-  
+
   def mark_download!
     @download_count_mutex.synchronize do
       @download_count += 1
@@ -504,12 +504,12 @@ class RemoteTable
     if warn_on_multiple_downloads and download_count > 1
       ::Kernel.warn "[remote_table] #{url} has been downloaded #{download_count} times."
     end
-  end 
-  
+  end
+
   def fully_cached!
     @fully_cached = true
   end
-  
+
   def fully_cached?
     !!@fully_cached
   end
