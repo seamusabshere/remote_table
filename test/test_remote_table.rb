@@ -80,4 +80,33 @@ describe RemoteTable do
     t = RemoteTable.new 'test/data/faa-aircraft.html', :row_xpath => row_xpath, :column_xpath => 'td', :encoding => 'windows-1252'
     t.rows.detect { |row| row['Model'] == 'A300B4600' }.wont_equal nil
   end
+
+  {
+    'foo.ods' => :ods,
+    'foo.open_office' => :ods,
+    'foo.xlsx' => :xlsx,
+    'foo.excelx' => :xlsx,
+    'foo.xls' => :xls,
+    'foo.excel' => :xls,
+    'foo.csv' => :delimited,
+    'foo.tsv' => :delimited,
+    'foo.delimited' => :delimited,
+    'foo.fixed_width' => :fixed_width,
+    'foo.htm' => :html,
+    'foo.html' => :html,
+    'foo.xml' => :xml,
+    'foo.yaml' => :yaml,
+    'foo.yml' => :yaml,
+    'foo.shp' => :shp
+  }.each do |basename, format|
+    it "detects the #{format} format from the filename #{basename}" do
+      RemoteTable.guess_format(basename).must_equal format
+    end
+  end
+
+  it "detects the correct extension name without confusion from basename" do
+    [ 'foo.xls', 'xlsx.xls', 'foo_xls' ].each do |basename|
+      RemoteTable.guess_format(basename).must_equal :xls
+    end
+  end
 end

@@ -48,6 +48,12 @@
   * :parser option takes an object that responds to #parse(row) and returns an array of one or more rows.
   * RemoteTable.transpose(url, key_key, value_key) helper
 
+2.1.2 / 2013-10-08
+
+* Bug fixes
+
+  * Correctly detect format from filename - don't get confused if a filename has "xls" in it (thanks @activefx #10)
+
 2.1.1 / 2013-03-25
 
 * Enhancements
