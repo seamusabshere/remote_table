@@ -1,3 +1,9 @@
+2.1.2 / 2013-10-08
+
+* Bug fixes
+
+  * Correctly detect format from filename - don't get confused if a filename has "xls" in it (thanks @activefx #10)
+
 2.1.1 / 2013-03-25
 
 * Enhancements
