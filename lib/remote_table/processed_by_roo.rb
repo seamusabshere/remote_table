@@ -8,7 +8,7 @@ class RemoteTable
     def _each
       require 'roo'
 
-      spreadsheet = roo_class.new local_copy.path, nil, :ignore
+      spreadsheet = roo_class.new local_copy.path, :file_warning => :ignore
       if sheet
         spreadsheet.default_sheet = sheet
       end
