@@ -74,10 +74,9 @@ describe RemoteTable do
   end
 
   # fixes ArgumentError: invalid byte sequence in UTF-8
-  # disabled because xpath not be somehow broken - works in chrome
   it %{safely strip soft hyphens and read windows-1252 html} do
-    row_xpath = '/html/body/table[2]/tbody/tr/td/center/table/tbody/tr[3]/td/table/tbody/tr[2]/td[1]'
-    t = RemoteTable.new 'test/data/faa-aircraft.html', :row_xpath => row_xpath, :column_xpath => 'td', :encoding => 'windows-1252'
+    row_xpath = '/html/body/table[2]/tr/td/center/table/tr[3]/td/table/tr'
+    t = RemoteTable.new 'test/data/faa-aircraft.html.bz2', :row_xpath => row_xpath, :column_xpath => 'td', :encoding => 'windows-1252', format: :html
     t.rows.detect { |row| row['Model'] == 'A300B4600' }.wont_equal nil
   end
 
