@@ -1,11 +1,7 @@
 require 'bundler/setup'
 
-require 'minitest/spec'
-require 'minitest/reporters'
 require 'minitest/autorun'
 # require 'pry-rescue/minitest'
-#MiniTest::Unit.runner = MiniTest::SuiteRunner.new
-#MiniTest::Unit.runner.reporters << MiniTest::Reporters::SpecReporter.new
 require 'remote_table'
 
 class MiniTest::Spec
