@@ -16,19 +16,19 @@ $test2_rows.freeze
 describe RemoteTable do
   describe "when using old-style syntax" do
     it "open an XLSX like an array (numbered columns)" do
-      t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :headers => false)
+      t = RemoteTable.new('test/data/backup/http___www.customerreferenceprogram.org_uploads_CRP_RFP_template.xlsx', :headers => false)
       t.rows[0][0].must_equal "Requirements"
       t.rows[5][0].must_equal "Software-As-A-Service"
     end
 
     it "open an XLSX with custom headers" do
-      t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :headers => %w{foo bar baz})
+      t = RemoteTable.new('test/data/backup/http___www.customerreferenceprogram.org_uploads_CRP_RFP_template.xlsx', :headers => %w{foo bar baz})
       t.rows[0]['foo'].must_equal "Requirements"
       t.rows[5]['foo'].must_equal "Software-As-A-Service"
     end
 
     it "open an XLSX" do
-      t = RemoteTable.new(:url => 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx')
+      t = RemoteTable.new('test/data/backup/http___www.customerreferenceprogram.org_uploads_CRP_RFP_template.xlsx')
       t.rows[5]["Requirements"].must_equal "Secure encryption of all data"
     end
     

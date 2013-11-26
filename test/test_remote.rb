@@ -4,16 +4,6 @@ require 'tempfile'
 
 describe RemoteTable do
   describe 'used on remote files' do
-    it "open an XLSX" do
-      t = RemoteTable.new 'http://www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx'
-      t[5]["Requirements"].must_equal "Secure encryption of all data"
-    end
-
-    it "does its best to download urls without http://" do
-      t = RemoteTable.new 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx'
-      t[5]["Requirements"].must_equal "Secure encryption of all data"
-    end
-
     it "add a row hash to every row" do
       t = RemoteTable.new(:url => 'http://www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx')
       t[5].row_hash.must_equal "06d8a738551c17735e2731e25c8d0461"
@@ -91,11 +81,11 @@ describe RemoteTable do
     end
 
     it "read only certain rows of an XLSX" do
-      t = RemoteTable.new 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :crop => 11..16, :headers => false
+      t = RemoteTable.new 'test/data/backup/http___www.customerreferenceprogram.org_uploads_CRP_RFP_template.xlsx', :crop => 11..16, :headers => false
       t[0][0].must_equal "Permissioning and access groups for all content"
       t[4][0].must_equal "Manage Multiple Incentive Programs for Participants"
 
-      t = RemoteTable.new 'www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx', :crop => 11..16, :headers => %w{ col1 }
+      t = RemoteTable.new 'test/data/backup/http___www.customerreferenceprogram.org_uploads_CRP_RFP_template.xlsx', :crop => 11..16, :headers => %w{ col1 }
       t[0]['col1'].must_equal "Permissioning and access groups for all content"
       t[4]['col1'].must_equal "Manage Multiple Incentive Programs for Participants"
     end
