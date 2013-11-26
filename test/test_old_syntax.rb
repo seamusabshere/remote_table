@@ -43,8 +43,9 @@ describe RemoteTable do
     end
     
     it "ignore UTF-8 byte order marks" do
-      t = RemoteTable.new :url => 'http://www.freebase.com/type/exporttypeinstances/base/horses/horse_breed?page=0&filter_mode=type&filter_view=table&show%01p%3D%2Ftype%2Fobject%2Fname%01index=0&show%01p%3D%2Fcommon%2Ftopic%2Fimage%01index=1&show%01p%3D%2Fcommon%2Ftopic%2Farticle%01index=2&sort%01p%3D%2Ftype%2Fobject%2Ftype%01p%3Dlink%01p%3D%2Ftype%2Flink%2Ftimestamp%01index=false&=&exporttype=csv-8'
-      t.rows.first['Name'].must_equal 'Tawleed'
+      t = RemoteTable.new 'test/data/bom.csv'
+      t.rows[0]['one'].must_equal '1'
+      t.rows[0]['two'].must_equal '2'
     end
     
     # this will die with an error about libcurl if your curl doesn't support ssl
