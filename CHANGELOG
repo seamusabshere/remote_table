@@ -1,8 +1,31 @@
-unreleased
+3.0.0 / 2013-11-26
 
 * Breaking changes
 
   * Include columns with blank headers as "untitled_N"
+  * skip blank lines at the top of CSV files when looking for headers [rc2]
+  * require rubyzip2 for Roo compatibility with Ruby 1.9 [rc2]
+  * :parser object must respond to #call(row), not #parse(row) [rc1]
+  * Whitespace now automatically "normalized" (/\s+/ -> ' ', stripped) for CSV [rc1]
+  * Strip whitespace from headers unless you provide them as an array [beta]
+  * Not passing anything options on to CSV... use :delimiter instead of :col_sep [beta]
+  * Just use :encoding to specify a file's internal/initial/original encoding. No more :internal_encoding, this was jargony. [alpha]
+  * No more shapefile support - hard to imagine a shapefile as a table [alpha]
+  * No more :transform, legacy or not [alpha]
+  * For :errata, now you pass an object that responds to #rejects?(row) and #correct!(row) [alpha]
+  * No more :errata_settings [alpha]
+
+* Enhancements
+
+  * eagerly load format-specific methods (instead of waiting for #each to be called) [rc2]
+  * use new Roo class names (Roo::OpenOffice instead of Roo::Openoffice) [rc2]
+  * Support relative paths with spaces [beta]
+  * :parser option takes an object that responds to #parse(row) and returns an array of one or more rows. [alpha]
+  * RemoteTable.transpose(url, key_key, value_key) helper [alpha]
+
+* Bug fixes
+
+  * pass CSV options to header parser - before, options like delimiter weren't passed so it couldn't read TSVs [rc2]
 
 3.0.0.rc2 / 2013-08-30
 
