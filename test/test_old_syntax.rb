@@ -5,11 +5,11 @@ $test2_rows_with_blanks = [
   { 'header4' => '1 at 4', 'header5' => '1 at 5', 'header6' => '1 at 6' },
   { 'header4' => '', 'header5' => '', 'header6' => '' },
   { 'header4' => '2 at 4', 'header5' => '2 at 5', 'header6' => '2 at 6' },
-]
+].map { |hsh| hsh.merge('untitled_1' => '') }
 $test2_rows = [
   { 'header4' => '1 at 4', 'header5' => '1 at 5', 'header6' => '1 at 6' },
   { 'header4' => '2 at 4', 'header5' => '2 at 5', 'header6' => '2 at 6' },
-]
+].map { |hsh| hsh.merge('untitled_1' => '') }
 $test2_rows_with_blanks.freeze
 $test2_rows.freeze
 
@@ -139,7 +139,7 @@ describe RemoteTable do
       t.rows.all? { |row| row.keys.all?(&:present?) }.must_equal true
       # correct values
       t.rows.each_with_index do |row, index|
-        $test2_rows[index].must_equal row.except('row_hash')
+        $test2_rows[index].except('untitled_1').must_equal row.except('row_hash')
       end
     end
     
@@ -158,7 +158,7 @@ describe RemoteTable do
       t.rows.all? { |row| row.keys.all?(&:present?) }.must_equal true
       # correct values
       t.rows.each_with_index do |row, index|
-        $test2_rows_with_blanks[index].must_equal row.except('row_hash')
+        $test2_rows_with_blanks[index].except('untitled_1').must_equal row.except('row_hash')
       end
     end
     

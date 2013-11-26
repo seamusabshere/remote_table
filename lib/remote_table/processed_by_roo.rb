@@ -49,6 +49,7 @@ class RemoteTable
 
         # create a hash to represent this row
         current_headers = ::ActiveSupport::OrderedHash.new
+        i = 0
         if headers == :first_row
           (1..spreadsheet.last_column).each do |x|
             v = spreadsheet.cell(first_row, x)
@@ -60,6 +61,8 @@ class RemoteTable
               v = assume_utf8 v
               # 'foobar' is found at column 6
               current_headers[v] = x
+            else
+              current_headers["untitled_#{i+=1}"] = x
             end
           end
           # "advance the cursor"

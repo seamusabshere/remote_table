@@ -1,3 +1,9 @@
+unreleased
+
+* Breaking changes
+
+  * Include columns with blank headers as "untitled_N"
+
 3.0.0.rc2 / 2013-08-30
 
 * Breaking changes

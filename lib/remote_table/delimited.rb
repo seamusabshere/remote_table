@@ -84,7 +84,7 @@ class RemoteTable
         if proto_headers
           proto_headers.map do |v|
             header = RemoteTable.normalize_whitespace v
-            header.present? ? header : "empty_#{i+=1}"
+            header.present? ? header : "untitled_#{i+=1}"
           end
         else
           raise "No headers found in first line: #{line.inspect}"
