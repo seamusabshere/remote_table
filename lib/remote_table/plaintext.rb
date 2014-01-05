@@ -28,6 +28,11 @@ class RemoteTable
       harmful = [ Plaintext.soft_hyphen(encoding), UTF8_BOM ]
       local_copy.in_place :perl, "s/#{harmful.join('//g; s/')}//g"
     end
+
+    # Replaces double quotemarks in strings with single quotemarks.
+    def change_quotemarks!
+      local_copy.in_place :perl, "s/\"/'/g"
+    end
     
     # No matter what the file encoding is SUPPOSED to be, run it through the system iconv binary to make sure it's UTF-8
     #

@@ -158,6 +158,7 @@ class RemoteTable
     :encoding => 'UTF-8',
     :delimiter => ',',
     :quote_char => '"',
+    :replace_quotes => false,
   }
   OLD_SETTING_NAMES = {
     :pre_select => [:select],
@@ -214,6 +215,10 @@ class RemoteTable
   #
   # @return [String]
   attr_reader :quote_char
+
+  # Whether to replace double quotes with single quotes. Defaults to false.
+  # @return [true,false]
+  attr_reader :replace_quotes
 
   # The sheet specified by the user as a number or a string.
   # @return[String,Integer]
@@ -414,6 +419,7 @@ class RemoteTable
       raise ::ArgumentError, "[remote_table] If you specify headers, none of them can be blank"
     end
     @quote_char = grab settings, :quote_char
+    @replace_quotes = grab settings, :replace_quotes
 
     @compression = grab(settings, :compression) || RemoteTable.guess_compression(url)
     @packing = grab(settings, :packing) || RemoteTable.guess_packing(url)
