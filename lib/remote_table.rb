@@ -460,7 +460,7 @@ class RemoteTable
       preprocess!
       memo = _each do |row|
         parser.call(row).each do |virtual_row|
-          virtual_row.row_hash = ::HashDigest.hexdigest row
+          virtual_row.row_hash = ::HashDigest.digest2 row
           if errata
             next if errata.rejects? virtual_row
             errata.correct! virtual_row

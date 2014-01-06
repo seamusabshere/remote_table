@@ -1,3 +1,9 @@
+3.2.0 / 2014-01-06
+
+* Breaking changes
+
+  * switch to faster HashDigest.digest2 for #row_hash - BREAKING CHANGE if you use row_hash as a unique id!
+
 3.1.0 / 2014-01-06
 
 * Breaking changes
