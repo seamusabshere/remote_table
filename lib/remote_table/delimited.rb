@@ -15,7 +15,6 @@ class RemoteTable
     end
 
     def preprocess!
-      change_quotemarks! if replace_quotes
       delete_harmful!
       convert_eol_to_unix!
       transliterate_whole_file_to_utf8!
@@ -64,11 +63,24 @@ class RemoteTable
     end
 
     def csv_options
-      {
+      retval = {
         skip_blanks: !keep_blank_rows,
-        col_sep:     delimiter,
-        quote_char:  quote_char,
       }
+      if delimiter
+        retval[:col_sep] = delimiter
+      end
+      if adaptive_quote_char
+        retval[:quote_char] = adaptive_quote_char
+      end
+      retval
+    end
+
+    def adaptive_quote_char
+      if quote_char
+        quote_char
+      elsif delimiter == "\t" or delimiter == '|'
+        "\0"
+      end
     end
 
     def headers

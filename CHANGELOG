@@ -1,7 +1,7 @@
 
 * Enhancements
 
-  * delimited parser accepts an optional :replace_quotes param that swaps double quotes for single quotes.
+  * by default, treat single and double quotes as "not special" in pipe- or tab-delimited files - thanks @dwillis https://github.com/seamusabshere/remote_table/pull/14
 
 3.0.0 / 2013-11-26
 

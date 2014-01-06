@@ -59,9 +59,20 @@ describe RemoteTable do
     f.close
   end
 
-  it "changes double quote marks to single" do
-    t = RemoteTable.new "file://#{File.expand_path('../data/cm.txt', __FILE__)}", :col_sep => '|', :replace_quotes => true, :headers => false
-    t[0][1].must_equal "OPEIU LOCAL 153 'VOTE' (VOICE OF THE ELECTORATE) COMMITTEE"
+  it "treats quotes as not special in a pipe-delimited file" do
+    t = RemoteTable.new "file://#{File.expand_path('../data/cm.txt', __FILE__)}", :delimiter => '|', :headers => false
+    t[0][1].must_equal %{OPEIU LOCAL 153 "VOTE" (VOICE OF THE ELECTORATE) COMMITTEE}
+  end
+
+  it "treats quotes as not special in a tab-delimited file" do
+    t = RemoteTable.new "file://#{File.expand_path('../data/cm.tsv', __FILE__)}", :delimiter => "\t", :headers => false
+    t[0][1].must_equal %{OPEIU LOCAL 153 "VOTE" (VOICE OF THE ELECTORATE) COMMITTEE}
+  end
+
+  # using backticks
+  it "allows quoted pipes in a pipe-delimited file" do
+    t = RemoteTable.new "file://#{File.expand_path('../data/cm.pathological.txt', __FILE__)}", :delimiter => '|', :headers => false, :quote_char => '`'
+    t[0][1].must_equal %{OPEIU LOCAL 153 '"|VOTE|"' (VOICE OF THE ELECTORATE) COMMITTEE}
   end
 
   it "open a yaml" do
