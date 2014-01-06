@@ -1,3 +1,6 @@
+* Breaking changes
+
+  * Stop requiring rubyzip2 on behalf of Roo per @rossmeissl https://github.com/seamusabshere/remote_table/issues/15 ... you may have to require it yourself
 
 * Enhancements
 
