@@ -59,6 +59,11 @@ describe RemoteTable do
     f.close
   end
 
+  it "changes double quote marks to single" do
+    t = RemoteTable.new "file://#{File.expand_path('../data/cm.txt', __FILE__)}", :col_sep => '|', :replace_quotes => true, :headers => false
+    t[0][1].must_equal "OPEIU LOCAL 153 'VOTE' (VOICE OF THE ELECTORATE) COMMITTEE"
+  end
+
   it "open a yaml" do
     t = RemoteTable.new "file://#{File.expand_path('../data/data.yml', __FILE__)}"
     t[0]['name'].must_equal 'Seamus Abshere'

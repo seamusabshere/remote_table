@@ -1,3 +1,8 @@
+
+* Enhancements
+
+  * delimited parser accepts an optional :replace_quotes param that swaps double quotes for single quotes.
+
 3.0.0 / 2013-11-26
 
 * Breaking changes

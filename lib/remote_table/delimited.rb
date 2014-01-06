@@ -15,6 +15,7 @@ class RemoteTable
     end
 
     def preprocess!
+      change_quotemarks! if replace_quotes
       delete_harmful!
       convert_eol_to_unix!
       transliterate_whole_file_to_utf8!
