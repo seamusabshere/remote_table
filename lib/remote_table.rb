@@ -4,14 +4,8 @@ if ::RUBY_VERSION < '1.9' and $KCODE != 'UTF8'
 end
 
 require 'thread'
-
-require 'active_support'
-require 'active_support/version'
-if ::ActiveSupport::VERSION::MAJOR >= 3
-  require 'active_support/core_ext'
-  require 'active_support/inflector/transliterate'
-end
 require 'hash_digest'
+require 'active_support/core_ext'
 
 require 'remote_table/local_copy'
 
