@@ -20,6 +20,7 @@ require 'remote_table/fixed_width'
 require 'remote_table/html'
 require 'remote_table/xml'
 require 'remote_table/yaml'
+require 'remote_table/json'
 
 class Hash
   # Added by remote_table to store a hash (think checksum) of the data with which a particular Hash is initialized.
@@ -90,6 +91,8 @@ class RemoteTable
         :xml
       when /yaml\z/, /yml\z/
         :yaml
+      when /json\z/
+        :json
       end
     end
 
@@ -141,7 +144,7 @@ class RemoteTable
   VALID = {
     :compression => [:gz, :zip, :bz2, :exe],
     :packing => [:tar],
-    :format => [:xlsx, :xls, :delimited, :ods, :fixed_width, :html, :xml, :yaml, :csv],
+    :format => [:xlsx, :xls, :delimited, :ods, :fixed_width, :html, :xml, :yaml, :csv, :json],
   }
   DEFAULT = {
     :streaming => false,
@@ -247,7 +250,7 @@ class RemoteTable
   # @return [String]
   attr_reader :column_css
 
-  # The format of the source file. Can be +:xlsx+, +:xls+, +:delimited+, +:ods+, +:fixed_width+, +:html+, +:xml+, +:yaml+.
+  # The format of the source file. Can be +:xlsx+, +:xls+, +:delimited+, +:ods+, +:fixed_width+, +:html+, +:xml+, +:yaml+, +:json+.
   # @return [Symbol]
   attr_reader :format
 
@@ -333,7 +336,7 @@ class RemoteTable
   # @return [Hash]
   attr_reader :errata
 
-  # The format of the source file. Can be specified as: :xlsx, :xls, :delimited (aka :csv), :ods, :fixed_width, :html, :xml, :yaml
+  # The format of the source file. Can be specified as: :xlsx, :xls, :delimited (aka :csv), :ods, :fixed_width, :html, :xml, :yaml :json
   #
   # Note: treats all +docs.google.com+ and +spreadsheets.google.com+ URLs as +:delimited+.
   #
@@ -341,6 +344,13 @@ class RemoteTable
   #
   # @return [Hash]
   attr_reader :format
+
+  # The root node of the json document. Specified as a string.
+  #
+  # Default: nil; no root node.
+  #
+  # @return [String]
+  attr_reader :root_node
 
   # @private
   class NullParser
@@ -431,6 +441,7 @@ class RemoteTable
     @pre_select = grab settings, :pre_select
     @pre_reject = grab settings, :pre_reject
     @errata = grab settings, :errata
+    @root_node = grab settings, :root_node
     @parser = grab settings, :parser
 
     @other_options = settings
