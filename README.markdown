@@ -118,6 +118,11 @@ You can call <code>symbolize_keys</code> yourself, but we don't do it automatica
     <td>The idea is to set up a <code>:row_[xpath|css]</code> and (optionally) a <code>:column_[xpath|css]</code>.</td>
     <td><a href="http://nokogiri.org/">nokogiri</a></td>
   </tr>
+  <tr>
+    <td>JSON</td>
+    <td>Force JSON format using <code>format: :json</code> and define root nodes using <code>root_node: 'data'</code></td>
+    <td><a href="http://www.ruby-doc.org/stdlib-2.0.0/libdoc/json/rdoc/JSON.html">JSON</a></td>
+  </tr>
 </table>
 
 ## Compression and packing
@@ -335,6 +340,9 @@ Everything is forced into UTF-8. You can improve the quality of the conversion b
     # 2005 EIA Residential Energy Consumption Survey microdata
     RemoteTable.new('http://www.eia.doe.gov/emeu/recs/recspubuse05/datafiles/RECS05alldata.csv',
                     :headers => :upcase)
+
+    # Public albums from the Facebook Engineering Team
+    RemoteTable.new('https://graph.facebook.com/Engineering/albums', format: :json, root_node: 'data')
 
     # ...and more from the tests...
 
