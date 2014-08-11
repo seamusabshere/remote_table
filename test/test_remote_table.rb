@@ -3,6 +3,22 @@ require 'helper'
 require 'tempfile'
 
 describe RemoteTable do
+  it "opens a json without root" do
+    t = RemoteTable.new "file://#{File.expand_path('../data/data_no_root.json', __FILE__)}"
+    t[0]['name'].must_equal 'Seamus Abshere'
+    t[0]['city'].must_equal 'Madison'
+    t[1]['name'].must_equal 'Derek Kastner'
+    t[1]['city'].must_equal 'Lansing'
+  end
+
+  it "opens a json with root" do
+    t = RemoteTable.new "file://#{File.expand_path('../data/data_with_root.json', __FILE__)}", root_node: 'data'
+    t[0]['name'].must_equal 'Seamus Abshere'
+    t[0]['city'].must_equal 'Madison'
+    t[1]['name'].must_equal 'Derek Kastner'
+    t[1]['city'].must_equal 'Lansing'
+  end
+
   it "doesn't screw up UTF-8" do
     t = RemoteTable.new "file://#{File.expand_path('../data/airports.utf8.csv', __FILE__)}"
     t[3]['city'].must_equal "Puerto Inírida"
@@ -111,7 +127,8 @@ describe RemoteTable do
     'foo.html' => :html,
     'foo.xml' => :xml,
     'foo.yaml' => :yaml,
-    'foo.yml' => :yaml
+    'foo.yml' => :yaml,
+    'foo.json' => :json
   }.each do |basename, format|
     it "detects the #{format} format from the filename #{basename}" do
       RemoteTable.guess_format(basename).must_equal format
