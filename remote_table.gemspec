@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.summary     = %{Open local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), other delimited, fixed-width files, and Google Docs. Returns an enumerator of Arrays or Hashes, depending on whether there are headers.}
   s.description = %{Open local or remote XLSX, XLS, ODS, CSV (comma separated), TSV (tab separated), other delimited, fixed-width files, and Google Docs. Returns an enumerator of Arrays or Hashes, depending on whether there are headers.}
 
+  s.license     = "MIT"
   s.rubyforge_project = "remotetable"
 
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
