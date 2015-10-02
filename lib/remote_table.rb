@@ -5,6 +5,7 @@ end
 
 require 'thread'
 require 'hash_digest'
+require 'active_support'
 require 'active_support/core_ext'
 
 require 'remote_table/local_copy'
