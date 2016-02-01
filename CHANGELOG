@@ -3,6 +3,7 @@ unreleased
 * Bug fixes
 
   * Fix Excel support via roo-xls
+  * Treat headers: true as :first_row in roo
 
 3.3.2 / 2015-10-01
 

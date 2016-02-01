@@ -50,7 +50,7 @@ class RemoteTable
         # create a hash to represent this row
         current_headers = ::ActiveSupport::OrderedHash.new
         i = 0
-        if headers == :first_row
+        if headers == :first_row or headers == true
           (1..spreadsheet.last_column).each do |x|
             v = spreadsheet.cell(first_row, x)
             if v.blank?
