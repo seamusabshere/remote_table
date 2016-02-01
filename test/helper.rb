@@ -3,6 +3,7 @@ require 'bundler/setup'
 require 'minitest/autorun'
 # require 'pry-rescue/minitest'
 require 'remote_table'
+require 'roo-xls'
 
 class MiniTest::Spec
   def setup

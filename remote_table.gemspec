@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'fastercsv', '>=1.5.0'
   s.add_runtime_dependency 'hash_digest', '>=1.1.3'
 
+  s.add_development_dependency 'roo-xls'
   s.add_development_dependency 'errata', '>=0.2.0'
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'rake'
