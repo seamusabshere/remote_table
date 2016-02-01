@@ -62,6 +62,9 @@ class RemoteTable
               # 'foobar' is found at column 6
               current_headers[v] = x
             else
+              if stop_after_untitled_headers and i > stop_after_untitled_headers
+                break
+              end
               current_headers["untitled_#{i+=1}"] = x
             end
           end

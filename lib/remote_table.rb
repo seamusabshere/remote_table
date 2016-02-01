@@ -154,6 +154,7 @@ class RemoteTable
     :keep_blank_rows => false,
     :skip => 0,
     :encoding => 'UTF-8',
+    :stop_after_untitled_headers => false,
   }
   OLD_SETTING_NAMES = {
     :pre_select => [:select],
@@ -353,6 +354,15 @@ class RemoteTable
   # @return [String]
   attr_reader :root_node
 
+  # When to trim untitled headers. Set this to 100 to prevent more than 100 untitled headers being created; the rest will be silently discarded.
+  #
+  # Note: This is effectively a right trim... the counting starts from the left.
+  #
+  # Default: false, don't try
+  #
+  # @return [Integer]
+  attr_reader :stop_after_untitled_headers
+
   # @private
   class NullParser
     def call(row)
@@ -444,6 +454,7 @@ class RemoteTable
     @errata = grab settings, :errata
     @root_node = grab settings, :root_node
     @parser = grab settings, :parser
+    @stop_after_untitled_headers = grab settings, :stop_after_untitled_headers
 
     @other_options = settings
 

@@ -1,5 +1,9 @@
 unreleased
 
+* Enhancements
+
+  * New option :stop_after_untitled_headers
+
 * Bug fixes
 
   * Fix Excel support via roo-xls

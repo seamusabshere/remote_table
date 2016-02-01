@@ -46,6 +46,7 @@ class RemoteTable
           # represent the row as a hash
           hash = ::ActiveSupport::OrderedHash.new
           row.each do |k, v|
+            next if k.nil?
             v = RemoteTable.normalize_whitespace v
             if not some_value_present and not keep_blank_rows and v.present?
               some_value_present = true
@@ -95,9 +96,11 @@ class RemoteTable
         end while line.length == 0
         proto_headers = Engine.parse_line(line, csv_options)
         if proto_headers
-          proto_headers.map do |v|
+          proto_headers.inject([]) do |memo, v|
+            break memo if stop_after_untitled_headers and i > stop_after_untitled_headers
             header = RemoteTable.normalize_whitespace v
-            header.present? ? header : "untitled_#{i+=1}"
+            memo << (header.present? ? header : "untitled_#{i+=1}")
+            memo
           end
         else
           raise "No headers found in first line: #{line.inspect}"
