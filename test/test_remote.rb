@@ -6,7 +6,7 @@ describe RemoteTable do
   describe 'used on remote files' do
     it "add a row hash to every row" do
       t = RemoteTable.new(:url => 'http://www.customerreferenceprogram.org/uploads/CRP_RFP_template.xlsx')
-      t[5].row_hash.must_equal "06d8a738551c17735e2731e25c8d0461"
+      t[5].row_hash.must_equal "59a3cf905334493bbdda971298f1b2a2f58e05cb"
     end
 
     it "open a google doc" do
