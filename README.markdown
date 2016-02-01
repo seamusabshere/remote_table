@@ -4,19 +4,11 @@ Open Google Docs spreadsheets, local or remote XLSX, XLS, ODS, CSV (comma separa
 
 Tested on MRI 1.8, MRI 1.9, and JRuby 1.6.7+. Thread-safe.
 
-## Real-world usage
+## Sponsor
 
-<p><a href="http://brighterplanet.com"><img src="https://s3.amazonaws.com/static.brighterplanet.com/assets/logos/flush-left/inline/green/rasterized/brighter_planet-160-transparent.png" alt="Brighter Planet logo"/></a></p>
+<p><a href="http://faraday.io"><img src="http://cdn2.hubspot.net/hubfs/515497/img/logo.svg" alt="Faraday logo"/></a></p>
 
-We use `remote_table` for [data science at Brighter Planet](http://brighterplanet.com/research) and in production at
-
-* [Brighter Planet's impact estimate web service](http://impact.brighterplanet.com)
-* [Brighter Planet's reference data web service](http://data.brighterplanet.com)
-
-It's also a big part of
-
-* the [`data_miner`](https://github.com/seamusabshere/data_miner) library
-* the [`earth`](https://github.com/brighterplanet/earth) library
+We use [`remote_table`](https://github.com/seamusabshere/remote_table) for [data-driven marketing at Faraday](http://faraday.io).
 
 ## Example
 
